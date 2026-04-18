@@ -1,0 +1,162 @@
+<section id="contact" class="contact-section">
+  <div class="container">
+    <div class="section-header">
+      <h2><%= storeInfo.contactLabel %></h2>
+      <div class="section-divider"></div>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info-card">
+        <div class="contact-logo-area">
+          <div class="logo-icon" style="color:var(--primary)">
+            <svg width="50" height="50" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="28" width="30" height="5" rx="2" fill="currentColor"/>
+              <rect x="8" y="15" width="24" height="14" rx="2" fill="currentColor" opacity="0.8"/>
+              <rect x="10" y="10" width="8" height="8" rx="1" fill="currentColor" opacity="0.6"/>
+              <rect x="22" y="10" width="8" height="8" rx="1" fill="currentColor" opacity="0.6"/>
+              <rect x="8" y="33" width="4" height="6" rx="1" fill="currentColor"/>
+              <rect x="28" y="33" width="4" height="6" rx="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3><%= storeInfo.name %></h3>
+        </div>
+        <ul class="contact-details">
+          <li><i class="fas fa-map-marker-alt"></i> <%= storeInfo.showroomAddress.address %></li>
+          <li><i class="fas fa-phone"></i> <a href="tel:<%= storeInfo.callNumbers.numbers[0].replace(/-/g, '') %>"><%= storeInfo.callNumbers.numbers[0] %></a></li>
+          <li><i class="fab fa-whatsapp"></i> <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>"><%= storeInfo.whatsapp.number %> (WhatsApp)</a></li>
+          <li><i class="fas fa-envelope"></i> <a href="mailto:<%= storeInfo.email.address %>"><%= storeInfo.email.address %></a></li>
+          <li><i class="fas fa-clock"></i> <%= storeInfo.openingHours.schedule[0] %></li>
+        </ul>
+        <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>?text=আসসালামু+আলাইকুম%2C+আমি+ফার্নিচার+সম্পর্কে+জানতে+চাই।" class="whatsapp-big-btn" target="_blank">
+          <i class="fab fa-whatsapp"></i> WhatsApp এ অর্ডার করুন
+        </a>
+      </div>
+      <div class="contact-map-area">
+        <div class="map-placeholder">
+          <i class="fas fa-map-marker-alt map-pin-icon"></i>
+          <p><%= storeInfo.showroomAddress.address.split(',')[0] %></p>
+          <span><%= storeInfo.name %> শোরুম</span>
+          <div class="map-streets">
+            <div class="street h"></div>
+            <div class="street v"></div>
+            <div class="street h2"></div>
+            <div class="street v2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-main">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="footer-logo">
+            <div class="logo-icon" style="color:var(--accent)">
+              <svg width="36" height="36" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="5" y="28" width="30" height="5" rx="2" fill="currentColor"/>
+                <rect x="8" y="15" width="24" height="14" rx="2" fill="currentColor" opacity="0.8"/>
+                <rect x="10" y="10" width="8" height="8" rx="1" fill="currentColor" opacity="0.6"/>
+                <rect x="22" y="10" width="8" height="8" rx="1" fill="currentColor" opacity="0.6"/>
+                <rect x="8" y="33" width="4" height="6" rx="1" fill="currentColor"/>
+                <rect x="28" y="33" width="4" height="6" rx="1" fill="currentColor"/>
+              </svg>
+            </div>
+            <span><%= storeInfo.name %></span>
+          </div>
+          <p class="footer-about"><%= storeInfo.showroomAddress.address.split(',')[0] %>, ঢাকার সেরা ফার্নিচার শোরুম। আমরা ২০+ বছর ধরে মানসম্পন্ন আসবাবপত্র সরবরাহ করে আসছি।</p>
+          <div class="footer-social">
+            <a href="https://facebook.com" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://youtube.com" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>দ্রুত লিংক</h4>
+          <ul class="footer-links">
+            <li><a href="/"><i class="fas fa-chevron-right"></i> হোম</a></li>
+            <li><a href="/#order-process"><i class="fas fa-chevron-right"></i> অর্ডার প্রক্রিয়া</a></li>
+            <li><a href="/search"><i class="fas fa-chevron-right"></i> পণ্য খুঁজুন</a></li>
+            <li><a href="/#contact"><i class="fas fa-chevron-right"></i> যোগাযোগ</a></li>
+            <li><a href="/admin"><i class="fas fa-chevron-right"></i> অ্যাডমিন প্যানেল</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>ক্যাটাগরি সমূহ</h4>
+          <ul class="footer-links">
+            <% if (typeof categories !== 'undefined') { %>
+              <% categories.forEach(function(cat) { %>
+                <li><a href="/category/<%= cat.id %>"><i class="fas fa-<%= cat.icon %>"></i> <%= cat.name %></a></li>
+              <% }); %>
+            <% } %>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>যোগাযোগ</h4>
+          <ul class="footer-contact-list">
+            <li><i class="fas fa-map-marker-alt"></i> <%= storeInfo.showroomAddress.address %></li>
+            <li><i class="fas fa-phone"></i> <a href="tel:<%= storeInfo.callNumbers.numbers[0].replace(/-/g, '') %>"><%= storeInfo.callNumbers.numbers[0] %></a></li>
+            <li><i class="fab fa-whatsapp"></i> <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>"><%= storeInfo.whatsapp.number %></a></li>
+            <li><i class="fas fa-envelope"></i> <a href="mailto:<%= storeInfo.email.address %>"><%= storeInfo.email.address %></a></li>
+            <li><i class="fas fa-clock"></i> <%= storeInfo.openingHours.schedule[0].split(':')[0] %>: ৯টা–৯টা</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <p>&copy; ২০২৪ <%= storeInfo.name %>। সর্বস্বত্ব সংরক্ষিত।</p>
+      <p>Developed with <span style="color:#e25555">❤</span> for quality furniture</p>
+    </div>
+  </div>
+</footer>
+
+<div class="whatsapp-fab" id="whatsappFab">
+  <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>?text=আসসালামু+আলাইকুম%2C+আমি+ফার্নিচার+অর্ডার+করতে+চাই।" target="_blank" aria-label="WhatsApp এ অর্ডার করুন">
+    <i class="fab fa-whatsapp"></i>
+    <span class="fab-tooltip">অর্ডার করুন</span>
+    <div class="fab-ring"></div>
+  </a>
+</div>
+
+<nav class="mobile-bottom-nav" aria-label="মোবাইল নেভিগেশন">
+  <a href="/" class="bottom-nav-item">
+    <i class="fas fa-home"></i>
+    <span>হোম</span>
+  </a>
+  <a href="/search" class="bottom-nav-item">
+    <i class="fas fa-search"></i>
+    <span>খুঁজুন</span>
+  </a>
+  <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>" class="bottom-nav-item bottom-nav-order" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+    <span>অর্ডার</span>
+  </a>
+  <button class="bottom-nav-item" id="bottomMenuToggle">
+    <i class="fas fa-bars"></i>
+    <span>মেনু</span>
+  </button>
+</nav>
+
+<div id="productModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="পণ্যের বিস্তারিত" hidden>
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="বন্ধ করুন"><i class="fas fa-times"></i></button>
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  window.__PRODUCTS__ = <%- JSON.stringify(typeof allProducts !== 'undefined' ? allProducts : []) %>;
+  window.__CATEGORIES__ = <%- JSON.stringify(typeof categories !== 'undefined' ? categories : []) %>;
+  window.__WA_NUMBER__ = "88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>";
+</script>
+<script src="/js/modal.js"></script>
+<script src="/js/search.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

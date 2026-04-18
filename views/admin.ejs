@@ -1,0 +1,484 @@
+<%- include('layout/header') %>
+
+<main class="inner-page admin-page">
+  <div class="admin-gate" id="adminGate">
+    <div class="admin-login-card">
+      <div class="admin-login-icon"><i class="fas fa-lock"></i></div>
+      <h2>অ্যাডমিন অ্যাক্সেস</h2>
+      <p>অ্যাডমিন প্যানেলে প্রবেশ করতে পাসওয়ার্ড দিন</p>
+      <div class="admin-login-form">
+        <div class="input-wrap">
+          <i class="fas fa-key field-icon"></i>
+          <input type="password" id="adminPassword" placeholder="পাসওয়ার্ড লিখুন" class="admin-pw-input">
+          <button type="button" id="pwToggle" class="pw-toggle"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="admin-login-error" id="adminLoginError" hidden>ভুল পাসওয়ার্ড। আবার চেষ্টা করুন।</div>
+        <button type="button" class="admin-login-btn" id="adminLoginBtn">প্রবেশ করুন <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-panel" id="adminPanel" hidden>
+    <div class="admin-header">
+      <div class="container">
+        <div class="admin-header-inner">
+          <h1><i class="fas fa-cog"></i> অ্যাডমিন প্যানেল</h1>
+          <div class="admin-stats">
+            <span><i class="fas fa-box"></i> <strong id="statProducts"><%= products.length %></strong> পণ্য</span>
+            <span><i class="fas fa-th-large"></i> <strong><%= categories.length %></strong> ক্যাটাগরি</span>
+          </div>
+          <button class="admin-logout-btn" id="adminLogout"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="admin-tabs" role="tablist">
+        <button class="admin-tab active" data-tab="add-product" role="tab">
+          <i class="fas fa-plus"></i> পণ্য যোগ করুন
+        </button>
+        <button class="admin-tab" data-tab="product-list" role="tab">
+          <i class="fas fa-list"></i> পণ্য তালিকা
+        </button>
+        <button class="admin-tab" data-tab="categories" role="tab">
+          <i class="fas fa-th-large"></i> ক্যাটাগরি
+        </button>
+        <button class="admin-tab" data-tab="export" role="tab">
+          <i class="fas fa-download"></i> ডেটা Export
+        </button>
+      </div>
+
+      <div class="admin-tab-content active" id="tab-add-product">
+        <div class="admin-card">
+          <h2 class="admin-card-title">নতুন পণ্য যোগ করুন</h2>
+          <form action="/admin/product" method="POST" class="admin-form" id="addProductForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>পণ্য ID <span class="optional">(ঐচ্ছিক, খালি রাখলে স্বয়ংক্রিয়)</span></label>
+                <input type="text" name="id" placeholder="যেমন: PRD-049" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>পণ্যের নাম (বাংলা) <span class="required">*</span></label>
+                <input type="text" name="name" placeholder="বাংলায় নাম" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label>পণ্যের নাম (ইংরেজি)</label>
+                <input type="text" name="nameEn" placeholder="English name" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>ক্যাটাগরি <span class="required">*</span></label>
+                <select name="categoryId" class="form-input" required>
+                  <option value="">ক্যাটাগরি বাছাই করুন</option>
+                  <% categories.forEach(function(cat) { %>
+                  <option value="<%= cat.id %>"><%= cat.name %> (<%= cat.nameEn %>)</option>
+                  <% }); %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>মূল্য (৳) <span class="required">*</span></label>
+                <input type="number" name="price" placeholder="বিক্রয় মূল্য" class="form-input" required min="0">
+              </div>
+              <div class="form-group">
+                <label>আসল মূল্য (৳)</label>
+                <input type="number" name="originalPrice" placeholder="আসল মূল্য (ছাড়ের আগে)" class="form-input" min="0">
+              </div>
+              <div class="form-group full-width">
+                <label>ছবির URL</label>
+                <input type="url" name="image" placeholder="https://..." class="form-input">
+              </div>
+              <div class="form-group">
+                <label>উপাদান</label>
+                <input type="text" name="material" placeholder="যেমন: সেগুন কাঠ" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>মাপ</label>
+                <input type="text" name="dimensions" placeholder="যেমন: 60×60×90 সেমি" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>রঙ</label>
+                <input type="text" name="color" placeholder="যেমন: বাদামী" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>ওজন</label>
+                <input type="text" name="weight" placeholder="যেমন: 12 কেজি" class="form-input">
+              </div>
+              <div class="form-group full-width">
+                <label>বিবরণ</label>
+                <textarea name="description" placeholder="পণ্যের বিস্তারিত বিবরণ..." class="form-textarea" rows="3"></textarea>
+              </div>
+              <div class="form-group full-width">
+                <label>ট্যাগ <span class="optional">(কমা দিয়ে আলাদা করুন)</span></label>
+                <input type="text" name="tags" placeholder="chair, office, premium" class="form-input">
+              </div>
+              <div class="form-group toggles-group">
+                <div class="toggle-item">
+                  <label class="toggle-label">স্টকে আছে</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" name="inStock" value="true" checked>
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <label class="toggle-label">ফিচার্ড</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" name="isFeatured" value="true">
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <label class="toggle-label">টপ সেলিং</label>
+                  <label class="toggle-switch">
+                    <input type="checkbox" name="isTopSelling" value="true">
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="admin-submit-btn">
+                <i class="fas fa-plus"></i> পণ্য যোগ করুন
+              </button>
+              <button type="reset" class="admin-reset-btn">
+                <i class="fas fa-redo"></i> রিসেট
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="admin-tab-content" id="tab-product-list">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h2 class="admin-card-title">পণ্য তালিকা</h2>
+            <div class="admin-search-wrap">
+              <input type="text" id="adminProductSearch" placeholder="পণ্য খুঁজুন..." class="admin-search-input">
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="admin-table" id="productTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>পণ্যের নাম</th>
+                  <th>ক্যাটাগরি</th>
+                  <th>মূল্য</th>
+                  <th>স্টক</th>
+                  <th>অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% products.forEach(function(product) {
+                  const cat = categories.find(c => c.id === product.categoryId);
+                %>
+                <tr data-product-id="<%= product.id %>" data-product-name="<%= product.name.toLowerCase() %>">
+                  <td><code class="product-id-cell"><%= product.id %></code></td>
+                  <td>
+                    <div class="product-cell">
+                      <img src="<%= product.image %>" alt="<%= product.name %>" class="table-thumb">
+                      <span><%= product.name %></span>
+                    </div>
+                  </td>
+                  <td><%= cat ? cat.name : '—' %></td>
+                  <td class="price-cell">৳<%= product.price.toLocaleString() %></td>
+                  <td>
+                    <span class="stock-badge <%= product.inStock ? 'in-stock' : 'out-of-stock' %>">
+                      <%= product.inStock ? 'আছে' : 'নেই' %>
+                    </span>
+                  </td>
+                  <td class="action-cell">
+                    <button class="action-btn edit-btn" data-id="<%= product.id %>" aria-label="সম্পাদনা">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="action-btn delete-btn" data-id="<%= product.id %>" data-name="<%= product.name %>" aria-label="মুছুন">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr class="edit-row" id="edit-row-<%= product.id %>" hidden>
+                  <td colspan="6">
+                    <div class="inline-edit-form">
+                      <div class="form-grid compact">
+                        <input type="text" class="form-input" placeholder="নাম (বাংলা)" value="<%= product.name %>" data-field="name">
+                        <input type="text" class="form-input" placeholder="English name" value="<%= product.nameEn %>" data-field="nameEn">
+                        <input type="number" class="form-input" placeholder="মূল্য" value="<%= product.price %>" data-field="price">
+                        <input type="number" class="form-input" placeholder="আসল মূল্য" value="<%= product.originalPrice %>" data-field="originalPrice">
+                        <select class="form-input" data-field="categoryId">
+                          <% categories.forEach(function(cat) { %>
+                          <option value="<%= cat.id %>" <%= cat.id === product.categoryId ? 'selected' : '' %>><%= cat.name %></option>
+                          <% }); %>
+                        </select>
+                        <select class="form-input" data-field="inStock">
+                          <option value="true" <%= product.inStock ? 'selected' : '' %>>স্টকে আছে</option>
+                          <option value="false" <%= !product.inStock ? 'selected' : '' %>>স্টকে নেই</option>
+                        </select>
+                      </div>
+                      <div class="inline-edit-actions">
+                        <button class="save-edit-btn" data-id="<%= product.id %>"><i class="fas fa-save"></i> সংরক্ষণ</button>
+                        <button class="cancel-edit-btn" data-id="<%= product.id %>"><i class="fas fa-times"></i> বাতিল</button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-tab-content" id="tab-categories">
+        <div class="admin-card">
+          <h2 class="admin-card-title">ক্যাটাগরি তালিকা</h2>
+          <div class="cat-admin-list">
+            <% categories.forEach(function(cat) { %>
+            <div class="cat-admin-item">
+              <div class="cat-admin-info">
+                <div class="cat-admin-icon"><i class="fas fa-<%= cat.icon %>"></i></div>
+                <div>
+                  <strong><%= cat.name %></strong>
+                  <span class="cat-admin-desc"><%= cat.description %></span>
+                </div>
+              </div>
+              <div class="cat-admin-actions">
+                <span class="cat-product-count-badge">
+                  <%= products.filter(p => p.categoryId === cat.id).length %>টি পণ্য
+                </span>
+                <a href="/category/<%= cat.id %>" class="action-btn view-btn" target="_blank" aria-label="দেখুন">
+                  <i class="fas fa-eye"></i>
+                </a>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+          <div class="admin-note">
+            <i class="fas fa-info-circle"></i>
+            ক্যাটাগরি যোগ বা পরিবর্তন করতে <code>/data/categories.js</code> ফাইল সম্পাদনা করুন।
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-tab-content" id="tab-export">
+        <div class="admin-card">
+          <h2 class="admin-card-title">ডেটা Export</h2>
+          <div class="export-section">
+            <div class="export-item">
+              <h3><i class="fas fa-box"></i> পণ্যের ডেটা (products.js)</h3>
+              <p>বর্তমান সকল পণ্যের তথ্য JSON ফরম্যাটে কপি করুন এবং <code>/data/products.js</code> ফাইলে পেস্ট করুন।</p>
+              <button class="export-btn" id="exportProductsBtn">
+                <i class="fas fa-copy"></i> পণ্যের JSON কপি করুন
+              </button>
+              <div class="export-area-wrap">
+                <textarea id="exportProductsArea" class="export-textarea" readonly rows="10"></textarea>
+              </div>
+            </div>
+            <div class="export-instructions">
+              <h4><i class="fas fa-info-circle"></i> ব্যবহার নির্দেশিকা</h4>
+              <ol>
+                <li>"পণ্যের JSON কপি করুন" বাটনে ক্লিক করুন</li>
+                <li>কোড এডিটরে <code>/data/products.js</code> ফাইলটি খুলুন</li>
+                <li>পুরো ফাইলের কন্টেন্ট মুছে দিন</li>
+                <li>কপি করা JSON পেস্ট করুন</li>
+                <li>ফাইলের শুরুতে <code>module.exports = </code> এবং শেষে <code>;</code> যোগ করুন</li>
+                <li>সার্ভার রিস্টার্ট করুন</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="admin-confirm-modal" id="deleteConfirmModal" hidden>
+  <div class="confirm-box">
+    <div class="confirm-icon"><i class="fas fa-exclamation-triangle"></i></div>
+    <h3>পণ্য মুছবেন?</h3>
+    <p id="deleteConfirmText"></p>
+    <div class="confirm-actions">
+      <button class="confirm-yes-btn" id="confirmDeleteYes">হ্যাঁ, মুছুন</button>
+      <button class="confirm-no-btn" id="confirmDeleteNo">না, রাখুন</button>
+    </div>
+  </div>
+</div>
+
+<%- include('layout/footer') %>
+
+<script>
+(function() {
+  const ADMIN_PASSWORD = "furniture2024";
+  const gateEl = document.getElementById('adminGate');
+  const panelEl = document.getElementById('adminPanel');
+  const loginBtn = document.getElementById('adminLoginBtn');
+  const pwInput = document.getElementById('adminPassword');
+  const pwToggle = document.getElementById('pwToggle');
+  const errorEl = document.getElementById('adminLoginError');
+  const logoutBtn = document.getElementById('adminLogout');
+
+  if (sessionStorage.getItem('adminAuth') === 'true') {
+    gateEl.hidden = true;
+    panelEl.hidden = false;
+  }
+
+  function login() {
+    if (pwInput.value === ADMIN_PASSWORD) {
+      sessionStorage.setItem('adminAuth', 'true');
+      gateEl.hidden = true;
+      panelEl.hidden = false;
+      errorEl.hidden = true;
+    } else {
+      errorEl.hidden = false;
+      pwInput.classList.add('shake');
+      setTimeout(() => pwInput.classList.remove('shake'), 500);
+    }
+  }
+
+  loginBtn.addEventListener('click', login);
+  pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+
+  pwToggle.addEventListener('click', () => {
+    const isText = pwInput.type === 'text';
+    pwInput.type = isText ? 'password' : 'text';
+    pwToggle.innerHTML = isText ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+  });
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('adminAuth');
+      location.reload();
+    });
+  }
+
+  document.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  const adminSearch = document.getElementById('adminProductSearch');
+  if (adminSearch) {
+    adminSearch.addEventListener('input', function() {
+      const q = this.value.toLowerCase();
+      document.querySelectorAll('#productTable tbody tr[data-product-id]').forEach(row => {
+        const name = row.dataset.productName || '';
+        const id = (row.dataset.productId || '').toLowerCase();
+        row.style.display = (name.includes(q) || id.includes(q)) ? '' : 'none';
+        const editRow = document.getElementById('edit-row-' + row.dataset.productId);
+        if (editRow) editRow.style.display = 'none';
+      });
+    });
+  }
+
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const editRow = document.getElementById('edit-row-' + id);
+      if (editRow) {
+        editRow.hidden = !editRow.hidden;
+      }
+    });
+  });
+
+  document.querySelectorAll('.cancel-edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const editRow = document.getElementById('edit-row-' + btn.dataset.id);
+      if (editRow) editRow.hidden = true;
+    });
+  });
+
+  document.querySelectorAll('.save-edit-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const row = document.getElementById('edit-row-' + id);
+      const data = {};
+      row.querySelectorAll('[data-field]').forEach(input => {
+        data[input.dataset.field] = input.value;
+      });
+      try {
+        const res = await fetch('/admin/product/' + id, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (res.ok) {
+          showToast('পণ্য আপডেট হয়েছে!', 'success');
+          row.hidden = true;
+        }
+      } catch (e) {
+        showToast('আপডেট ব্যর্থ হয়েছে।', 'error');
+      }
+    });
+  });
+
+  let deleteTargetId = null;
+  const deleteModal = document.getElementById('deleteConfirmModal');
+
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      deleteTargetId = btn.dataset.id;
+      document.getElementById('deleteConfirmText').textContent = '"' + btn.dataset.name + '" পণ্যটি মুছে ফেলবেন?';
+      deleteModal.hidden = false;
+    });
+  });
+
+  document.getElementById('confirmDeleteNo')?.addEventListener('click', () => {
+    deleteModal.hidden = true;
+    deleteTargetId = null;
+  });
+
+  document.getElementById('confirmDeleteYes')?.addEventListener('click', async () => {
+    if (!deleteTargetId) return;
+    try {
+      const res = await fetch('/admin/product/' + deleteTargetId, { method: 'DELETE' });
+      if (res.ok) {
+        deleteModal.hidden = true;
+        const row = document.querySelector('tr[data-product-id="' + deleteTargetId + '"]');
+        const editRow = document.getElementById('edit-row-' + deleteTargetId);
+        if (row) row.remove();
+        if (editRow) editRow.remove();
+        showToast('পণ্য মুছে ফেলা হয়েছে!', 'success');
+        deleteTargetId = null;
+      }
+    } catch (e) {
+      showToast('মুছতে ব্যর্থ হয়েছে।', 'error');
+    }
+  });
+
+  const exportBtn = document.getElementById('exportProductsBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      const json = JSON.stringify(window.__PRODUCTS__, null, 2);
+      const area = document.getElementById('exportProductsArea');
+      area.value = json;
+      area.style.display = 'block';
+      navigator.clipboard.writeText('module.exports = ' + json + ';').then(() => {
+        showToast('JSON কপি হয়েছে! ✅', 'success');
+      }).catch(() => {
+        area.select();
+        showToast('টেক্সটেরিয়া থেকে কপি করুন।', 'info');
+      });
+    });
+  }
+
+  function showToast(msg, type) {
+    if (window.showToast) { window.showToast(msg, type); return; }
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + (type || 'info');
+    toast.textContent = msg;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 2500);
+  }
+
+  const bottomMenuToggle = document.getElementById('bottomMenuToggle');
+  if (bottomMenuToggle) {
+    bottomMenuToggle.addEventListener('click', () => {
+      document.getElementById('mobileMenuBtn').click();
+    });
+  }
+})();
+</script>

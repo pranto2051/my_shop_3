@@ -1,0 +1,256 @@
+<%- include('layout/header') %>
+
+<main>
+  <section class="hero-slider-section" id="heroSlider" aria-label="হিরো স্লাইডার">
+    <div class="slider-track" id="sliderTrack">
+      <% featuredProducts.forEach(function(product, index) {
+        const cat = categories.find(c => c.id === product.categoryId);
+        const discount = product.originalPrice > product.price
+          ? Math.round((1 - product.price/product.originalPrice)*100) : 0;
+      %>
+      <div class="slide" data-index="<%= index %>">
+        <div class="slide-bg"></div>
+        <div class="slide-inner container">
+          <div class="slide-image-side">
+            <div class="slide-img-wrap">
+              <img src="<%= product.image %>" alt="<%= product.name %>" loading="<%= index === 0 ? 'eager' : 'lazy' %>" class="slide-img">
+            </div>
+          </div>
+          <div class="slide-text-side">
+            <% if (cat) { %>
+            <div class="slide-badge"><i class="fas fa-<%= cat.icon %>"></i> <%= cat.name %></div>
+            <% } %>
+            <h1 class="slide-title"><%= product.name %></h1>
+            <p class="slide-desc"><%= product.description.substring(0, 80) %>...</p>
+            <div class="slide-price-row">
+              <span class="slide-price">৳<%= product.price.toLocaleString('bn-BD') %></span>
+              <% if (discount > 0) { %>
+              <span class="slide-discount">-<%= discount %>%</span>
+              <% } %>
+            </div>
+            <div class="slide-actions">
+              <button class="btn-outline-hero btn-detail" data-id="<%= product.id %>">বিস্তারিত দেখুন</button>
+              <a href="https://wa.me/8801700000000?text=আসসালামু+আলাইকুম%2C+আমি+<%= encodeURIComponent(product.name) %>+(ID%3A+<%= product.id %>)+অর্ডার+করতে+চাই।" class="btn-filled-hero" target="_blank">অর্ডার করুন <i class="fas fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+
+    <button class="slider-arrow slider-prev" id="sliderPrev" aria-label="পূর্ববর্তী">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="slider-arrow slider-next" id="sliderNext" aria-label="পরবর্তী">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <div class="slider-dots" id="sliderDots" role="tablist">
+      <% featuredProducts.forEach(function(_, i) { %>
+      <button class="dot <%= i === 0 ? 'active' : '' %>" data-index="<%= i %>" role="tab" aria-label="স্লাইড <%= i+1 %>"></button>
+      <% }); %>
+    </div>
+  </section>
+
+  <section class="search-section">
+    <div class="container">
+      <h2 class="search-section-title">আপনার পছন্দের পণ্য খুঁজুন</h2>
+      <form action="/search" method="GET" class="search-bar-form" id="mainSearchForm">
+        <div class="search-fields">
+          <div class="search-field">
+            <i class="fas fa-search field-icon"></i>
+            <input type="text" name="q" id="searchQ" placeholder="পণ্যের নাম বা ID লিখুন..." class="search-input" autocomplete="off">
+          </div>
+          <div class="search-field">
+            <i class="fas fa-th-large field-icon"></i>
+            <select name="categoryId" class="search-select">
+              <option value="">সকল ক্যাটাগরি</option>
+              <% categories.forEach(function(cat) { %>
+              <option value="<%= cat.id %>"><%= cat.name %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="search-field price-range-field">
+            <i class="fas fa-taka-sign field-icon"></i>
+            <input type="number" name="minPrice" placeholder="সর্বনিম্ন ৳" class="search-input price-input" min="0">
+            <span class="price-sep">—</span>
+            <input type="number" name="maxPrice" placeholder="সর্বোচ্চ ৳" class="search-input price-input" min="0">
+          </div>
+          <div class="search-field">
+            <i class="fas fa-sort field-icon"></i>
+            <select name="sort" class="search-select">
+              <option value="">সর্বশেষ যোগ</option>
+              <option value="price_asc">মূল্য (কম–বেশি)</option>
+              <option value="price_desc">মূল্য (বেশি–কম)</option>
+              <option value="popular">জনপ্রিয়তা</option>
+            </select>
+          </div>
+          <button type="submit" class="search-btn">
+            <i class="fas fa-search"></i> খুঁজুন
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="top-selling-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <h2><i class="fas fa-fire fire-icon"></i> সর্বাধিক বিক্রিত পণ্য</h2>
+          <div class="section-divider"></div>
+        </div>
+        <a href="/search?sort=popular" class="see-all-link">সকল দেখুন <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="h-scroll-wrap">
+        <button class="h-scroll-btn prev-btn" data-target="topSellingRow" aria-label="পূর্ববর্তী"><i class="fas fa-chevron-left"></i></button>
+        <div class="product-h-row" id="topSellingRow">
+          <% topSelling.forEach(function(product, index) {
+            const cat = categories.find(c => c.id === product.categoryId);
+            const discount = product.originalPrice > product.price
+              ? Math.round((1 - product.price/product.originalPrice)*100) : 0;
+          %>
+          <div class="product-card" style="animation-delay: <%= index * 0.08 %>s">
+            <div class="card-image-wrap">
+              <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy" class="card-img">
+              <div class="card-badges">
+                <% if (discount > 0) { %><span class="badge badge-discount">-<%= discount %>%</span><% } %>
+                <% if (product.isTopSelling) { %><span class="badge badge-top">TOP</span><% } %>
+              </div>
+              <div class="card-overlay-actions">
+                <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>?text=আমি+<%= encodeURIComponent(product.name) %>+(ID%3A+<%= product.id %>)+অর্ডার+করতে+চাই।" class="card-wa-btn" target="_blank" aria-label="WhatsApp অর্ডার"><i class="fab fa-whatsapp"></i></a>
+              </div>
+              <button class="product-id-badge" data-id="<%= product.id %>" aria-label="ID কপি করুন">#<%= product.id %></button>
+            </div>
+            <div class="card-body">
+              <% if (cat) { %><div class="category-tag"><i class="fas fa-<%= cat.icon %>"></i> <%= cat.name %></div><% } %>
+              <h3 class="product-name"><%= product.name %></h3>
+              <div class="rating">
+                <% for(let i=1; i<=5; i++) { %>
+                  <i class="fas fa-star<%= i <= Math.floor(product.rating) ? '' : (i - product.rating < 1 && i - product.rating > 0 ? '-half-alt' : '-o') %>"></i>
+                <% } %>
+                <span>(<%= product.reviewCount %>)</span>
+              </div>
+              <div class="price-row">
+                <span class="price">৳<%= product.price.toLocaleString() %></span>
+                <% if (product.originalPrice > product.price) { %><span class="original-price">৳<%= product.originalPrice.toLocaleString() %></span><% } %>
+              </div>
+              <button class="btn-detail btn-card-detail" data-id="<%= product.id %>">বিস্তারিত দেখুন</button>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+        <button class="h-scroll-btn next-btn" data-target="topSellingRow" aria-label="পরবর্তী"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </section>
+
+  <% categoryWithProducts.forEach(function(cat) { %>
+  <% if (cat.products && cat.products.length > 0) { %>
+  <section class="category-section" id="section-<%= cat.id %>" data-cat-id="<%= cat.id %>">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="cat-section-icon"><i class="fas fa-<%= cat.icon %>"></i></div>
+          <div>
+            <h2 class="cat-section-title"><%= cat.name %> <span class="count-badge"><%= cat.products.length %>টি পণ্য</span></h2>
+            <p class="cat-section-desc"><%= cat.description %></p>
+            <div class="section-divider"></div>
+          </div>
+        </div>
+        <a href="/category/<%= cat.id %>" class="see-all-link">সকল দেখুন <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="h-scroll-wrap">
+        <button class="h-scroll-btn prev-btn" data-target="catRow-<%= cat.id %>" aria-label="পূর্ববর্তী"><i class="fas fa-chevron-left"></i></button>
+        <div class="product-h-row" id="catRow-<%= cat.id %>">
+          <% cat.products.slice(0, 6).forEach(function(product, index) {
+            const discount = product.originalPrice > product.price
+              ? Math.round((1 - product.price/product.originalPrice)*100) : 0;
+          %>
+          <div class="product-card" style="animation-delay: <%= index * 0.08 %>s">
+            <div class="card-image-wrap">
+              <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy" class="card-img">
+              <div class="card-badges">
+                <% if (discount > 0) { %><span class="badge badge-discount">-<%= discount %>%</span><% } %>
+                <% if (product.isTopSelling) { %><span class="badge badge-top">TOP</span><% } %>
+                <% if (!product.inStock) { %><span class="badge badge-out">স্টক নেই</span><% } %>
+              </div>
+              <div class="card-overlay-actions">
+                <a href="https://wa.me/8801700000000?text=আমি+<%= encodeURIComponent(product.name) %>+(ID%3A+<%= product.id %>)+অর্ডার+করতে+চাই।" class="card-wa-btn" target="_blank" aria-label="WhatsApp অর্ডার"><i class="fab fa-whatsapp"></i></a>
+              </div>
+              <button class="product-id-badge" data-id="<%= product.id %>" aria-label="ID কপি করুন">#<%= product.id %></button>
+            </div>
+            <div class="card-body">
+              <div class="category-tag"><i class="fas fa-<%= cat.icon %>"></i> <%= cat.name %></div>
+              <h3 class="product-name"><%= product.name %></h3>
+              <div class="rating">
+                <% for(let i=1; i<=5; i++) { %>
+                  <i class="fas fa-star<%= i <= Math.floor(product.rating) ? '' : (i - product.rating < 1 && i - product.rating > 0 ? '-half-alt' : '') %>"></i>
+                <% } %>
+                <span>(<%= product.reviewCount %>)</span>
+              </div>
+              <div class="price-row">
+                <span class="price">৳<%= product.price.toLocaleString() %></span>
+                <% if (product.originalPrice > product.price) { %><span class="original-price">৳<%= product.originalPrice.toLocaleString() %></span><% } %>
+              </div>
+              <button class="btn-detail btn-card-detail" data-id="<%= product.id %>">বিস্তারিত দেখুন</button>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+        <button class="h-scroll-btn next-btn" data-target="catRow-<%= cat.id %>" aria-label="পরবর্তী"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="cat-section-footer">
+        <a href="/category/<%= cat.id %>" class="btn-see-more">আরও পণ্য দেখুন <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+  <% } %>
+  <% }); %>
+
+  <section class="order-process-section" id="order-process">
+    <div class="container">
+      <div class="section-header center">
+        <h2>কিভাবে অর্ডার করবেন?</h2>
+        <p class="section-subtitle">মাত্র ৪টি সহজ ধাপে আপনার পছন্দের ফার্নিচার পান</p>
+        <div class="section-divider center-div"></div>
+      </div>
+      <div class="steps-grid">
+        <div class="step-item">
+          <div class="step-number">০১</div>
+          <div class="step-icon-wrap"><i class="fas fa-search"></i></div>
+          <h3>পণ্য বাছাই</h3>
+          <p>আমাদের বিশাল কালেকশন থেকে আপনার পছন্দের ফার্নিচার বাছাই করুন।</p>
+          <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="step-item">
+          <div class="step-number">০২</div>
+          <div class="step-icon-wrap"><i class="fab fa-whatsapp"></i></div>
+          <h3>WhatsApp মেসেজ</h3>
+          <p>পণ্যের নাম, ID ও পরিমাণ সহ আমাদের WhatsApp এ মেসেজ করুন।</p>
+          <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="step-item">
+          <div class="step-number">০৩</div>
+          <div class="step-icon-wrap"><i class="fas fa-check-circle"></i></div>
+          <h3>অর্ডার নিশ্চিত</h3>
+          <p>আমাদের টিম আপনার সাথে যোগাযোগ করে অর্ডার নিশ্চিত করবে।</p>
+          <div class="step-connector"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div class="step-item">
+          <div class="step-number">০৪</div>
+          <div class="step-icon-wrap"><i class="fas fa-truck"></i></div>
+          <h3>ডেলিভারি পান</h3>
+          <p>নির্ধারিত সময়ে আপনার দরজায় পৌঁছে দেওয়া হবে।</p>
+        </div>
+      </div>
+      <div class="order-cta">
+        <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>?text=আসসালামু+আলাইকুম%2C+আমি+এখনই+অর্ডার+করতে+চাই।" class="btn-whatsapp-cta" target="_blank">
+          <i class="fab fa-whatsapp"></i> এখনই অর্ডার করুন (WhatsApp)
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('layout/footer') %>

@@ -1,0 +1,118 @@
+<%- include('layout/header') %>
+
+<main class="inner-page">
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="ব্রেডক্রাম্ব">
+        <a href="/">হোম</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>খোঁজার ফলাফল</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="search-page-header">
+    <div class="container">
+      <% if (query) { %>
+      <h1>"<%= query %>" এর জন্য <span class="result-number"><%= results.length %>টি</span> পণ্য পাওয়া গেছে</h1>
+      <% } else { %>
+      <h1>সকল পণ্য — <span class="result-number"><%= results.length %>টি</span> পণ্য</h1>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="search-filter-bar">
+    <div class="container">
+      <form action="/search" method="GET" class="search-bar-form compact">
+        <div class="search-fields">
+          <div class="search-field">
+            <i class="fas fa-search field-icon"></i>
+            <input type="text" name="q" value="<%= query %>" placeholder="পণ্যের নাম বা ID..." class="search-input">
+          </div>
+          <div class="search-field">
+            <i class="fas fa-th-large field-icon"></i>
+            <select name="categoryId" class="search-select">
+              <option value="">সকল ক্যাটাগরি</option>
+              <% categories.forEach(function(cat) { %>
+              <option value="<%= cat.id %>" <%= categoryId === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="search-field price-range-field">
+            <input type="number" name="minPrice" value="<%= minPrice %>" placeholder="সর্বনিম্ন ৳" class="search-input price-input" min="0">
+            <span class="price-sep">—</span>
+            <input type="number" name="maxPrice" value="<%= maxPrice %>" placeholder="সর্বোচ্চ ৳" class="search-input price-input" min="0">
+          </div>
+          <div class="search-field">
+            <select name="sort" class="search-select">
+              <option value="" <%= !sort ? 'selected' : '' %>>সর্বশেষ যোগ</option>
+              <option value="price_asc" <%= sort === 'price_asc' ? 'selected' : '' %>>মূল্য (কম–বেশি)</option>
+              <option value="price_desc" <%= sort === 'price_desc' ? 'selected' : '' %>>মূল্য (বেশি–কম)</option>
+              <option value="popular" <%= sort === 'popular' ? 'selected' : '' %>>জনপ্রিয়তা</option>
+            </select>
+          </div>
+          <button type="submit" class="search-btn"><i class="fas fa-search"></i> খুঁজুন</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="container">
+    <% if (results.length === 0) { %>
+    <div class="empty-state large-empty">
+      <div class="empty-icon"><i class="fas fa-search"></i></div>
+      <h2>কোন পণ্য পাওয়া যায়নি</h2>
+      <p>অন্য কীওয়ার্ড দিয়ে চেষ্টা করুন অথবা ক্যাটাগরি পরিবর্তন করুন।</p>
+      <div class="empty-suggestions">
+        <p>পরামর্শ:</p>
+        <ul>
+          <% categories.forEach(function(cat) { %>
+          <li><a href="/search?categoryId=<%= cat.id %>"><%= cat.name %></a></li>
+          <% }); %>
+        </ul>
+      </div>
+      <a href="/" class="btn-go-home">হোমে ফিরুন</a>
+    </div>
+    <% } else { %>
+    <div class="products-grid search-grid" id="searchResultGrid">
+      <% results.forEach(function(product, index) {
+        const cat = categories.find(c => c.id === product.categoryId);
+        const discount = product.originalPrice > product.price
+          ? Math.round((1 - product.price/product.originalPrice)*100) : 0;
+      %>
+      <div class="product-card fade-in-up" style="animation-delay: <%= index * 0.04 %>s">
+        <div class="card-image-wrap">
+          <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy" class="card-img">
+          <div class="card-badges">
+            <% if (discount > 0) { %><span class="badge badge-discount">-<%= discount %>%</span><% } %>
+            <% if (product.isTopSelling) { %><span class="badge badge-top">TOP</span><% } %>
+            <% if (!product.inStock) { %><span class="badge badge-out">স্টক নেই</span><% } %>
+          </div>
+          <div class="card-overlay-actions">
+            <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>?text=আমি+<%= encodeURIComponent(product.name) %>+(ID%3A+<%= product.id %>)+অর্ডার+করতে+চাই।" class="card-wa-btn" target="_blank" aria-label="WhatsApp অর্ডার"><i class="fab fa-whatsapp"></i></a>
+          </div>
+          <button class="product-id-badge" data-id="<%= product.id %>" aria-label="ID কপি করুন">#<%= product.id %></button>
+        </div>
+        <div class="card-body">
+          <% if (cat) { %><div class="category-tag"><a href="/category/<%= cat.id %>"><i class="fas fa-<%= cat.icon %>"></i> <%= cat.name %></a></div><% } %>
+          <h3 class="product-name"><%= product.name %></h3>
+          <div class="rating">
+            <% for(let i=1; i<=5; i++) { %>
+              <i class="fas fa-star"></i>
+            <% } %>
+            <span>(<%= product.reviewCount %>)</span>
+          </div>
+          <div class="price-row">
+            <span class="price">৳<%= product.price.toLocaleString() %></span>
+            <% if (product.originalPrice > product.price) { %><span class="original-price">৳<%= product.originalPrice.toLocaleString() %></span><% } %>
+          </div>
+          <button class="btn-detail btn-card-detail" data-id="<%= product.id %>">বিস্তারিত দেখুন</button>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('layout/footer') %>

@@ -1,0 +1,147 @@
+<%- include('layout/header') %>
+
+<main class="inner-page">
+  <div class="breadcrumb-bar">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="ব্রেডক্রাম্ব">
+        <a href="/">হোম</a>
+        <i class="fas fa-chevron-right"></i>
+        <span><%= category.name %></span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="category-hero-banner">
+    <div class="container">
+      <div class="cat-hero-inner">
+        <div class="cat-hero-icon"><i class="fas fa-<%= category.icon %>"></i></div>
+        <div class="cat-hero-text">
+          <h1><%= category.name %></h1>
+          <p><%= category.description %></p>
+          <span class="cat-product-count"><%= categoryProducts.length %>টি পণ্য পাওয়া গেছে</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="category-layout">
+      <aside class="filter-sidebar" id="filterSidebar">
+        <div class="sidebar-header">
+          <h3><i class="fas fa-sliders-h"></i> ফিল্টার</h3>
+          <button class="sidebar-close-btn" id="sidebarClose" aria-label="ফিল্টার বন্ধ করুন"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="filter-group">
+          <h4>মূল্য পরিসীমা</h4>
+          <div class="price-range-inputs">
+            <input type="number" id="filterMinPrice" placeholder="সর্বনিম্ন" min="0" class="filter-input">
+            <span>—</span>
+            <input type="number" id="filterMaxPrice" placeholder="সর্বোচ্চ" min="0" class="filter-input">
+          </div>
+          <button class="apply-filter-btn" id="applyPriceFilter">প্রয়োগ করুন</button>
+        </div>
+
+        <div class="filter-group">
+          <h4>সাজানো</h4>
+          <div class="sort-radio-group">
+            <label class="radio-label">
+              <input type="radio" name="catSort" value="newest" checked> সর্বশেষ যোগ
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="catSort" value="price_asc"> মূল্য (কম–বেশি)
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="catSort" value="price_desc"> মূল্য (বেশি–কম)
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="catSort" value="popular"> জনপ্রিয়তা
+            </label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h4>অন্যান্য ক্যাটাগরি</h4>
+          <ul class="sidebar-cat-list">
+            <% categories.forEach(function(cat) { %>
+            <li>
+              <a href="/category/<%= cat.id %>" class="<%= cat.id === category.id ? 'active' : '' %>">
+                <i class="fas fa-<%= cat.icon %>"></i> <%= cat.name %>
+              </a>
+            </li>
+            <% }); %>
+          </ul>
+        </div>
+      </aside>
+
+      <div class="products-main">
+        <div class="products-toolbar">
+          <div class="toolbar-left">
+            <button class="filter-toggle-btn" id="filterToggle">
+              <i class="fas fa-sliders-h"></i> ফিল্টার
+            </button>
+            <span class="result-count" id="resultCount"><%= categoryProducts.length %>টি পণ্য</span>
+          </div>
+          <div class="toolbar-right">
+            <select class="sort-select-toolbar" id="toolbarSort">
+              <option value="newest">সর্বশেষ যোগ</option>
+              <option value="price_asc">মূল্য (কম–বেশি)</option>
+              <option value="price_desc">মূল্য (বেশি–কম)</option>
+              <option value="popular">জনপ্রিয়তা</option>
+            </select>
+          </div>
+        </div>
+
+        <% if (categoryProducts.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fas fa-box-open"></i></div>
+          <h3>কোন পণ্য নেই</h3>
+          <p>এই ক্যাটাগরিতে এখনও কোন পণ্য যোগ করা হয়নি।</p>
+          <a href="/" class="btn-go-home">হোমে ফিরুন</a>
+        </div>
+        <% } else { %>
+        <div class="products-grid" id="categoryProductGrid">
+          <% categoryProducts.forEach(function(product, index) {
+            const cat = categories.find(c => c.id === product.categoryId);
+            const discount = product.originalPrice > product.price
+              ? Math.round((1 - product.price/product.originalPrice)*100) : 0;
+          %>
+          <div class="product-card fade-in-up" style="animation-delay: <%= index * 0.05 %>s"
+               data-price="<%= product.price %>" data-rating="<%= product.rating %>" data-id="<%= product.id %>">
+            <div class="card-image-wrap">
+              <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy" class="card-img">
+              <div class="card-badges">
+                <% if (discount > 0) { %><span class="badge badge-discount">-<%= discount %>%</span><% } %>
+                <% if (product.isTopSelling) { %><span class="badge badge-top">TOP</span><% } %>
+                <% if (!product.inStock) { %><span class="badge badge-out">স্টক নেই</span><% } %>
+              </div>
+              <div class="card-overlay-actions">
+            <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>?text=আমি+<%= encodeURIComponent(product.name) %>+(ID%3A+<%= product.id %>)+অর্ডার+করতে+চাই।" class="card-wa-btn" target="_blank" aria-label="WhatsApp অর্ডার"><i class="fab fa-whatsapp"></i></a>
+          </div>
+              <button class="product-id-badge" data-id="<%= product.id %>" aria-label="ID কপি করুন">#<%= product.id %></button>
+            </div>
+            <div class="card-body">
+              <% if (cat) { %><div class="category-tag"><i class="fas fa-<%= cat.icon %>"></i> <%= cat.name %></div><% } %>
+              <h3 class="product-name"><%= product.name %></h3>
+              <div class="rating">
+                <% for(let i=1; i<=5; i++) { %>
+                  <i class="fas fa-star<%= i <= Math.floor(product.rating) ? '' : '' %>"></i>
+                <% } %>
+                <span>(<%= product.reviewCount %>)</span>
+              </div>
+              <div class="price-row">
+                <span class="price">৳<%= product.price.toLocaleString() %></span>
+                <% if (product.originalPrice > product.price) { %><span class="original-price">৳<%= product.originalPrice.toLocaleString() %></span><% } %>
+              </div>
+              <button class="btn-detail btn-card-detail" data-id="<%= product.id %>">বিস্তারিত দেখুন</button>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('layout/footer') %>

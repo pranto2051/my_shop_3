@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="<%= storeInfo.name %> - মিরপুর, ঢাকা। মানসম্পন্ন চেয়ার, টেবিল, দরজা, জানালা, সোফা, বেড, ওয়ার্ডরোব ও শেলফ।">
+  <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : storeInfo.name %>">
+  <meta property="og:description" content="মিরপুর, ঢাকার সেরা ফার্নিচার শোরুম। মানসম্পন্ন আসবাবপত্রের জন্য <%= storeInfo.name %>।">
+  <meta property="og:type" content="website">
+  <title><%= typeof title !== 'undefined' ? title : storeInfo.name %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/animations.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="container">
+    <div class="top-bar-left">
+      <span><i class="fas fa-phone"></i> <%= storeInfo.callNumbers.numbers[0] %></span>
+      <span><i class="fas fa-map-marker-alt"></i> <%= storeInfo.showroomAddress.address.split(',')[0] %></span>
+      <span><i class="fas fa-clock"></i> <%= storeInfo.openingHours.schedule[0].split(':')[0] %> ৯টা–৯টা</span>
+    </div>
+    <div class="top-bar-right">
+      <a href="https://facebook.com" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+    </div>
+  </div>
+</div>
+
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <div class="header-inner">
+      <a href="/" class="logo" aria-label="<%= storeInfo.name %>">
+        <div class="logo-icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="28" width="30" height="5" rx="2" fill="currentColor"/>
+            <rect x="8" y="15" width="24" height="14" rx="2" fill="currentColor" opacity="0.8"/>
+            <rect x="10" y="10" width="8" height="8" rx="1" fill="currentColor" opacity="0.6"/>
+            <rect x="22" y="10" width="8" height="8" rx="1" fill="currentColor" opacity="0.6"/>
+            <rect x="8" y="33" width="4" height="6" rx="1" fill="currentColor"/>
+            <rect x="28" y="33" width="4" height="6" rx="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-name"><%= storeInfo.name %></span>
+          <span class="logo-tagline">মানসম্পন্ন আসবাবপত্র</span>
+        </div>
+      </a>
+
+      <nav class="main-nav" id="mainNav" aria-label="মূল নেভিগেশন">
+        <ul>
+          <li><a href="/" class="nav-link">হোম</a></li>
+          <li class="has-dropdown">
+            <a href="#" class="nav-link">ক্যাটাগরি <i class="fas fa-chevron-down"></i></a>
+            <div class="dropdown-menu">
+              <% if (typeof categories !== 'undefined') { %>
+                <% categories.forEach(function(cat) { %>
+                  <a href="/category/<%= cat.id %>" class="dropdown-item">
+                    <i class="fas fa-<%= cat.icon %>"></i>
+                    <span><%= cat.name %></span>
+                  </a>
+                <% }); %>
+              <% } %>
+            </div>
+          </li>
+          <li><a href="/#order-process" class="nav-link">অর্ডার প্রক্রিয়া</a></li>
+          <li><a href="/#contact" class="nav-link">যোগাযোগ</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button class="search-toggle" id="searchToggle" aria-label="খুঁজুন">
+          <i class="fas fa-search"></i>
+        </button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="মেনু" aria-expanded="false">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-overlay" id="mobileOverlay" aria-hidden="true">
+  <div class="mobile-menu-content">
+    <button class="mobile-close" id="mobileClose" aria-label="বন্ধ করুন">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="mobile-logo">
+      <span class="logo-name"><%= storeInfo.name %></span>
+    </div>
+    <nav class="mobile-nav">
+      <ul>
+        <li><a href="/">হোম</a></li>
+        <li class="mobile-dropdown">
+          <button class="mobile-cat-toggle">ক্যাটাগরি <i class="fas fa-chevron-down"></i></button>
+          <ul class="mobile-cat-list">
+            <% if (typeof categories !== 'undefined') { %>
+              <% categories.forEach(function(cat) { %>
+                <li><a href="/category/<%= cat.id %>"><i class="fas fa-<%= cat.icon %>"></i> <%= cat.name %></a></li>
+              <% }); %>
+            <% } %>
+          </ul>
+        </li>
+        <li><a href="/#order-process">অর্ডার প্রক্রিয়া</a></li>
+        <li><a href="/#contact">যোগাযোগ</a></li>
+        <li><a href="/admin">অ্যাডমিন</a></li>
+      </ul>
+    </nav>
+    <div class="mobile-contact-info">
+      <a href="tel:<%= storeInfo.callNumbers.numbers[0].replace(/-/g, '') %>"><i class="fas fa-phone"></i> <%= storeInfo.callNumbers.numbers[0] %></a>
+      <a href="https://wa.me/88<%= storeInfo.whatsapp.number.replace(/-/g, '') %>" class="whatsapp-btn-mobile">
+        <i class="fab fa-whatsapp"></i> WhatsApp এ মেসেজ করুন
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="header-search-bar" id="headerSearchBar">
+  <div class="container">
+    <form action="/search" method="GET" class="search-form-inline">
+      <input type="text" name="q" placeholder="পণ্যের নাম বা ID লিখুন..." class="search-input-inline" autocomplete="off">
+      <button type="submit" class="search-submit-btn"><i class="fas fa-search"></i> খুঁজুন</button>
+    </form>
+    <button class="search-close" id="searchClose" aria-label="বন্ধ করুন"><i class="fas fa-times"></i></button>
+  </div>
+</div>
+
+<div class="sticky-cat-nav" id="stickyCatNav">
+  <div class="container">
+    <div class="cat-nav-scroll">
+      <% if (typeof categories !== 'undefined') { %>
+        <% categories.forEach(function(cat) { %>
+          <a href="#section-<%= cat.id %>" class="cat-nav-pill" data-cat="<%= cat.id %>">
+            <i class="fas fa-<%= cat.icon %>"></i> <%= cat.name %>
+          </a>
+        <% }); %>
+      <% } %>
+    </div>
+  </div>
+</div>
