@@ -27,14 +27,20 @@
             <span><i class="fas fa-box"></i> <strong id="statProducts"><%= products.length %></strong> পণ্য</span>
             <span><i class="fas fa-th-large"></i> <strong><%= categories.length %></strong> ক্যাটাগরি</span>
           </div>
-          <button class="admin-logout-btn" id="adminLogout"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
+          <div class="admin-header-actions">
+            <a href="/" class="admin-home-btn"><i class="fas fa-home"></i> হোমে ফিরুন</a>
+            <button class="admin-logout-btn" id="adminLogout"><i class="fas fa-sign-out-alt"></i> লগআউট</button>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="container">
       <div class="admin-tabs" role="tablist">
-        <button class="admin-tab active" data-tab="add-product" role="tab">
+        <button class="admin-tab active" data-tab="dashboard" role="tab">
+          <i class="fas fa-chart-line"></i> ড্যাশবোর্ড
+        </button>
+        <button class="admin-tab" data-tab="add-product" role="tab">
           <i class="fas fa-plus"></i> পণ্য যোগ করুন
         </button>
         <button class="admin-tab" data-tab="product-list" role="tab">
@@ -48,7 +54,90 @@
         </button>
       </div>
 
-      <div class="admin-tab-content active" id="tab-add-product">
+      <div class="admin-tab-content active" id="tab-dashboard">
+        <div class="dashboard-stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon featured"><i class="fas fa-star"></i></div>
+            <div class="stat-info">
+              <h3><%= products.filter(p => p.isFeatured).length %></h3>
+              <p>ফিচার্ড পণ্য</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon top-selling"><i class="fas fa-fire"></i></div>
+            <div class="stat-info">
+              <h3><%= products.filter(p => p.isTopSelling).length %></h3>
+              <p>টপ সেলিং</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon stock-out"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-info">
+              <h3><%= products.filter(p => !p.inStock).length %></h3>
+              <p>স্টক শেষ</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon category-stat"><i class="fas fa-th-large"></i></div>
+            <div class="stat-info">
+              <h3><%= categories.length %></h3>
+              <p>মোট ক্যাটাগরি</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-charts-grid">
+          <div class="admin-card dashboard-chart-card">
+            <h2 class="admin-card-title">ক্যাটাগরি অনুযায়ী পণ্য</h2>
+            <div class="cat-report-list">
+              <% categories.forEach(function(cat) { 
+                const count = products.filter(p => p.categoryId === cat.id).length;
+                const percentage = products.length > 0 ? Math.round((count / products.length) * 100) : 0;
+              %>
+              <div class="cat-report-item">
+                <div class="cat-report-info">
+                  <i class="fas fa-<%= cat.icon %>"></i>
+                  <span><%= cat.name %></span>
+                  <strong><%= count %>টি</strong>
+                </div>
+                <div class="cat-report-bar-wrap">
+                  <div class="cat-report-bar" style="--cat-percentage: <%= percentage %>%;"></div>
+                </div>
+              </div>
+              <% }); %>
+            </div>
+          </div>
+
+          <div class="admin-card dashboard-chart-card">
+            <h2 class="admin-card-title">দ্রুত রিপোর্ট</h2>
+            <div class="quick-report-list">
+              <% 
+                const totalValue = products.reduce((sum, p) => sum + (Number(p.price) || 0), 0);
+                const avgValue = products.length > 0 ? Math.round(totalValue / products.length) : 0;
+                const inStockCount = products.filter(p => p.inStock).length;
+              %>
+              <div class="report-item">
+                <div class="report-label">মোট পণ্যের মূল্য</div>
+                <div class="report-value">৳<%= totalValue.toLocaleString('bn-BD') %></div>
+              </div>
+              <div class="report-item">
+                <div class="report-label">গড় পণ্যের মূল্য</div>
+                <div class="report-value">৳<%= avgValue.toLocaleString('bn-BD') %></div>
+              </div>
+              <div class="report-item">
+                <div class="report-label">স্টকে থাকা পণ্য</div>
+                <div class="report-value"><%= inStockCount %>টি</div>
+              </div>
+              <div class="report-item">
+                <div class="report-label">সর্বশেষ আপডেট</div>
+                <div class="report-value"><%= new Date().toLocaleDateString('bn-BD') %></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-tab-content" id="tab-add-product">
         <div class="admin-card">
           <h2 class="admin-card-title">নতুন পণ্য যোগ করুন</h2>
           <form action="/admin/product" method="POST" class="admin-form" id="addProductForm">
@@ -305,7 +394,9 @@
 
 <script>
 (function() {
+  document.body.classList.add('on-admin-page');
   const ADMIN_PASSWORD = "furniture2024";
+  const DEMO_PASSWORD = "demo123";
   const gateEl = document.getElementById('adminGate');
   const panelEl = document.getElementById('adminPanel');
   const loginBtn = document.getElementById('adminLoginBtn');
@@ -314,16 +405,24 @@
   const errorEl = document.getElementById('adminLoginError');
   const logoutBtn = document.getElementById('adminLogout');
 
-  if (sessionStorage.getItem('adminAuth') === 'true') {
-    gateEl.hidden = true;
-    panelEl.hidden = false;
-  }
-
-  function login() {
-    if (pwInput.value === ADMIN_PASSWORD) {
-      sessionStorage.setItem('adminAuth', 'true');
+  function updateAdminView() {
+    const isAdmin = sessionStorage.getItem('adminAuth') === 'true';
+    if (isAdmin) {
       gateEl.hidden = true;
       panelEl.hidden = false;
+    } else {
+      gateEl.hidden = false;
+      panelEl.hidden = true;
+    }
+  }
+
+  updateAdminView();
+
+  function login() {
+    const enteredPw = pwInput.value;
+    if (enteredPw === ADMIN_PASSWORD || enteredPw === DEMO_PASSWORD) {
+      sessionStorage.setItem('adminAuth', 'true');
+      updateAdminView();
       errorEl.hidden = true;
     } else {
       errorEl.hidden = false;

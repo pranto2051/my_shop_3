@@ -18,7 +18,7 @@ Open `http://localhost:3000`
 | `/` | Homepage with slider, search, categories |
 | `/category/:id` | Category product listing |
 | `/search` | Search results with filters |
-| `/admin` | Admin panel (password: `furniture2024`) |
+| `/admin` | Admin panel (Password: `furniture2024`, Demo: `demo123`) |
 
 ## Tech Stack
 
