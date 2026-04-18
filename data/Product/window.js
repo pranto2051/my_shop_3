@@ -8,9 +8,9 @@ module.exports = [
     originalPrice: 10000,
     image: "https://images.pexels.com/photos/13113822/pexels-photo-13113822.jpeg",
     images: [
-      "https://images.pexels.com/photos/34406999/pexels-photo-34406999.jpeg",
-      "https://images.pexels.com/photos/35828780/pexels-photo-35828780.jpeg",
-      "https://images.pexels.com/photos/15666878/pexels-photo-15666878.jpeg"
+      "https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg",
+      "https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg",
+      "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg"
     ],
     description: "সেগুন কাঠের ফ্রেমে তৈরি ক্লাসিক জানালা। শাটার সহ। বৃষ্টি ও রোদ থেকে সুরক্ষা দেয়।",
     material: "সেগুন কাঠ + কাচ",
@@ -24,6 +24,7 @@ module.exports = [
     reviewCount: 16,
     tags: ["wooden", "window", "frame", "জানালা", "কাঠ"]
   },
+
   {
     id: "PRD-020",
     name: "অ্যালুমিনিয়াম স্লাইডিং জানালা",
@@ -31,11 +32,11 @@ module.exports = [
     categoryId: "cat_004",
     price: 6000,
     originalPrice: 7000,
-    image: "https://placehold.co/600x500/A0B0B8/FAF6F1?text=Aluminum+Window",
+    image: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg",
     images: [
-      "https://placehold.co/600x500/A0B0B8/FAF6F1?text=Aluminum+Window+Open",
-      "https://placehold.co/600x500/8090A0/FAF6F1?text=Aluminum+Window+Closed",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Aluminum+Window+Frame"
+      "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg",
+      "https://images.pexels.com/photos/210617/pexels-photo-210617.jpeg",
+      "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg"
     ],
     description: "আধুনিক অ্যালুমিনিয়াম ফ্রেমের স্লাইডিং জানালা। মসকিউটো নেট সহ। রক্ষণাবেক্ষণ সহজ এবং দীর্ঘস্থায়ী।",
     material: "অ্যালুমিনিয়াম + ডাবল গ্লাস",
@@ -49,6 +50,7 @@ module.exports = [
     reviewCount: 24,
     tags: ["aluminum", "sliding", "window", "জানালা", "স্লাইডিং"]
   },
+
   {
     id: "PRD-021",
     name: "বে উইন্ডো ডিজাইন",
@@ -56,11 +58,11 @@ module.exports = [
     categoryId: "cat_004",
     price: 18000,
     originalPrice: 22000,
-    image: "https://placehold.co/600x500/6B8FA0/FAF6F1?text=Bay+Window",
+    image: "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg",
     images: [
-      "https://placehold.co/600x500/6B8FA0/FAF6F1?text=Bay+Window+Front",
-      "https://placehold.co/600x500/4A7090/FAF6F1?text=Bay+Window+Corner",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Bay+Window+Frame"
+      "https://images.pexels.com/photos/1648771/pexels-photo-1648771.jpeg",
+      "https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg",
+      "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg"
     ],
     description: "এলিগেন্ট বে উইন্ডো ডিজাইন। ঘরের সৌন্দর্য ও আলো বাড়ায়। বসার জায়গা হিসেবেও ব্যবহার করা যায়।",
     material: "হার্ডউড + ফ্লোট গ্লাস",
@@ -74,6 +76,7 @@ module.exports = [
     reviewCount: 9,
     tags: ["bay", "window", "design", "জানালা", "বে"]
   },
+
   {
     id: "PRD-022",
     name: "লুভার জানালা",
@@ -81,13 +84,13 @@ module.exports = [
     categoryId: "cat_004",
     price: 5500,
     originalPrice: 6500,
-    image: "https://placehold.co/600x500/8B4E38/FAF6F1?text=Louvered+Window",
+    image: "https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg",
     images: [
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Louvered+Open",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Louvered+Angle",
-      "https://placehold.co/600x500/C8923A/FAF6F1?text=Louvered+Detail"
+      "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg",
+      "https://images.pexels.com/photos/210617/pexels-photo-210617.jpeg",
+      "https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg"
     ],
-    description: "বায়ু চলাচলের জন্য আদর্শ লুভার জানালা। গোপনীয়তা বজায় রেখে বাতাস প্রবেশ করতে দেয়। বাথরুম ও কিচেনের জন্য উপযুক্ত।",
+    description: "বায়ু চলাচলের জন্য আদর্শ লুভার জানালা। গোপনীয়তা বজায় রেখে বাতাস প্রবেশ করতে দেয়।",
     material: "অ্যালুমিনিয়াম লুভার + ফ্রেম",
     dimensions: "90×120 সেমি",
     color: "সাদা",
@@ -99,6 +102,7 @@ module.exports = [
     reviewCount: 11,
     tags: ["louvered", "ventilation", "window", "জানালা"]
   },
+
   {
     id: "PRD-023",
     name: "গ্রিল সহ সিকিউরিটি জানালা",
@@ -106,13 +110,13 @@ module.exports = [
     categoryId: "cat_004",
     price: 9500,
     originalPrice: 11000,
-    image: "https://placehold.co/600x500/3D3D3D/FAF6F1?text=Security+Window",
+    image: "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg",
     images: [
-      "https://placehold.co/600x500/3D3D3D/FAF6F1?text=Security+Window+Front",
-      "https://placehold.co/600x500/5D5D5D/FAF6F1?text=Security+Window+Grill",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Security+Window+Frame"
+      "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg",
+      "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg",
+      "https://images.pexels.com/photos/210617/pexels-photo-210617.jpeg"
     ],
-    description: "লোহার গ্রিল সহ সিকিউরিটি জানালা। নিরাপত্তার জন্য আদর্শ। সুন্দর ডিজাইনের গ্রিলে ঘরের সৌন্দর্যও অক্ষুণ্ন থাকে।",
+    description: "লোহার গ্রিল সহ সিকিউরিটি জানালা। নিরাপত্তার জন্য আদর্শ।",
     material: "আয়রন গ্রিল + কাঠের ফ্রেম + কাচ",
     dimensions: "120×120 সেমি",
     color: "ব্ল্যাক গ্রিল",
@@ -124,6 +128,7 @@ module.exports = [
     reviewCount: 19,
     tags: ["security", "grill", "window", "জানালা", "গ্রিল"]
   },
+
   {
     id: "PRD-024",
     name: "ডাবল হ্যাং জানালা",
@@ -131,13 +136,13 @@ module.exports = [
     categoryId: "cat_004",
     price: 7500,
     originalPrice: 9000,
-    image: "https://placehold.co/600x500/6B8FA0/FAF6F1?text=Double+Hung+Window",
+    image: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
     images: [
-      "https://placehold.co/600x500/6B8FA0/FAF6F1?text=Double+Hung+Front",
-      "https://placehold.co/600x500/4A7090/FAF6F1?text=Double+Hung+Open",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Double+Hung+Frame"
+      "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg",
+      "https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg",
+      "https://images.pexels.com/photos/1648771/pexels-photo-1648771.jpeg"
     ],
-    description: "ডাবল হ্যাং ডিজাইনের উভয় দিক থেকে খোলা যায় এমন জানালা। বায়ু চলাচলে সর্বোচ্চ নিয়ন্ত্রণ। আধুনিক বাড়ির জন্য উপযুক্ত।",
+    description: "ডাবল হ্যাং ডিজাইনের উভয় দিক থেকে খোলা যায় এমন জানালা।",
     material: "UPVC + ডাবল গ্লাস",
     dimensions: "100×140 সেমি",
     color: "সাদা",

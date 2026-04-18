@@ -1,18 +1,18 @@
 module.exports = [
   {
     id: "PRD-031",
-    name: "キングサイズベッド ウィズ ストレージ",
+    name: "রাজকীয় পোস্টার বেড",
     nameEn: "King Size Bed with Storage",
     categoryId: "cat_006",
     price: 38000,
     originalPrice: 45000,
-    image: "https://placehold.co/600x500/4A2C17/FAF6F1?text=King+Size+Bed",
+    image: "https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/4A2C17/FAF6F1?text=King+Bed+Front",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=King+Bed+Storage",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=King+Bed+Headboard"
+      "https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "স্টোরেজ সহ বিশাল কিং সাইজ বেড। হেডবোর্ডে বুকশেলফ ও লাইট সহ। নিচে বড় স্টোরেজ ড্রয়ার। সেগুন কাঠের মজবুত ফ্রেম।",
+    description: "স্টোরেজ সহ বিশাল কিং সাইজ বেড...",
     material: "সেগুন কাঠ",
     dimensions: "200×200 সেমি (ম্যাট্রেস)",
     color: "ডার্ক ওয়ালনাট",
@@ -24,6 +24,7 @@ module.exports = [
     reviewCount: 45,
     tags: ["king", "bed", "storage", "বেড", "কিং সাইজ"]
   },
+
   {
     id: "PRD-032",
     name: "কুইন সাইজ প্রিমিয়াম বেড",
@@ -31,13 +32,13 @@ module.exports = [
     categoryId: "cat_006",
     price: 28000,
     originalPrice: 33000,
-    image: "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Queen+Size+Bed",
+    image: "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Queen+Bed+Front",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Queen+Bed+Side",
-      "https://placehold.co/600x500/4A2C17/FAF6F1?text=Queen+Bed+Headboard"
+      "https://images.pexels.com/photos/210617/pexels-photo-210617.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/1648771/pexels-photo-1648771.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "প্রিমিয়াম কুইন সাইজ বেড। সুন্দর হেডবোর্ড ডিজাইন সহ। মজবুত স্লেট সাপোর্ট। বৈবাহিক দম্পতিদের জন্য আদর্শ।",
+    description: "প্রিমিয়াম কুইন সাইজ বেড...",
     material: "সলিড কাঠ",
     dimensions: "160×200 সেমি (ম্যাট্রেস)",
     color: "মেহগনি ব্রাউন",
@@ -49,6 +50,7 @@ module.exports = [
     reviewCount: 33,
     tags: ["queen", "bed", "premium", "বেড", "কুইন সাইজ"]
   },
+
   {
     id: "PRD-033",
     name: "সিঙ্গেল বাঙ্কার বেড",
@@ -56,13 +58,13 @@ module.exports = [
     categoryId: "cat_006",
     price: 22000,
     originalPrice: 27000,
-    image: "https://placehold.co/600x500/C8923A/FAF6F1?text=Bunk+Bed",
+    image: "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/C8923A/FAF6F1?text=Bunk+Bed+Full",
-      "https://placehold.co/600x500/E8B96A/1C1C1C?text=Bunk+Bed+Ladder",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Bunk+Bed+Detail"
+      "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "বাচ্চাদের জন্য মজাদার বাঙ্কার বেড। মইয়ের সিঁড়ি সহ। নিরাপত্তার জন্য সাইড রেইলিং। স্টোরেজ ড্রয়ার সহ।",
+    description: "বাচ্চাদের জন্য মজাদার বাঙ্কার বেড...",
     material: "পাইন কাঠ",
     dimensions: "200×100 সেমি (প্রতি স্তর)",
     color: "প্রাকৃতিক পাইন",
@@ -74,6 +76,7 @@ module.exports = [
     reviewCount: 21,
     tags: ["bunk", "single", "bed", "kids", "বেড", "বাঙ্কার"]
   },
+
   {
     id: "PRD-034",
     name: "ডিভান বেড উইথ হেডবোর্ড",
@@ -81,13 +84,13 @@ module.exports = [
     categoryId: "cat_006",
     price: 18500,
     originalPrice: 22000,
-    image: "https://placehold.co/600x500/8B4E38/FAF6F1?text=Divan+Bed",
+    image: "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Divan+Bed+Front",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Divan+Bed+Side",
-      "https://placehold.co/600x500/C8923A/FAF6F1?text=Divan+Bed+Storage"
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/210617/pexels-photo-210617.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "ফ্যাব্রিক হেডবোর্ড সহ ডিভান বেড। অটোমান স্টাইল স্টোরেজ। কম উচ্চতার আধুনিক ডিজাইন। বেডরুমে কমনীয়তা আনবে।",
+    description: "ফ্যাব্রিক হেডবোর্ড সহ ডিভান বেড...",
     material: "MDF ফ্রেম + ফ্যাব্রিক আপহোলস্টারি",
     dimensions: "160×200 সেমি",
     color: "ধূসর নীল",
@@ -99,6 +102,7 @@ module.exports = [
     reviewCount: 16,
     tags: ["divan", "bed", "headboard", "বেড", "ডিভান"]
   },
+
   {
     id: "PRD-035",
     name: "প্ল্যাটফর্ম বেড - মডার্ন",
@@ -106,13 +110,13 @@ module.exports = [
     categoryId: "cat_006",
     price: 25000,
     originalPrice: 29000,
-    image: "https://placehold.co/600x500/3D2B1F/FAF6F1?text=Platform+Bed",
+    image: "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/3D2B1F/FAF6F1?text=Platform+Bed+Top",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Platform+Bed+Side",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Platform+Bed+Detail"
+      "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/1648771/pexels-photo-1648771.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "মডার্ন লো-প্রোফাইল প্ল্যাটফর্ম বেড। বক্স স্প্রিং ছাড়াই ব্যবহার করা যায়। মিনিমালিস্ট ডিজাইন প্রেমীদের জন্য।",
+    description: "মডার্ন লো-প্রোফাইল প্ল্যাটফর্ম বেড...",
     material: "সলিড কাঠ + ইঞ্জিনিয়ারড উড",
     dimensions: "180×210 সেমি",
     color: "ওয়ালনাট",
@@ -124,6 +128,7 @@ module.exports = [
     reviewCount: 19,
     tags: ["platform", "modern", "bed", "বেড", "প্ল্যাটফর্ম"]
   },
+
   {
     id: "PRD-036",
     name: "পোস্টার বেড রয়্যাল ডিজাইন",
@@ -131,15 +136,15 @@ module.exports = [
     categoryId: "cat_006",
     price: 42000,
     originalPrice: 50000,
-    image: "https://placehold.co/600x500/4A2C17/FAF6F1?text=Royal+Poster+Bed",
+    image: "https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/4A2C17/FAF6F1?text=Poster+Bed+Full",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Poster+Bed+Post",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Poster+Bed+Detail"
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "রাজকীয় পোস্টার বেড। চারটি উঁচু পোস্ট ও সুন্দর খোদাই নকশা সহ। সেগুন কাঠের তৈরি দীর্ঘস্থায়ী এই বেড আপনার বেডরুমকে রাজপ্রাসাদে পরিণত করবে।",
+    description: "রাজকীয় পোস্টার বেড...",
     material: "সেগুন কাঠ",
-    dimensions: "180×210×220 সেমি (পোস্ট সহ)",
+    dimensions: "180×210×220 সেমি",
     color: "অ্যান্টিক মেহগনি",
     weight: "120 কেজি",
     inStock: true,

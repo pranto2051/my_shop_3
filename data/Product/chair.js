@@ -6,13 +6,13 @@ module.exports = [
     categoryId: "cat_001",
     price: 8500,
     originalPrice: 10000,
-    image: "https://plus.unsplash.com/premium_photo-1684505743465-830b207b85e0?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=600&q=80",
     images: [
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Royal+Chair+Front",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Royal+Chair+Side",
-      "https://placehold.co/600x500/C8923A/FAF6F1?text=Royal+Chair+Back"
+      "https://images.pexels.com/photos/1957477/pexels-photo-1957477.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/2762247/pexels-photo-2762247.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "উচ্চমানের সেগুন কাঠে তৈরি এই অফিস চেয়ারটি দীর্ঘস্থায়ী ও আরামদায়ক। পিঠের সাপোর্ট এবং আর্মরেস্ট সহ এটি দীর্ঘক্ষণ বসার জন্য আদর্শ।",
+    description: "উচ্চমানের সেগুন কাঠে তৈরি...",
     material: "সেগুন কাঠ",
     dimensions: "60×60×90 সেমি",
     color: "বাদামী",
@@ -24,6 +24,7 @@ module.exports = [
     reviewCount: 23,
     tags: ["office", "chair", "premium", "চেয়ার", "অফিস"]
   },
+
   {
     id: "PRD-002",
     name: "ডাইনিং চেয়ার সেট",
@@ -31,13 +32,13 @@ module.exports = [
     categoryId: "cat_001",
     price: 12000,
     originalPrice: 15000,
-    image: "https://placehold.co/600x500/8B4E38/FAF6F1?text=Dining+Chair+Set",
+    image: "https://images.pexels.com/photos/2762247/pexels-photo-2762247.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Dining+Set+Front",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Dining+Set+Side",
-      "https://placehold.co/600x500/C8923A/FAF6F1?text=Dining+Set+Group"
+      "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "৬টি চেয়ারের সম্পূর্ণ ডাইনিং সেট। উচ্চমানের কাঠ ও ফোমের গদি দিয়ে তৈরি। পরিবারের সবাইকে একসাথে বসার জন্য আদর্শ।",
+    description: "৬টি চেয়ারের সম্পূর্ণ ডাইনিং সেট...",
     material: "গামারি কাঠ + ফোম কুশন",
     dimensions: "45×50×95 সেমি (প্রতিটি)",
     color: "হালকা বাদামী",
@@ -49,20 +50,21 @@ module.exports = [
     reviewCount: 18,
     tags: ["dining", "chair", "set", "চেয়ার", "ডাইনিং"]
   },
+
   {
     id: "PRD-003",
-    name: "এক্সিকিউティブ লেদার চেয়ার",
+    name: "এক্সিকিউটি�� লেদার চেয়ার",
     nameEn: "Executive Leather Chair",
     categoryId: "cat_001",
     price: 15000,
     originalPrice: 18000,
-    image: "https://placehold.co/600x500/3D2B1F/FAF6F1?text=Executive+Chair",
+    image: "https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/3D2B1F/FAF6F1?text=Executive+Front",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Executive+Side",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Executive+Back"
+      "https://images.pexels.com/photos/1957477/pexels-photo-1957477.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/1648771/pexels-photo-1648771.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "প্রিমিয়াম লেদার আপহোলস্টারি সহ এক্সিকিউティブ অফিস চেয়ার। হাইট অ্যাডজাস্টেবল, আর্মরেস্ট সহ। সিইও ও ম্যানেজারদের জন্য আদর্শ।",
+    description: "প্রিমিয়াম লেদার আপহোলস্টারি...",
     material: "PU লেদার + স্টিল ফ্রেম",
     dimensions: "65×65×115 সেমি",
     color: "কালো",
@@ -74,6 +76,7 @@ module.exports = [
     reviewCount: 31,
     tags: ["executive", "leather", "chair", "office", "চেয়ার", "লেদার"]
   },
+
   {
     id: "PRD-004",
     name: "রকিং চেয়ার",
@@ -81,13 +84,13 @@ module.exports = [
     categoryId: "cat_001",
     price: 6500,
     originalPrice: 7500,
-    image: "https://placehold.co/600x500/8B4E38/FAF6F1?text=Rocking+Chair",
+    image: "https://images.pexels.com/photos/2762247/pexels-photo-2762247.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Rocking+Front",
-      "https://placehold.co/600x500/C8923A/FAF6F1?text=Rocking+Side",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Rocking+Detail"
+      "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "ঐতিহ্যবাহী ডিজাইনের রকিং চেয়ার। বয়স্কদের জন্য বিশেষভাবে তৈরি। সেগুন কাঠের তৈরি মজবুত ও আরামদায়ক।",
+    description: "ঐতিহ্যবাহী ডিজাইনের রকিং চেয়ার...",
     material: "সেগুন কাঠ",
     dimensions: "55×80×100 সেমি",
     color: "গাঢ় বাদামী",
@@ -99,6 +102,7 @@ module.exports = [
     reviewCount: 12,
     tags: ["rocking", "chair", "traditional", "চেয়ার", "রকিং"]
   },
+
   {
     id: "PRD-005",
     name: "বাচ্চাদের স্টাডি চেয়ার",
@@ -106,13 +110,13 @@ module.exports = [
     categoryId: "cat_001",
     price: 3500,
     originalPrice: 4000,
-    image: "https://placehold.co/600x500/C8923A/FAF6F1?text=Kids+Study+Chair",
+    image: "https://images.pexels.com/photos/4144223/pexels-photo-4144223.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/C8923A/FAF6F1?text=Kids+Chair+Front",
-      "https://placehold.co/600x500/E8B96A/1C1C1C?text=Kids+Chair+Side",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Kids+Chair+Detail"
+      "https://images.pexels.com/photos/4144224/pexels-photo-4144224.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/4144225/pexels-photo-4144225.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/4144226/pexels-photo-4144226.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "বাচ্চাদের পড়াশোনার জন্য বিশেষভাবে ডিজাইন করা চেয়ার। হাইট অ্যাডজাস্টেবল, পিঠের সাপোর্ট সহ। উজ্জ্বল রঙে আকর্ষণীয়।",
+    description: "বাচ্চাদের পড়াশোনার জন্য...",
     material: "MDF + ফোম",
     dimensions: "40×40×70-90 সেমি",
     color: "রঙিন",
@@ -124,6 +128,7 @@ module.exports = [
     reviewCount: 27,
     tags: ["kids", "study", "chair", "children", "চেয়ার", "বাচ্চা"]
   },
+
   {
     id: "PRD-006",
     name: "ফোল্ডিং চেয়ার",
@@ -131,13 +136,13 @@ module.exports = [
     categoryId: "cat_001",
     price: 2500,
     originalPrice: 3000,
-    image: "https://placehold.co/600x500/8B4E38/FAF6F1?text=Folding+Chair",
+    image: "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Folding+Open",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Folding+Closed",
-      "https://placehold.co/600x500/C8923A/FAF6F1?text=Folding+Detail"
+      "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/210617/pexels-photo-210617.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "সহজে ভাঁজ করা যায় এমন পোর্টেবল চেয়ার। অতিথি আপ্যায়ন ও অনুষ্ঠানের জন্য আদর্শ। হালকা ওজনের ও সংরক্ষণ করা সহজ।",
+    description: "সহজে ভাঁজ করা যায়...",
     material: "স্টিল + প্লাস্টিক",
     dimensions: "42×45×85 সেমি",
     color: "সিলভার",

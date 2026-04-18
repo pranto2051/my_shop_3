@@ -6,13 +6,13 @@ module.exports = [
     categoryId: "cat_008",
     price: 8500,
     originalPrice: 10000,
-    image: "https://placehold.co/600x500/8B4E38/FAF6F1?text=5+Tier+Bookshelf",
+    image: "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Bookshelf+Front",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Bookshelf+Side",
-      "https://placehold.co/600x500/C8923A/FAF6F1?text=Bookshelf+Detail"
+      "https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "৫ তলার বুকশেলফ। প্রচুর বই সংরক্ষণের সুবিধা। মজবুত কাঠের তৈরি, দেওয়ালে আটকানোর সুবিধা আছে।",
+    description: "৫ তলার বুকশেলফ...",
     material: "সলিড কাঠ",
     dimensions: "90×30×180 সেমি",
     color: "প্রাকৃতিক কাঠ",
@@ -24,6 +24,7 @@ module.exports = [
     reviewCount: 27,
     tags: ["bookshelf", "5tier", "storage", "শেলফ", "বুক"]
   },
+
   {
     id: "PRD-044",
     name: "ফ্লোটিং ওয়াল শেলফ সেট",
@@ -31,13 +32,13 @@ module.exports = [
     categoryId: "cat_008",
     price: 4500,
     originalPrice: 5500,
-    image: "https://placehold.co/600x500/C8923A/FAF6F1?text=Floating+Wall+Shelf",
+    image: "https://images.pexels.com/photos/4144223/pexels-photo-4144223.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/C8923A/FAF6F1?text=Float+Shelf+View",
-      "https://placehold.co/600x500/E8B96A/1C1C1C?text=Float+Shelf+Wall",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=Float+Shelf+Set"
+      "https://images.pexels.com/photos/4144224/pexels-photo-4144224.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/4144225/pexels-photo-4144225.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/4144226/pexels-photo-4144226.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "৩টি ফ্লোটিং শেলফের সেট। দেওয়ালে সুন্দরভাবে সাজানো যায়। বই, ফুলদানি ও সাজসজ্জার জিনিস রাখার জন্য আদর্শ।",
+    description: "৩টি ফ্লোটিং শেলফের সেট...",
     material: "MDF + লোহার বন্ধনী",
     dimensions: "৬০, ৮০, ১০০ সেমি (৩টি)",
     color: "সাদা",
@@ -49,6 +50,7 @@ module.exports = [
     reviewCount: 22,
     tags: ["floating", "wall", "shelf", "set", "শেলফ", "দেওয়াল"]
   },
+
   {
     id: "PRD-045",
     name: "ডিসপ্লে র‍্যাক কাচসহ",
@@ -56,13 +58,13 @@ module.exports = [
     categoryId: "cat_008",
     price: 12000,
     originalPrice: 14500,
-    image: "https://placehold.co/600x500/6B8FA0/FAF6F1?text=Display+Rack",
+    image: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=600&q=80",
     images: [
-      "https://placehold.co/600x500/6B8FA0/FAF6F1?text=Display+Rack+Front",
-      "https://placehold.co/600x500/4A7090/FAF6F1?text=Display+Rack+Interior",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Display+Rack+Side"
+      "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1582582494700-f8ce0b0d2b6b?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=600&q=80"
     ],
-    description: "কাচের দরজা সহ ডিসপ্লে র‍্যাক। ট্রফি, কাপ, শোপিস ও গুরুত্বপূর্ণ জিনিস সাজিয়ে রাখার জন্য আদর্শ। ভেতরে আলো সংযুক্ত করা যায়।",
+    description: "কাচের দরজা সহ ডিসপ্লে র‍্যাক...",
     material: "MDF + টেম্পারড গ্লাস",
     dimensions: "90×40×180 সেমি",
     color: "গ্লাসি হোয়াইট",
@@ -74,6 +76,7 @@ module.exports = [
     reviewCount: 15,
     tags: ["display", "rack", "glass", "showcase", "শেলফ", "র‍্যাক"]
   },
+
   {
     id: "PRD-046",
     name: "কিচেন র‍্যাক স্টেইনলেস",
@@ -81,13 +84,13 @@ module.exports = [
     categoryId: "cat_008",
     price: 6500,
     originalPrice: 7800,
-    image: "https://placehold.co/600x500/A0A0A0/FAF6F1?text=Kitchen+Rack",
+    image: "https://images.pexels.com/photos/271743/pexels-photo-271743.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/A0A0A0/FAF6F1?text=Kitchen+Rack+Full",
-      "https://placehold.co/600x500/808080/FAF6F1?text=Kitchen+Rack+Side",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=Kitchen+Rack+Detail"
+      "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/276528/pexels-photo-276528.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/210617/pexels-photo-210617.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "স্টেইনলেস স্টিলের কিচেন র‍্যাক। রাস্ট প্রুফ ও সহজে পরিষ্কার করা যায়। রান্নাঘরের বাসনপত্র সাজানোর জন্য আদর্শ।",
+    description: "স্টেইনলেস স্টিলের কিচেন র‍্যাক...",
     material: "স্টেইনলেস স্টিল ৩০৪",
     dimensions: "80×35×150 সেমি",
     color: "সিলভার",
@@ -99,6 +102,7 @@ module.exports = [
     reviewCount: 31,
     tags: ["kitchen", "rack", "stainless", "shelf", "শেলফ", "রান্নাঘর"]
   },
+
   {
     id: "PRD-047",
     name: "অফিস ফাইল র‍্যাক",
@@ -106,13 +110,13 @@ module.exports = [
     categoryId: "cat_008",
     price: 3800,
     originalPrice: 4500,
-    image: "https://placehold.co/600x500/3D2B1F/FAF6F1?text=Office+File+Rack",
+    image: "https://images.unsplash.com/photo-1587614382346-4ec9a46f7e5b?auto=format&fit=crop&w=600&q=80",
     images: [
-      "https://placehold.co/600x500/3D2B1F/FAF6F1?text=File+Rack+Front",
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=File+Rack+Side",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=File+Rack+Detail"
+      "https://images.unsplash.com/photo-1593642532871-8b12e02d091c?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1588702547923-7093a6c3ba33?auto=format&fit=crop&w=600&q=80",
+      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80"
     ],
-    description: "অফিসের ফাইল ও ডকুমেন্ট সংরক্ষণের জন্য র‍্যাক। লেবেল হোল্ডার সহ। সহজে গুছানো যায়। ডেস্কের পাশে রাখার জন্য উপযুক্ত।",
+    description: "অফিসের ফাইল ও ডকুমেন্ট সংরক্ষণের জন্য র‍্যাক...",
     material: "কাঠ + মেটাল",
     dimensions: "45×30×120 সেমি",
     color: "ডার্ক ব্রাউন",
@@ -124,6 +128,7 @@ module.exports = [
     reviewCount: 19,
     tags: ["office", "file", "rack", "shelf", "শেলফ", "অফিস"]
   },
+
   {
     id: "PRD-048",
     name: "টিভি শেলফ কাম র‍্যাক",
@@ -131,13 +136,13 @@ module.exports = [
     categoryId: "cat_008",
     price: 11500,
     originalPrice: 14000,
-    image: "https://placehold.co/600x500/6B3A2A/FAF6F1?text=TV+Shelf+Rack",
+    image: "https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=600",
     images: [
-      "https://placehold.co/600x500/6B3A2A/FAF6F1?text=TV+Shelf+Front",
-      "https://placehold.co/600x500/4A2C17/FAF6F1?text=TV+Shelf+Side",
-      "https://placehold.co/600x500/8B4E38/FAF6F1?text=TV+Shelf+Detail"
+      "https://images.pexels.com/photos/271816/pexels-photo-271816.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg?auto=compress&cs=tinysrgb&w=600"
     ],
-    description: "টিভি রাখার জন্য বিশেষ শেলফ। সাইডে বই ও শোপিসের জন্য শেলফ। নিচে ড্রয়ার ও ক্যাবিনেট। কেবল ম্যানেজমেন্টের হোল সহ।",
+    description: "টিভি রাখার জন্য বিশেষ শেলফ...",
     material: "সলিড কাঠ + MDF",
     dimensions: "180×45×150 সেমি",
     color: "ওয়ালনাট ব্রাউন",
