@@ -8,6 +8,7 @@ import { useAdmin } from '@/app/context/AdminContext';
 export default function Header({ storeInfo, categories }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileCatOpen, setIsMobileCatOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
   const { state } = useAdmin();
@@ -93,7 +94,7 @@ export default function Header({ storeInfo, categories }) {
                 <i className="fas fa-search"></i>
               </button>
               <button 
-                className={`mobile-menu-btn ${isMobileMenuOpen ? 'active' : ''}`} 
+                className={`mobile-menu-btn ${isMobileMenuOpen ? 'open' : ''}`} 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
                 aria-label="মেনু" 
                 aria-expanded={isMobileMenuOpen}
@@ -108,7 +109,7 @@ export default function Header({ storeInfo, categories }) {
       </header>
 
       {/* Mobile Menu */}
-      <div className={`mobile-overlay ${isMobileMenuOpen ? 'active' : ''}`} onClick={() => setIsMobileMenuOpen(false)} aria-hidden={!isMobileMenuOpen}>
+      <div className={`mobile-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={() => setIsMobileMenuOpen(false)} aria-hidden={!isMobileMenuOpen}>
         <div className="mobile-menu-content" onClick={(e) => e.stopPropagation()}>
           <button className="mobile-close" onClick={() => setIsMobileMenuOpen(false)} aria-label="বন্ধ করুন">
             <i className="fas fa-times"></i>
@@ -120,13 +121,18 @@ export default function Header({ storeInfo, categories }) {
             <ul>
               <li><Link href="/" className="nav-link">হোম</Link></li>
               <li>
-                <div className="mobile-cat-header">ক্যাটাগরি</div>
-                <div className="mobile-cat-list">
+                <button className="mobile-cat-toggle" onClick={() => setIsMobileCatOpen(!isMobileCatOpen)}>
+                  <span>ক্যাটাগরি</span>
+                  <i className={`fas fa-chevron-${isMobileCatOpen ? 'up' : 'down'}`}></i>
+                </button>
+                <div className={`mobile-cat-list ${isMobileCatOpen ? 'open' : ''}`}>
                   {categories && categories.map((cat) => (
-                    <Link key={cat.id} href={`/category/${cat.id}`} className="mobile-cat-item">
-                      <i className={`fas fa-${cat.icon}`}></i>
-                      <span>{cat.name}</span>
-                    </Link>
+                    <li key={cat.id}>
+                      <Link href={`/category/${cat.id}`} className="mobile-cat-item">
+                        <i className={`fas fa-${cat.icon}`}></i>
+                        <span>{cat.name}</span>
+                      </Link>
+                    </li>
                   ))}
                 </div>
               </li>

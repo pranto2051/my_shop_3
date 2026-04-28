@@ -103,7 +103,7 @@ export default function CategoryPage({ params: paramsPromise }) {
 
       <div className="container">
         <div className="category-layout">
-          <aside className={`filter-sidebar ${isSidebarOpen ? 'active' : ''}`} id="filterSidebar">
+          <aside className={`filter-sidebar ${isSidebarOpen ? 'open' : ''}`} id="filterSidebar">
             <div className="sidebar-header">
               <h3><i className="fas fa-sliders-h"></i> ফিল্টার</h3>
               <button className="sidebar-close-btn" onClick={() => setIsSidebarOpen(false)} aria-label="ফিল্টার বন্ধ করুন"><i className="fas fa-times"></i></button>
