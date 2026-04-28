@@ -596,7 +596,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: linear-gradient(135deg, #7c4b2a 0%, #5d351d 100%);
+  background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
   color: white;
   border: none;
   padding: 14px;
@@ -604,13 +604,13 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(124, 75, 42, 0.3);
+  box-shadow: 0 4px 15px rgba(139, 69, 19, 0.35);
 }
 
 .updateBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(124, 75, 42, 0.4);
-  background: linear-gradient(135deg, #8b5634 0%, #6b3e23 100%);
+  box-shadow: 0 8px 25px rgba(139, 69, 19, 0.45);
+  background: linear-gradient(135deg, #9a4d1a 0%, #704830 100%);
 }
 
 /* Payment Section Improvements */
