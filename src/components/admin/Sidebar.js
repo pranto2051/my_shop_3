@@ -13,23 +13,27 @@ import {
   FaShield,
   FaLayerGroup,
   FaTruckFast,
-  FaGear
+  FaGear,
+  FaXmark
 } from 'react-icons/fa6';
 
-export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeInfo }) {
+export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeInfo, isOpen, onClose }) {
   const { state } = useAdmin();
   
   const activeOrdersCount = state.orders.filter(o => o.status === 'active').length;
   const stagesCount = state.orderStages.length;
 
   return (
-    <aside className={styles.sidebar}>
+    <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
       <div className={styles.brand}>
         <div className={styles.brandIcon}><FaShield /></div>
         <div className={styles.brandText}>
           <span className={styles.brandName}>{storeInfo.name}</span>
           <span className={styles.brandRole}>অ্যাডমিন প্যানেল</span>
         </div>
+        <button className={styles.closeBtn} onClick={onClose}>
+          <FaXmark />
+        </button>
       </div>
       
       <nav className={styles.nav}>

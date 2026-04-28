@@ -5,6 +5,12 @@
   margin-top: 30px;
 }
 
+@media (max-width: 480px) {
+  .categoriesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .categoryCard {
   background: white;
   border-radius: 20px;

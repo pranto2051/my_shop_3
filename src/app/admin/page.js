@@ -18,6 +18,7 @@ import AdminLogin from '@/components/admin/login/AdminLogin';
 import OrderTrackingPanel from '@/components/admin/panels/OrderTrackingPanel';
 import ProductsPanel from '@/components/admin/panels/ProductsPanel';
 import SettingsPanel from '@/components/admin/panels/SettingsPanel';
+import { FaBars, FaXmark } from 'react-icons/fa6';
 
 export default function AdminPage() {
   const getArray = (val) => {
@@ -40,10 +41,22 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [products, setProducts] = useState(productsData);
   const [categoriesData, setCategoriesData] = useState(categories);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Order Management State
   const [showCreateOrder, setShowCreateOrder] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  // Toggle sidebar
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  // Close sidebar on tab change (mobile)
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (window.innerWidth <= 1024) {
+      setIsSidebarOpen(false);
+    }
+  };
 
   // Login logic
   const handleLogin = () => {
@@ -60,6 +73,19 @@ export default function AdminPage() {
     if (localStorage.getItem('adminLoggedIn') === 'true') {
       setIsLoggedIn(true);
     }
+
+    const handleResize = () => {
+      if (window.innerWidth > 1024) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleLogout = () => {
@@ -82,29 +108,40 @@ export default function AdminPage() {
 
   return (
     <main className="admin-wrapper">
-      <section className="admin-dashboard-layout" style={{ display: 'flex' }}>
+      <section className={`admin-dashboard-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
         <Sidebar 
           activeTab={activeTab} 
-          setActiveTab={setActiveTab} 
+          setActiveTab={handleTabChange} 
           handleLogout={handleLogout} 
           storeInfo={storeInfo} 
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
         />
+
+        {isSidebarOpen && (
+          <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
+        )}
 
         <div className="admin-main-content">
           <header className="dashboard-top-bar">
-            <div className="breadcrumb">
-              <span className="root-path">অ্যাডমিন</span>
-              <i className="fas fa-chevron-right separator"></i>
-              <span className="current-path">
-                {activeTab === 'dashboard' ? 'ড্যাশবোর্ড' :
-                 activeTab === 'products' ? 'পণ্য ব্যবস্থাপনা' :
-                 activeTab === 'categories' ? 'ক্যাটাগরি সমূহ' :
-                 activeTab === 'orders' ? 'অর্ডার তালিকা' :
-                 activeTab === 'create-order' ? 'নতুন অর্ডার' :
-                 activeTab === 'order-stages' ? 'অর্ডার স্টেজ' :
-                 activeTab === 'order-tracking' ? 'অর্ডার ট্র্যাকিং' :
-                 activeTab === 'settings' ? 'সেটিংস' : 'অর্ডার ব্যবস্থাপনা'}
-              </span>
+            <div className="top-bar-left">
+              <button className="sidebar-toggle-btn" onClick={toggleSidebar}>
+                {isSidebarOpen ? <FaXmark /> : <FaBars />}
+              </button>
+              <div className="breadcrumb">
+                <span className="root-path">অ্যাডমিন</span>
+                <i className="fas fa-chevron-right separator"></i>
+                <span className="current-path">
+                  {activeTab === 'dashboard' ? 'ড্যাশবোর্ড' :
+                   activeTab === 'products' ? 'পণ্য ব্যবস্থাপনা' :
+                   activeTab === 'categories' ? 'ক্যাটাগরি সমূহ' :
+                   activeTab === 'orders' ? 'অর্ডার তালিকা' :
+                   activeTab === 'create-order' ? 'নতুন অর্ডার' :
+                   activeTab === 'order-stages' ? 'অর্ডার স্টেজ' :
+                   activeTab === 'order-tracking' ? 'অর্ডার ট্র্যাকিং' :
+                   activeTab === 'settings' ? 'সেটিংস' : 'অর্ডার ব্যবস্থাপনা'}
+                </span>
+              </div>
             </div>
           </header>
 
@@ -227,7 +264,73 @@ export default function AdminPage() {
       )}
 
       <style jsx>{`
-        .admin-wrapper { min-height: 100vh; background: #f8f9fa; }
+        .admin-wrapper { min-height: 100vh; background: #f8f9fa; position: relative; }
+        .admin-dashboard-layout { display: flex; min-height: 100vh; transition: all 0.3s ease; }
+        .admin-main-content { flex: 1; padding: 30px; overflow-y: auto; transition: all 0.3s ease; width: 100%; }
+        
+        .dashboard-top-bar { 
+          background: white; 
+          padding: 15px 30px; 
+          border-bottom: 1px solid #eee; 
+          margin: -30px -30px 30px -30px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          position: sticky;
+          top: 0;
+          z-index: 100;
+        }
+
+        .top-bar-left { display: flex; align-items: center; gap: 15px; }
+        .sidebar-toggle-btn { 
+          display: none; 
+          background: #7C4B2A; 
+          color: white; 
+          border: none; 
+          width: 40px; 
+          height: 40px; 
+          border-radius: 8px; 
+          align-items: center; 
+          justify-content: center; 
+          font-size: 1.2rem; 
+          cursor: pointer;
+          transition: 0.2s;
+        }
+
+        .sidebar-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.5);
+          backdrop-filter: blur(3px);
+          z-index: 999;
+          display: none;
+        }
+
+        @media (max-width: 1024px) {
+          .sidebar-toggle-btn { display: flex; }
+          .admin-main-content { padding: 20px; }
+          .dashboard-top-bar { padding: 12px 20px; margin: -20px -20px 20px -20px; }
+          .sidebar-overlay { display: block; }
+          
+          .admin-dashboard-layout:not(.sidebar-open) .admin-main-content {
+            margin-left: 0;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .stats-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+          .stat-card { padding: 15px; }
+          .stat-icon { width: 40px; height: 40px; font-size: 1.2rem; }
+          .stat-info h3 { font-size: 0.85rem; }
+          .stat-info p { font-size: 1.2rem; }
+        }
+
+        @media (max-width: 480px) {
+          .stats-grid { grid-template-columns: 1fr; }
+          .breadcrumb { font-size: 0.85rem; }
+          .current-path { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        }
+
         .admin-login-overlay { position: fixed; inset: 0; background: #FDF6E8; z-index: 2000; justify-content: center; align-items: center; }
         .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
         .login-header { text-align: center; margin-bottom: 30px; }
@@ -235,7 +338,6 @@ export default function AdminPage() {
         .login-submit-btn { width: 100%; background: #7C4B2A; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 20px; }
         .admin-dashboard-layout { min-height: 100vh; }
         .admin-sidebar { width: 260px; background: #2c3e50; color: white; padding: 20px; }
-        .admin-main-content { flex: 1; padding: 30px; overflow-y: auto; }
         .stat-card { background: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
         .premium-table { width: 100%; border-collapse: collapse; margin-top: 20px; }

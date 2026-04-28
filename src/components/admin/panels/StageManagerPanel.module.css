@@ -9,6 +9,19 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .addBtn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .title {
@@ -174,6 +187,24 @@
   align-items: center;
   gap: 16px;
   transition: all 0.2s;
+}
+
+@media (max-width: 600px) {
+  .stageCard {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .stageMain {
+    width: 100%;
+    order: 1;
+  }
+  
+  .stageActions {
+    width: 100%;
+    justify-content: flex-end;
+    order: 2;
+  }
 }
 
 .stageCard:hover {

@@ -9,6 +9,14 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .headerLeft {
@@ -21,6 +29,12 @@
   font-size: 32px;
   color: var(--walnut-deep);
   margin: 0;
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 24px;
+  }
 }
 
 .subtitle {
@@ -36,6 +50,24 @@
   padding: 24px;
   margin-bottom: 24px;
   box-shadow: 0 4px 20px rgba(124, 75, 42, 0.1);
+}
+
+@media (max-width: 480px) {
+  .searchSection {
+    padding: 16px;
+  }
+  
+  .inputGroup {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+  }
+  
+  .searchBtn {
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+  }
 }
 
 .searchForm {
@@ -92,6 +124,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .searchBtn:hover {
@@ -136,6 +169,16 @@
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 20px;
+}
+
+@media (max-width: 480px) {
+  .customerHeader {
+    padding: 16px;
+  }
+  
+  .customerName {
+    font-size: 22px;
+  }
 }
 
 .customerInfo {

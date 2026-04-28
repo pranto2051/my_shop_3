@@ -26,6 +26,20 @@
   gap: 24px;
 }
 
+@media (max-width: 480px) {
+  .settingsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .settingsContainer {
+    padding: 16px;
+  }
+  
+  .header h2 {
+    font-size: 20px;
+  }
+}
+
 .settingsCard {
   background: white;
   padding: 24px;
