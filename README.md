@@ -78,3 +78,12 @@ furniture-shop/
 - Mobile bottom navigation
 - Floating WhatsApp button
 - 48 products across 8 categories
+
+
+
+## Login 
+``
+- Main Password : furniture2024
+- Demo Password : demo123
+
+``
