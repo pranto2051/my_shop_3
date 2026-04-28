@@ -13,6 +13,8 @@ import OrdersPanel from '@/components/admin/panels/OrdersPanel';
 import OrderDetailDrawer from '@/components/admin/panels/OrderDetailDrawer';
 import CreateOrderModal from '@/components/admin/panels/CreateOrderModal';
 import StageManagerPanel from '@/components/admin/panels/StageManagerPanel';
+import CategoriesPanel from '@/components/admin/panels/CategoriesPanel';
+import AdminLogin from '@/components/admin/login/AdminLogin';
 
 export default function AdminPage() {
   const getArray = (val) => {
@@ -34,6 +36,7 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [products, setProducts] = useState(productsData);
+  const [categoriesData, setCategoriesData] = useState(categories);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,7 +48,7 @@ export default function AdminPage() {
 
   // Login logic
   const handleLogin = () => {
-    if (password === 'furniture2024') {
+    if (password === 'furniture2024' || password === 'demo123') {
       setIsLoggedIn(true);
       setLoginError(false);
       localStorage.setItem('adminLoggedIn', 'true');
@@ -111,35 +114,13 @@ export default function AdminPage() {
 
   if (!isLoggedIn) {
     return (
-      <main className="admin-wrapper">
-        <section className="admin-login-overlay" style={{ display: 'flex', opacity: 1, visibility: 'visible' }}>
-          <div className="login-card">
-            <div className="login-header">
-              <div className="logo-circle"><i className="fas fa-lock"></i></div>
-              <h1 className="login-title">{storeInfo.name}</h1>
-              <p className="login-subtitle">অ্যাডমিন প্রবেশাধিকার</p>
-            </div>
-            <div className="login-body">
-              <div className="form-group">
-                <label className="form-label">অ্যাডমিন পাসওয়ার্ড</label>
-                <div className="input-with-icon">
-                  <i className="fas fa-key"></i>
-                  <input 
-                    type="password" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                    placeholder="পাসওয়ার্ড লিখুন..." 
-                    className="admin-input" 
-                  />
-                </div>
-                {loginError && <p className="error-msg" style={{ display: 'block' }}>ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।</p>}
-              </div>
-              <button className="login-submit-btn" onClick={handleLogin}>প্রবেশ করুন</button>
-            </div>
-          </div>
-        </section>
-      </main>
+      <AdminLogin 
+        password={password}
+        setPassword={setPassword}
+        handleLogin={handleLogin}
+        loginError={loginError}
+        storeInfo={storeInfo}
+      />
     );
   }
 
@@ -161,6 +142,7 @@ export default function AdminPage() {
               <span className="current-path">
                 {activeTab === 'dashboard' ? 'ড্যাশবোর্ড' : 
                  activeTab === 'products' ? 'পণ্য ব্যবস্থাপনা' : 
+                 activeTab === 'categories' ? 'ক্যাটাগরি সমূহ' :
                  activeTab === 'orders' ? 'অর্ডার তালিকা' : 
                  activeTab === 'order-stages' ? 'অর্ডার স্টেজ' : 'অর্ডার ব্যবস্থাপনা'}
               </span>
@@ -177,7 +159,7 @@ export default function AdminPage() {
                   </div>
                   <div className="stat-card accent">
                     <div className="stat-icon"><i className="fas fa-th-large"></i></div>
-                    <div className="stat-info"><h3>ক্যাটাগরি</h3><p>{categories.length}</p></div>
+                    <div className="stat-info"><h3>ক্যাটাগরি</h3><p>{categoriesData.length}</p></div>
                   </div>
                   <div className="stat-card success">
                     <div className="stat-icon"><i className="fas fa-drafting-compass"></i></div>
@@ -217,7 +199,7 @@ export default function AdminPage() {
                                 </div>
                               </div>
                             </td>
-                            <td><span className="badge category-badge">{(categories.find(c => c.id === product.categoryId) || {}).name}</span></td>
+                            <td><span className="badge category-badge">{(categoriesData.find(c => c.id === product.categoryId) || {}).name}</span></td>
                             <td>৳{product.price.toLocaleString('bn-BD')}</td>
                             <td><span className={`badge ${product.inStock ? 'stock-in' : 'stock-out'}`}>{product.inStock ? 'স্টকে আছে' : 'স্টক শেষ'}</span></td>
                             <td>
@@ -255,7 +237,7 @@ export default function AdminPage() {
                   <div className="filter-group">
                     <select className="admin-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
                       <option value="all">সব ক্যাটাগরি</option>
-                      {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                      {categoriesData.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                     </select>
                   </div>
                 </div>
@@ -285,7 +267,7 @@ export default function AdminPage() {
                               </div>
                             </div>
                           </td>
-                          <td><span className="badge category-badge">{(categories.find(c => c.id === product.categoryId) || {}).name}</span></td>
+                          <td><span className="badge category-badge">{(categoriesData.find(c => c.id === product.categoryId) || {}).name}</span></td>
                           <td>৳{product.price.toLocaleString('bn-BD')}</td>
                           <td><span className={`badge ${product.inStock ? 'stock-in' : 'stock-out'}`}>{product.inStock ? 'স্টকে আছে' : 'স্টক শেষ'}</span></td>
                           <td>
@@ -315,6 +297,13 @@ export default function AdminPage() {
 
             {activeTab === 'order-stages' && (
               <StageManagerPanel />
+            )}
+
+            {activeTab === 'categories' && (
+              <CategoriesPanel 
+                categories={categoriesData} 
+                onUpdateCategories={setCategoriesData} 
+              />
             )}
           </div>
         </div>
@@ -355,8 +344,8 @@ export default function AdminPage() {
                   </div>
                   <div className="form-group">
                     <label className="form-label">ক্যাটাগরি</label>
-                    <select name="categoryId" defaultValue={editingProduct?.categoryId || categories[0]?.id} required>
-                      {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                    <select name="categoryId" defaultValue={editingProduct?.categoryId || categoriesData[0]?.id} required>
+                      {categoriesData.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                     </select>
                   </div>
                 </div>

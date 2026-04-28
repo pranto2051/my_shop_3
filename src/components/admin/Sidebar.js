@@ -10,7 +10,8 @@ import {
   FaCirclePlus, 
   FaListCheck, 
   FaRightFromBracket,
-  FaShield
+  FaShield,
+  FaLayerGroup
 } from 'react-icons/fa6';
 
 export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeInfo }) {
@@ -43,6 +44,13 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
           onClick={() => setActiveTab('products')}
         >
           <FaCouch /> <span>পণ্যসমূহ</span>
+        </button>
+
+        <button 
+          className={`${styles.navItem} ${activeTab === 'categories' ? styles.active : ''}`} 
+          onClick={() => setActiveTab('categories')}
+        >
+          <FaLayerGroup /> <span>ক্যাটাগরি সমূহ</span>
         </button>
 
         <div className={`${styles.sectionLabel} ${styles.orderMgmtLabel}`}>অর্ডার ব্যবস্থাপনা</div>

@@ -22,3 +22,10 @@ Thumbs.db
 # Build directories
 dist/
 build/
+.next/
+out/
+
+# Other
+login.txt
+.DS_Store
+*.log
