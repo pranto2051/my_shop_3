@@ -5,6 +5,7 @@ import styles from './PremiumLoading.module.css';
 
 export default function PremiumLoading({ onComplete }) {
   const [fadeOut, setFadeOut] = useState(false);
+  const [dustParticles, setDustParticles] = useState([]);
   const brandName = "মা - ফার্নিচার";
   
   // Use Intl.Segmenter to safely split Bengali characters (grapheme clusters)
@@ -21,6 +22,15 @@ export default function PremiumLoading({ onComplete }) {
   const letters = getSegments(brandName);
 
   useEffect(() => {
+    // Generate dust particles only on the client to avoid hydration mismatch
+    const particles = [...Array(15)].map(() => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 5}s`,
+      animationDuration: `${3 + Math.random() * 4}s`
+    }));
+    setDustParticles(particles);
+
     const timer = setTimeout(() => {
       setFadeOut(true);
       setTimeout(() => {
@@ -55,16 +65,11 @@ export default function PremiumLoading({ onComplete }) {
         </div>
 
         <div className={styles.dustContainer}>
-          {[...Array(15)].map((_, i) => (
+          {dustParticles.map((particleStyle, i) => (
             <div 
               key={i} 
               className={styles.dust} 
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${3 + Math.random() * 4}s`
-              }}
+              style={particleStyle}
             ></div>
           ))}
         </div>
