@@ -16,6 +16,7 @@ import StageManagerPanel from '@/components/admin/panels/StageManagerPanel';
 import CategoriesPanel from '@/components/admin/panels/CategoriesPanel';
 import AdminLogin from '@/components/admin/login/AdminLogin';
 import OrderTrackingPanel from '@/components/admin/panels/OrderTrackingPanel';
+import ProductsPanel from '@/components/admin/panels/ProductsPanel';
 
 export default function AdminPage() {
   const getArray = (val) => {
@@ -38,10 +39,6 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [products, setProducts] = useState(productsData);
   const [categoriesData, setCategoriesData] = useState(categories);
-  const [showModal, setShowModal] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
 
   // Order Management State
   const [showCreateOrder, setShowCreateOrder] = useState(false);
@@ -69,49 +66,6 @@ export default function AdminPage() {
     localStorage.removeItem('adminLoggedIn');
   };
 
-  // Product CRUD
-  const handleSaveProduct = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const productData = {
-      id: formData.get('id') || `PRD-${String(products.length + 1).padStart(3, '0')}`,
-      name: formData.get('name'),
-      nameEn: formData.get('nameEn'),
-      categoryId: formData.get('categoryId'),
-      price: parseInt(formData.get('price')),
-      originalPrice: parseInt(formData.get('originalPrice')),
-      image: formData.get('image'),
-      description: formData.get('description'),
-      material: formData.get('material'),
-      dimensions: formData.get('dimensions'),
-      color: formData.get('color'),
-      inStock: formData.get('inStock') === 'on',
-      isFeatured: formData.get('isFeatured') === 'on',
-      isTopSelling: formData.get('isTopSelling') === 'on',
-      rating: editingProduct ? editingProduct.rating : 4.0,
-      reviewCount: editingProduct ? editingProduct.reviewCount : 0,
-    };
-
-    if (editingProduct) {
-      setProducts(products.map(p => p.id === editingProduct.id ? { ...p, ...productData } : p));
-    } else {
-      setProducts([productData, ...products]);
-    }
-    setShowModal(false);
-    setEditingProduct(null);
-  };
-
-  const handleDeleteProduct = (id) => {
-    if (confirm('আপনি কি নিশ্চিত যে এই পণ্যটি মুছে ফেলতে চান?')) {
-      setProducts(products.filter(p => p.id !== id));
-    }
-  };
-
-  const filteredProducts = products.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.id.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || p.categoryId === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
 
   if (!isLoggedIn) {
     return (
@@ -206,10 +160,7 @@ export default function AdminPage() {
                             <td>৳{product.price.toLocaleString('bn-BD')}</td>
                             <td><span className={`badge ${product.inStock ? 'stock-in' : 'stock-out'}`}>{product.inStock ? 'স্টকে আছে' : 'স্টক শেষ'}</span></td>
                             <td>
-                              <div className="action-btns">
-                                <button className="action-btn edit" onClick={() => { setEditingProduct(product); setShowModal(true); }}><i className="fas fa-edit"></i></button>
-                                <button className="action-btn delete" onClick={() => handleDeleteProduct(product.id)}><i className="fas fa-trash-alt"></i></button>
-                              </div>
+                              <button className="view-all-btn" style={{ padding: '5px 10px', fontSize: '12px' }} onClick={() => setActiveTab('products')}>ব্যবস্থাপনা</button>
                             </td>
                           </tr>
                         ))}
@@ -221,70 +172,11 @@ export default function AdminPage() {
             )}
 
             {activeTab === 'products' && (
-              <div className="tab-pane active">
-                <div className="section-header">
-                  <div className="title-group">
-                    <h2 className="section-title">পণ্য ব্যবস্থাপনা</h2>
-                    <p className="section-subtitle">আপনার শোরুমের সব পণ্যের তালিকা ও নিয়ন্ত্রণ</p>
-                  </div>
-                  <button className="add-new-btn" onClick={() => { setEditingProduct(null); setShowModal(true); }}>
-                    <i className="fas fa-plus-circle"></i> নতুন পণ্য যোগ করুন
-                  </button>
-                </div>
-
-                <div className="filter-bar">
-                  <div className="search-field">
-                    <i className="fas fa-search"></i>
-                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="নাম বা আইডি দিয়ে খুঁজুন..." />
-                  </div>
-                  <div className="filter-group">
-                    <select className="admin-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-                      <option value="all">সব ক্যাটাগরি</option>
-                      {categoriesData.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="table-responsive">
-                  <table className="premium-table">
-                    <thead>
-                      <tr>
-                        <th>আইডি</th>
-                        <th>পণ্য</th>
-                        <th>ক্যাটাগরি</th>
-                        <th>মূল্য</th>
-                        <th>স্টক</th>
-                        <th>অ্যাকশন</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredProducts.map(product => (
-                        <tr key={product.id}>
-                          <td>#{product.id}</td>
-                          <td>
-                            <div className="product-cell">
-                              <img src={product.image} alt="" className="mini-img" />
-                              <div className="product-names">
-                                <span className="name-bn">{product.name}</span>
-                                <span className="name-en">{product.nameEn}</span>
-                              </div>
-                            </div>
-                          </td>
-                          <td><span className="badge category-badge">{(categoriesData.find(c => c.id === product.categoryId) || {}).name}</span></td>
-                          <td>৳{product.price.toLocaleString('bn-BD')}</td>
-                          <td><span className={`badge ${product.inStock ? 'stock-in' : 'stock-out'}`}>{product.inStock ? 'স্টকে আছে' : 'স্টক শেষ'}</span></td>
-                          <td>
-                            <div className="action-btns">
-                              <button className="action-btn edit" onClick={() => { setEditingProduct(product); setShowModal(true); }}><i className="fas fa-edit"></i></button>
-                              <button className="action-btn delete" onClick={() => handleDeleteProduct(product.id)}><i className="fas fa-trash-alt"></i></button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+              <ProductsPanel 
+                products={products} 
+                setProducts={setProducts} 
+                categoriesData={categoriesData} 
+              />
             )}
 
             {activeTab === 'orders' && (
@@ -326,81 +218,6 @@ export default function AdminPage() {
           order={selectedOrder} 
           onClose={() => setSelectedOrder(null)} 
         />
-      )}
-
-      {showModal && (
-        <div className="modal-overlay" style={{ display: 'flex' }}>
-          <div className="modal-card premium-card">
-            <div className="modal-header">
-              <div className="title-group">
-                <h2>{editingProduct ? 'পণ্য এডিট করুন' : 'পণ্য যোগ করুন'}</h2>
-              </div>
-              <button className="close-btn" onClick={() => setShowModal(false)}><i className="fas fa-times"></i></button>
-            </div>
-            <div className="modal-body">
-              <form className="premium-form" onSubmit={handleSaveProduct}>
-                <input type="hidden" name="id" defaultValue={editingProduct?.id || ''} />
-                <div className="form-row">
-                  <div className="form-group flex-2">
-                    <label className="form-label">পণ্যের নাম (বাংলা)</label>
-                    <input type="text" name="name" defaultValue={editingProduct?.name || ''} required />
-                  </div>
-                  <div className="form-group flex-2">
-                    <label className="form-label">Product Name (English)</label>
-                    <input type="text" name="nameEn" defaultValue={editingProduct?.nameEn || ''} required />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">ক্যাটাগরি</label>
-                    <select name="categoryId" defaultValue={editingProduct?.categoryId || categoriesData[0]?.id} required>
-                      {categoriesData.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-                    </select>
-                  </div>
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">মূল্য (৳)</label>
-                    <input type="number" name="price" defaultValue={editingProduct?.price || ''} required />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">আগের মূল্য (৳)</label>
-                    <input type="number" name="originalPrice" defaultValue={editingProduct?.originalPrice || ''} />
-                  </div>
-                  <div className="form-group flex-2">
-                    <label className="form-label">ছবির লিঙ্ক (URL)</label>
-                    <input type="text" name="image" defaultValue={editingProduct?.image || ''} />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">পণ্যের বর্ণনা</label>
-                  <textarea name="description" rows="3" defaultValue={editingProduct?.description || ''}></textarea>
-                </div>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label className="form-label">উপাদান (Material)</label>
-                    <input type="text" name="material" defaultValue={editingProduct?.material || ''} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">মাপ (Dimensions)</label>
-                    <input type="text" name="dimensions" defaultValue={editingProduct?.dimensions || ''} />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label">রঙ (Color)</label>
-                    <input type="text" name="color" defaultValue={editingProduct?.color || ''} />
-                  </div>
-                </div>
-                <div className="form-toggles">
-                   <label><input type="checkbox" name="inStock" defaultChecked={editingProduct ? editingProduct.inStock : true} /> স্টকে আছে</label>
-                   <label><input type="checkbox" name="isFeatured" defaultChecked={editingProduct ? editingProduct.isFeatured : false} /> ফিচার্ড পণ্য</label>
-                   <label><input type="checkbox" name="isTopSelling" defaultChecked={editingProduct ? editingProduct.isTopSelling : false} /> টপ সেলিং</label>
-                </div>
-                <div className="form-actions">
-                  <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>বাতিল</button>
-                  <button type="submit" className="btn-primary">সংরক্ষণ করুন</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
       )}
 
       <style jsx>{`

@@ -10,6 +10,11 @@ export default function Header({ storeInfo, categories }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
 
+  // Hide header on admin routes
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);

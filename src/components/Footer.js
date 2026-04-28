@@ -1,6 +1,16 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer({ storeInfo, categories }) {
+  const pathname = usePathname();
+  
+  // Hide footer on admin routes
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <>
       <footer className="site-footer">

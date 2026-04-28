@@ -4,6 +4,7 @@ import './styles/animations.css';
 import './styles/responsive.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AdminBodyClass from '@/components/AdminBodyClass';
 import AnimationManager from '@/components/AnimationManager';
 import storeInfoRaw from '@/data/shopInfo';
 import categoriesRaw from '@/data/categories';
@@ -49,6 +50,7 @@ export default function RootLayout({ children }) {
       </head>
       <body suppressHydrationWarning>
         <AdminProvider>
+          <AdminBodyClass />
           <Header storeInfo={storeInfo} categories={categories} />
           <AnimationManager />
           {children}
