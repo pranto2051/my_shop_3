@@ -2,12 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAdmin } from '@/app/context/AdminContext';
 
 export default function Footer({ storeInfo, categories }) {
   const pathname = usePathname();
+  const { state } = useAdmin();
+  const showAdminFooter = state?.settings?.showAdminFooter;
   
-  // Hide footer on admin routes
-  if (pathname?.startsWith('/admin')) {
+  // Hide footer on admin routes unless explicitly enabled in settings
+  if (pathname?.startsWith('/admin') && !showAdminFooter) {
     return null;
   }
 

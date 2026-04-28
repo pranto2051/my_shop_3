@@ -25,10 +25,23 @@ const initialState = {
   orderSearch: '',
   products: getArray(productsRaw),
   categories: getArray(categoriesRaw),
+  settings: {
+    showAdminHeader: false,
+    showAdminFooter: false,
+  },
 };
 
 function adminReducer(state, action) {
   switch (action.type) {
+    case 'UPDATE_SETTINGS':
+      const newSettings = { ...state.settings, ...action.payload };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('admin_settings', JSON.stringify(newSettings));
+      }
+      return {
+        ...state,
+        settings: newSettings,
+      };
     case 'SET_INITIAL_DATA':
       return {
         ...state,
@@ -201,6 +214,15 @@ export const getOrdersByPhone = (phone, orders) => {
 
 export function AdminProvider({ children }) {
   const [state, dispatch] = useReducer(adminReducer, initialState);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedSettings = localStorage.getItem('admin_settings');
+      if (savedSettings) {
+        dispatch({ type: 'UPDATE_SETTINGS', payload: JSON.parse(savedSettings) });
+      }
+    }
+  }, []);
 
   return (
     <AdminContext.Provider value={{ state, dispatch }}>

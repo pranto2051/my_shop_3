@@ -386,6 +386,70 @@
   background: #5d381f;
 }
 
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 30px;
+  padding: 20px 0;
+}
+
+.pageBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #e0d5c1;
+  background: white;
+  color: #7c4b2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background: #fcf8f1;
+  border-color: #7c4b2a;
+}
+
+.pageBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
+.pageNumbers {
+  display: flex;
+  gap: 8px;
+}
+
+.pageNumber {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #e0d5c1;
+  background: white;
+  color: #4a3728;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pageNumber:hover {
+  background: #fcf8f1;
+  border-color: #7c4b2a;
+}
+
+.activePage {
+  background: #7c4b2a !important;
+  color: white !important;
+  border-color: #7c4b2a !important;
+  box-shadow: 0 4px 12px rgba(124, 75, 42, 0.2);
+}
+
 @media (max-width: 768px) {
   .formGrid {
     grid-template-columns: 1fr;

@@ -8,6 +8,8 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   const handleSaveProduct = (e) => {
     e.preventDefault();
@@ -55,6 +57,28 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
     return matchesSearch && matchesCategory;
   });
 
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    // Scroll to top of table
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (e) => {
+    setCategoryFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
   return (
     <div className={styles.productsContainer}>
       <div className={styles.header}>
@@ -74,13 +98,13 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
             type="text" 
             placeholder="নাম বা আইডি দিয়ে খুঁজুন..." 
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
         </div>
         <select 
           className={styles.categorySelect}
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
+          onChange={handleCategoryChange}
         >
           <option value="all">সব ক্যাটাগরি</option>
           {categoriesData.map(cat => (
@@ -103,7 +127,7 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map(product => (
+              {currentProducts.map(product => (
                 <tr key={product.id}>
                   <td>#{product.id}</td>
                   <td>
@@ -154,6 +178,39 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
           </table>
         </div>
       </div>
+
+      {/* Pagination UI */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button 
+            className={styles.pageBtn} 
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <i className="fas fa-chevron-left"></i>
+          </button>
+          
+          <div className={styles.pageNumbers}>
+            {[...Array(totalPages)].map((_, i) => (
+              <button 
+                key={i + 1}
+                className={`${styles.pageNumber} ${currentPage === i + 1 ? styles.activePage : ''}`}
+                onClick={() => handlePageChange(i + 1)}
+              >
+                {(i + 1).toLocaleString('bn-BD')}
+              </button>
+            ))}
+          </div>
+
+          <button 
+            className={styles.pageBtn} 
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <i className="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      )}
 
       {showModal && (
         <div className={styles.modalOverlay}>

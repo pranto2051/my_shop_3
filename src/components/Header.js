@@ -3,17 +3,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAdmin } from '@/app/context/AdminContext';
 
 export default function Header({ storeInfo, categories }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
-
-  // Hide header on admin routes
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
+  const { state } = useAdmin();
+  const showAdminHeader = state?.settings?.showAdminHeader;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,6 +25,11 @@ export default function Header({ storeInfo, categories }) {
     setIsMobileMenuOpen(false);
     setIsSearchOpen(false);
   }, [pathname]);
+
+  // Hide header on admin routes unless explicitly enabled in settings
+  if (pathname?.startsWith('/admin') && !showAdminHeader) {
+    return null;
+  }
 
   return (
     <>

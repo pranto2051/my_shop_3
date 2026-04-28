@@ -12,7 +12,8 @@ import {
   FaRightFromBracket,
   FaShield,
   FaLayerGroup,
-  FaTruckFast
+  FaTruckFast,
+  FaGear
 } from 'react-icons/fa6';
 
 export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeInfo }) {
@@ -87,6 +88,13 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
           onClick={() => setActiveTab('order-tracking')}
         >
           <FaTruckFast /> <span>অর্ডার ট্র্যাকিং</span>
+        </button>
+
+        <button 
+          className={`${styles.navItem} ${activeTab === 'settings' ? styles.active : ''}`} 
+          onClick={() => setActiveTab('settings')}
+        >
+          <FaGear /> <span>সেটিংস</span>
         </button>
 
         <div className={styles.sectionLabel}>অন্যান্য</div>

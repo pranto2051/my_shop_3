@@ -17,6 +17,7 @@ import CategoriesPanel from '@/components/admin/panels/CategoriesPanel';
 import AdminLogin from '@/components/admin/login/AdminLogin';
 import OrderTrackingPanel from '@/components/admin/panels/OrderTrackingPanel';
 import ProductsPanel from '@/components/admin/panels/ProductsPanel';
+import SettingsPanel from '@/components/admin/panels/SettingsPanel';
 
 export default function AdminPage() {
   const getArray = (val) => {
@@ -101,7 +102,8 @@ export default function AdminPage() {
                  activeTab === 'orders' ? 'অর্ডার তালিকা' :
                  activeTab === 'create-order' ? 'নতুন অর্ডার' :
                  activeTab === 'order-stages' ? 'অর্ডার স্টেজ' :
-                 activeTab === 'order-tracking' ? 'অর্ডার ট্র্যাকিং' : 'অর্ডার ব্যবস্থাপনা'}
+                 activeTab === 'order-tracking' ? 'অর্ডার ট্র্যাকিং' :
+                 activeTab === 'settings' ? 'সেটিংস' : 'অর্ডার ব্যবস্থাপনা'}
               </span>
             </div>
           </header>
@@ -203,6 +205,10 @@ export default function AdminPage() {
                 categories={categoriesData} 
                 onUpdateCategories={setCategoriesData} 
               />
+            )}
+
+            {activeTab === 'settings' && (
+              <SettingsPanel />
             )}
           </div>
         </div>

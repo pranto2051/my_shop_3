@@ -50,7 +50,17 @@ body.on-admin-page .top-bar,
 body.on-admin-page .whatsapp-fab,
 body.on-admin-page .mobile-bottom-nav,
 body.on-admin-page .contact-section {
-  display: none !important;
+  display: none;
+}
+
+/* Overrides when settings are enabled */
+body.on-admin-page.show-header-on-admin .site-header,
+body.on-admin-page.show-header-on-admin .top-bar {
+  display: block;
+}
+
+body.on-admin-page.show-footer-on-admin .site-footer {
+  display: block;
 }
 
 html {
