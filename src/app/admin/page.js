@@ -10,7 +10,7 @@ import storeInfoRaw from '@/data/shopInfo';
 
 import Sidebar from '@/components/admin/Sidebar';
 import OrdersPanel from '@/components/admin/panels/OrdersPanel';
-import OrderDetailDrawer from '@/components/admin/panels/OrderDetailDrawer';
+import OrderDetailsView from '@/components/admin/panels/OrderDetailsView';
 import CreateOrderModal from '@/components/admin/panels/CreateOrderModal';
 import StageManagerPanel from '@/components/admin/panels/StageManagerPanel';
 import CategoriesPanel from '@/components/admin/panels/CategoriesPanel';
@@ -315,7 +315,7 @@ export default function AdminPage() {
       )}
 
       {selectedOrder && (
-        <OrderDetailDrawer 
+        <OrderDetailsView 
           order={selectedOrder} 
           onClose={() => setSelectedOrder(null)} 
         />
