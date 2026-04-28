@@ -12,8 +12,11 @@ import HeroSlider from '@/components/HeroSlider';
 import SearchSection from '@/components/SearchSection';
 import ProductRow from '@/components/ProductRow';
 import OrderTrackingSection from '@/components/home/OrderTrackingSection';
+import LoadingScreen from '@/components/LoadingScreen';
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+  
   const getArray = (val) => {
     if (!val) return [];
     if (Array.isArray(val)) return val;
@@ -76,9 +79,16 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
+  const handleLoadingComplete = () => {
+    setIsLoading(false);
+  };
+
   return (
     <>
-      <div className={`sticky-cat-nav ${showStickyNav ? 'visible' : ''}`}>
+      {isLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
+      
+      <main className={`main-content ${isLoading ? 'is-loading' : 'is-loaded'}`}>
+        <div className={`sticky-cat-nav ${showStickyNav ? 'visible' : ''}`}>
         <div className="container">
           <div className="cat-nav-scroll">
             {categoryWithProducts.map((cat) => (
@@ -148,6 +158,7 @@ export default function Home() {
         categories={allCategories} 
         storeInfo={storeInfo} 
       />
+      </main>
     </>
   );
 }

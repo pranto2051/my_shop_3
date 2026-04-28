@@ -1,0 +1,509 @@
+.loadingContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #F5F0E6 0%, #EBE4D6 50%, #E8DCC8 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.loadingContainer.fadeOut {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+
+.animationWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 40px;
+}
+
+.workshopScene {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+}
+
+.windowLight {
+  animation: windowGlow 4s ease-in-out infinite;
+}
+
+@keyframes windowGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.6; }
+}
+
+.toolRack {
+  transform-origin: center top;
+  animation: subtleSway 3s ease-in-out infinite;
+}
+
+@keyframes subtleSway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(0.5deg); }
+}
+
+.hammer {
+  transform-origin: 54px 270px;
+  animation: hammerSwing 1.2s ease-in-out infinite;
+}
+
+@keyframes hammerSwing {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-15deg); }
+  75% { transform: rotate(15deg); }
+}
+
+.saw {
+  transform-origin: 54px 200px;
+  animation: sawMove 2s ease-in-out infinite;
+}
+
+@keyframes sawMove {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  50% { transform: translateX(-5px) rotate(-3deg); }
+}
+
+.woodPile {
+  animation: woodBob 3s ease-in-out infinite;
+}
+
+@keyframes woodBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.workbench {
+  animation: benchVibrate 0.1s linear infinite;
+}
+
+@keyframes benchVibrate {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(0.5px); }
+}
+
+.bedFrame {
+  animation: bedAssemble 5s ease-in-out infinite;
+}
+
+@keyframes bedAssemble {
+  0%, 100% { transform: scale(1); }
+  10% { transform: scale(1.02); }
+  20% { transform: scale(1); }
+  30% { transform: scale(0.98); }
+  40% { transform: scale(1.01); }
+  50% { transform: scale(1); }
+}
+
+.builder {
+  transform-origin: center bottom;
+}
+
+.builderBody {
+  animation: builderBreathe 3s ease-in-out infinite;
+}
+
+@keyframes builderBreathe {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.02); }
+}
+
+.builderArm {
+  transform-origin: 445px 269px;
+  animation: builderReach 5s ease-in-out infinite;
+}
+
+@keyframes builderReach {
+  0%, 15% { transform: rotate(0deg); }
+  20% { transform: rotate(-30deg); }
+  25% { transform: rotate(-20deg); }
+  30% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.builderHammer {
+  transform-origin: 479px 275px;
+  animation: hammerHit 1.2s ease-in-out infinite;
+}
+
+@keyframes hammerHit {
+  0%, 70%, 100% { transform: rotate(0deg); }
+  80% { transform: rotate(-25deg); }
+  90% { transform: rotate(15deg); }
+}
+
+.builderLeg {
+  animation: builderShift 2s ease-in-out infinite;
+}
+
+@keyframes builderShift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(2px); }
+}
+
+.assistant {
+  transform-origin: center bottom;
+}
+
+.assistantBody {
+  animation: assistantBounce 0.6s ease-in-out infinite;
+}
+
+@keyframes assistantBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.assistantArmBack {
+  transform-origin: 555px 283px;
+  animation: armSwingBack 0.6s ease-in-out infinite;
+}
+
+@keyframes armSwingBack {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-20deg); }
+}
+
+.assistantArmFront {
+  transform-origin: 600px 283px;
+  animation: armSwingFront 0.6s ease-in-out infinite;
+}
+
+@keyframes armSwingFront {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(30deg); }
+}
+
+.assistantLegBack {
+  animation: legMoveBack 0.6s ease-in-out infinite;
+}
+
+@keyframes legMoveBack {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-5px) rotate(-10deg); }
+  75% { transform: translateX(5px) rotate(10deg); }
+}
+
+.assistantLegFront {
+  animation: legMoveFront 0.6s ease-in-out infinite;
+}
+
+@keyframes legMoveFront {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(5px) rotate(10deg); }
+  75% { transform: translateX(-5px) rotate(-10deg); }
+}
+
+.woodPlank {
+  transform-origin: center center;
+  animation: plankTransfer 5s ease-in-out infinite;
+}
+
+@keyframes plankTransfer {
+  0% { 
+    transform: translateX(150px) translateY(0);
+    opacity: 1;
+  }
+  15% {
+    transform: translateX(150px) translateY(0);
+    opacity: 1;
+  }
+  20% {
+    transform: translateX(80px) translateY(-30px);
+    opacity: 1;
+  }
+  25% {
+    transform: translateX(40px) translateY(-20px);
+    opacity: 1;
+  }
+  30% {
+    transform: translateX(0px) translateY(0);
+    opacity: 1;
+  }
+  35% {
+    transform: translateX(0px) translateY(0);
+    opacity: 1;
+  }
+  45% {
+    transform: translateX(0px) translateY(0);
+    opacity: 1;
+  }
+  55% {
+    transform: translateX(150px) translateY(0);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(150px) translateY(0);
+    opacity: 0;
+  }
+}
+
+.speedLines {
+  animation: speedLineFlash 0.6s ease-in-out infinite;
+}
+
+@keyframes speedLineFlash {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.particles {
+  animation: particleFloat 2s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  50% { transform: translateY(-10px) rotate(180deg); opacity: 0.5; }
+}
+
+.particle1 { animation: particle1Anim 2s ease-in-out infinite; }
+.particle2 { animation: particle2Anim 2.3s ease-in-out infinite 0.2s; }
+.particle3 { animation: particle3Anim 1.8s ease-in-out infinite 0.4s; }
+.particle4 { animation: particle4Anim 2.5s ease-in-out infinite 0.1s; }
+
+@keyframes particle1Anim {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-20px, -30px) scale(0); opacity: 0; }
+}
+
+@keyframes particle2Anim {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(10px, -25px) scale(0); opacity: 0; }
+}
+
+@keyframes particle3Anim {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(-15px, -20px) scale(0); opacity: 0; }
+}
+
+@keyframes particle4Anim {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(5px, -35px) scale(0); opacity: 0; }
+}
+
+.loadingText {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.textMain {
+  display: block;
+  font-size: 28px;
+  font-weight: 600;
+  color: #5D4E37;
+  margin-bottom: 8px;
+  animation: textPulse 2s ease-in-out infinite;
+}
+
+.textSub {
+  display: block;
+  font-size: 16px;
+  color: #8B7355;
+  opacity: 0;
+  animation: textFadeIn 2s ease-in-out infinite 0.5s;
+}
+
+@keyframes textPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.98); }
+}
+
+@keyframes textFadeIn {
+  0% { opacity: 0; }
+  50% { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+
+.progressContainer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 20px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 6px;
+  background: rgba(139, 115, 85, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #C4956A, #D4A574, #C4956A);
+  background-size: 200% 100%;
+  border-radius: 10px;
+  transition: width 0.1s ease-out;
+  animation: progressShimmer 1.5s linear infinite;
+}
+
+@keyframes progressShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.progressText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #8B7355;
+  min-width: 45px;
+  text-align: right;
+}
+
+.loadingDots {
+  display: flex;
+  gap: 8px;
+  margin-top: 25px;
+}
+
+.loadingDots span {
+  width: 10px;
+  height: 10px;
+  background: #C4956A;
+  border-radius: 50%;
+  animation: dotBounce 1.4s ease-in-out infinite;
+}
+
+.loadingDots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loadingDots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(1); opacity: 0.5; }
+  40% { transform: scale(1.3); opacity: 1; }
+}
+
+.websitePreview {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 180px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(93, 78, 55, 0.3);
+  overflow: hidden;
+  opacity: 0;
+  animation: previewFadeIn 1s ease-out 0.5s forwards;
+}
+
+@keyframes previewFadeIn {
+  to { opacity: 1; }
+}
+
+.previewHeader {
+  background: linear-gradient(135deg, #E8DCC8, #D4C4A8);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+}
+
+.previewDots {
+  display: flex;
+  gap: 5px;
+}
+
+.previewDots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #C4956A;
+}
+
+.previewDots span:nth-child(2) {
+  background: #D4A574;
+}
+
+.previewDots span:nth-child(3) {
+  background: #B8855A;
+}
+
+.previewContent {
+  padding: 15px;
+}
+
+.previewSkeleton {
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(90deg, #F5F0E6 25%, #E8DCC8 50%, #F5F0E6 75%);
+  background-size: 400% 100%;
+  border-radius: 6px;
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.previewLines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.previewLine {
+  height: 10px;
+  background: #E8DCC8;
+  border-radius: 4px;
+  animation: lineAppear 0.5s ease-out forwards;
+}
+
+.previewLineShort {
+  height: 10px;
+  width: 60%;
+  background: #E8DCC8;
+  border-radius: 4px;
+  animation: lineAppear 0.5s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+@keyframes lineAppear {
+  to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .textMain {
+    font-size: 22px;
+  }
+  
+  .textSub {
+    font-size: 14px;
+  }
+  
+  .websitePreview {
+    width: 220px;
+    height: 140px;
+  }
+  
+  .progressContainer {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .textMain {
+    font-size: 18px;
+  }
+  
+  .animationWrapper {
+    margin-bottom: 30px;
+  }
+}

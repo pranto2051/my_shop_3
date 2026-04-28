@@ -64,11 +64,29 @@ export default function AnimationManager() {
     observeElements();
 
     // Re-check when the path changes (Next.js route changes)
-    // We use a small timeout to ensure the DOM has updated
     const timer = setTimeout(observeElements, 100);
+
+    // Watch for DOM changes to observe new elements (like after loading screen)
+    const mutationObserver = new MutationObserver((mutations) => {
+      let shouldCheck = false;
+      mutations.forEach(mutation => {
+        if (mutation.addedNodes.length > 0) {
+          shouldCheck = true;
+        }
+      });
+      if (shouldCheck) {
+        observeElements();
+      }
+    });
+
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
 
     return () => {
       observer.disconnect();
+      mutationObserver.disconnect();
       clearTimeout(timer);
     };
   }, [pathname]);
