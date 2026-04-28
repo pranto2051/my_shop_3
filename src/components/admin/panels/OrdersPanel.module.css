@@ -298,6 +298,74 @@
   border-left-width: 10px;
 }
 
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 40px;
+  padding-bottom: 20px;
+}
+
+.pageBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--parchment);
+  color: var(--walnut);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--walnut);
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(124, 75, 42, 0.15);
+}
+
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pageNumbers {
+  display: flex;
+  gap: 10px;
+}
+
+.pageNumber {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--parchment);
+  color: var(--walnut-mid);
+  font-family: 'Fira Code', monospace;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pageNumber:hover {
+  border-color: var(--walnut);
+  background: white;
+}
+
+.activePage {
+  background: linear-gradient(135deg, var(--walnut-deep) 0%, var(--walnut) 100%) !important;
+  color: white !important;
+  border-color: var(--walnut-deep) !important;
+  box-shadow: 0 4px 15px rgba(124, 75, 42, 0.35);
+}
+
 .orderCard:hover::before {
   opacity: 1;
 }

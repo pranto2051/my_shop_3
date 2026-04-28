@@ -13,26 +13,18 @@
 
 .backdrop {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(15, 10, 5, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  inset: 0;
+  background: #0f0a0559;
 }
 
 .modal {
   position: relative;
   width: min(1000px, 100%);
   max-height: 90vh;
-  background: rgba(255, 250, 245, 0.7);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: #fffaf5;
   border-radius: 30px;
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.15),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    0 25px 50px -12px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -79,7 +71,7 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(124, 75, 42, 0.06);
-  background: rgba(255, 255, 255, 0.2);
+  background: #ffffff;
 }
 
 .headerTitleGroup {
@@ -112,7 +104,7 @@
   height: 40px;
   border-radius: 50%;
   border: none;
-  background: rgba(124, 75, 42, 0.1);
+  background: #f2ece8;
   color: var(--walnut-deep);
   display: flex;
   align-items: center;
@@ -143,7 +135,7 @@
 }
 
 .content::-webkit-scrollbar-thumb {
-  background: rgba(124, 75, 42, 0.2);
+  background: #e5d5cc;
   border-radius: 10px;
 }
 
@@ -160,18 +152,18 @@
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.35);
+  background: #ffffff;
   border-radius: 20px;
   padding: 24px;
   margin-bottom: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(124, 75, 42, 0.08);
   box-shadow: 0 8px 32px -4px rgba(124, 75, 42, 0.03);
   transition: transform 0.3s;
 }
 
 .card:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.45);
+  background: #ffffff;
 }
 
 .cardHeader {
@@ -312,10 +304,10 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  background: rgba(124, 75, 42, 0.03);
+  background: #fdf8f4;
   padding: 16px;
   border-radius: 16px;
-  border: 1px solid rgba(124, 75, 42, 0.05);
+  border: 1px solid rgba(124, 75, 42, 0.08);
 }
 
 .paymentItem {
@@ -337,14 +329,14 @@
 .clearedVal {
   font-weight: 700;
   color: #15803d;
-  background: rgba(21, 128, 61, 0.1);
+  background: #e8f5e9;
   padding: 2px 8px;
   border-radius: 6px;
 }
 
 .progressBar {
   height: 10px;
-  background: rgba(0, 0, 0, 0.05);
+  background: #f0f0f0;
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 24px;
@@ -389,7 +381,7 @@
 .timelineLine {
   width: 2px;
   flex: 1;
-  background: rgba(0, 0, 0, 0.05);
+  background: #f0f0f0;
   margin: 4px 0;
 }
 
@@ -440,10 +432,12 @@
 }
 
 .historyNote {
-  background: rgba(124, 75, 42, 0.03);
+  background: #fdf8f4;
   padding: 8px 12px;
   border-radius: 8px;
   border-left: 3px solid var(--honey);
+  border: 1px solid rgba(124, 75, 42, 0.08);
+  border-left-width: 3px;
 }
 
 .historyNote p {
@@ -498,7 +492,7 @@
   padding: 16px;
   border-radius: 16px;
   border: 1.5px solid rgba(124, 75, 42, 0.1);
-  background: rgba(255, 255, 255, 0.5);
+  background: #ffffff;
   font-family: 'Noto Sans Bengali', sans-serif;
   font-size: 14px;
   resize: none;
@@ -521,7 +515,7 @@
 
 .templateBtn {
   font-size: 11px;
-  background: rgba(124, 75, 42, 0.05);
+  background: #f9f6f4;
   border: 1px solid rgba(124, 75, 42, 0.1);
   padding: 4px 10px;
   border-radius: 8px;
@@ -627,7 +621,7 @@
   justify-content: center;
   gap: 8px;
   padding: 10px;
-  background: rgba(124, 75, 42, 0.08);
+  background: #f4ede8;
   color: #7c4b2a;
   border: 1px solid rgba(124, 75, 42, 0.15);
   border-radius: 10px;
@@ -637,13 +631,13 @@
 }
 
 .addPaymentToggle:hover {
-  background: rgba(124, 75, 42, 0.12);
+  background: #ede4de;
 }
 
 .paymentForm {
   margin-top: 15px;
   padding: 15px;
-  background: rgba(255, 255, 255, 0.5);
+  background: #ffffff;
   border-radius: 15px;
   border: 1px solid rgba(124, 75, 42, 0.1);
   display: flex;
@@ -709,8 +703,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.4);
+  background: #ffffff;
   border-radius: 10px;
+  border: 1px solid rgba(124, 75, 42, 0.08);
   border-left: 3px solid #7c4b2a;
 }
 

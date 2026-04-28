@@ -3,11 +3,13 @@
 import React, { useState } from 'react';
 import { useAdmin, getOrderProgress } from '@/app/context/AdminContext';
 import styles from './OrdersPanel.module.css';
-import { FaPlus, FaPhone, FaClipboardList, FaCheckCircle, FaBan, FaCalendarDay } from 'react-icons/fa6';
+import { FaPlus, FaPhone, FaClipboardList, FaCheckCircle, FaBan, FaCalendarDay, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 
 export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
   const { state, dispatch } = useAdmin();
   const { orders, orderStages, orderFilter, orderSearch } = state;
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.customerPhone.includes(orderSearch) || 
@@ -19,6 +21,17 @@ export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
     return matchesSearch && matchesFilter;
   });
 
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentOrders = filteredOrders.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const stats = {
     active: orders.filter(o => o.status === 'active').length,
     completed: orders.filter(o => o.status === 'completed').length,
@@ -28,10 +41,12 @@ export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
 
   const handleSearch = (e) => {
     dispatch({ type: 'SET_ORDER_SEARCH', payload: e.target.value });
+    setCurrentPage(1);
   };
 
   const handleFilter = (filter) => {
     dispatch({ type: 'SET_ORDER_FILTER', payload: filter });
+    setCurrentPage(1);
   };
 
   const getStageColor = (stageId) => {
@@ -122,7 +137,7 @@ export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
       </div>
 
       <div className={styles.orderGrid}>
-        {filteredOrders.map(order => {
+        {currentOrders.map(order => {
           const progress = getOrderProgress(order, orderStages);
           const stageColor = getStageColor(order.currentStageId);
           
@@ -206,6 +221,39 @@ export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
           );
         })}
       </div>
+
+      {/* Pagination UI */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button 
+            className={styles.pageBtn} 
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <FaChevronLeft />
+          </button>
+          
+          <div className={styles.pageNumbers}>
+            {[...Array(totalPages)].map((_, i) => (
+              <button 
+                key={i + 1}
+                className={`${styles.pageNumber} ${currentPage === i + 1 ? styles.activePage : ''}`}
+                onClick={() => handlePageChange(i + 1)}
+              >
+                {(i + 1).toLocaleString('bn-BD')}
+              </button>
+            ))}
+          </div>
+
+          <button 
+            className={styles.pageBtn} 
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <FaChevronRight />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
