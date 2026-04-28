@@ -81,6 +81,30 @@ function adminReducer(state, action) {
         ),
       };
 
+    case 'ADD_PAYMENT_HISTORY':
+      return {
+        ...state,
+        orders: state.orders.map(order => 
+          order.id === action.payload.orderId 
+            ? { 
+                ...order, 
+                advancePaid: (order.advancePaid || 0) + action.payload.amount,
+                remainingAmount: Math.max(0, order.totalPrice - ((order.advancePaid || 0) + action.payload.amount)),
+                paymentHistory: [
+                  ...(order.paymentHistory || []),
+                  {
+                    id: Date.now().toString(),
+                    amount: action.payload.amount,
+                    date: new Date().toISOString(),
+                    note: action.payload.note || 'পেমেন্ট সংগ্রহ করা হয়েছে'
+                  }
+                ],
+                updatedAt: new Date().toISOString()
+              } 
+            : order
+        ),
+      };
+
     case 'CANCEL_ORDER':
       return {
         ...state,

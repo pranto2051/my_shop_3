@@ -21,6 +21,9 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
   const [selectedStageId, setSelectedStageId] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [newPaymentAmount, setNewPaymentAmount] = useState('');
+  const [paymentNote, setPaymentNote] = useState('');
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   useEffect(() => {
     if (order) {
@@ -75,6 +78,27 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
     
     setIsUpdating(false);
     setAdminNote('');
+  };
+
+  const handleAddPayment = () => {
+    const amount = parseFloat(newPaymentAmount);
+    if (isNaN(amount) || amount <= 0) return;
+
+    dispatch({
+      type: 'ADD_PAYMENT_HISTORY',
+      payload: {
+        orderId: order.id,
+        amount: amount,
+        note: paymentNote || 'অতিরিক্ত পেমেন্ট যোগ করা হয়েছে'
+      }
+    });
+
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
+    
+    setNewPaymentAmount('');
+    setPaymentNote('');
+    setShowPaymentForm(false);
   };
 
   const handleCancelOrder = () => {
@@ -207,6 +231,7 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
                       <div className={styles.pQty}>পরিমাণ: {order.quantity}টি</div>
                     </div>
                   </div>
+                  
                   <div className={styles.paymentGrid}>
                     <div className={styles.paymentItem}>
                       <span>মোট মূল্য</span>
@@ -218,9 +243,74 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
                     </div>
                     <div className={styles.paymentItem}>
                       <span>বাকি</span>
-                      <span className={styles.remainingVal}>৳{order.remainingAmount.toLocaleString('bn-BD')}</span>
+                      {order.remainingAmount === 0 ? (
+                        <span className={styles.clearedVal}>বাকি Clear ✓</span>
+                      ) : (
+                        <span className={styles.remainingVal}>৳{order.remainingAmount.toLocaleString('bn-BD')}</span>
+                      )}
                     </div>
                   </div>
+
+                  <div className={styles.paymentActionSection}>
+                    <button 
+                      className={styles.addPaymentToggle}
+                      onClick={() => setShowPaymentForm(!showPaymentForm)}
+                      disabled={order.remainingAmount === 0}
+                      style={order.remainingAmount === 0 ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
+                    >
+                      {showPaymentForm ? <FaXmark /> : <FaMoneyBillWave />} 
+                      {showPaymentForm ? 'বন্ধ করুন' : 'পেমেন্ট যোগ করুন'}
+                    </button>
+
+                    {showPaymentForm && (
+                      <div className={styles.paymentForm}>
+                        <div className={styles.inputGroup}>
+                          <label>পেমেন্টের পরিমাণ</label>
+                          <input 
+                            type="number" 
+                            placeholder="৳০০০"
+                            value={newPaymentAmount}
+                            onChange={(e) => setNewPaymentAmount(e.target.value)}
+                          />
+                        </div>
+                        <div className={styles.inputGroup}>
+                          <label>নোট (ঐচ্ছিক)</label>
+                          <input 
+                            type="text" 
+                            placeholder="পেমেন্টের কারণ..."
+                            value={paymentNote}
+                            onChange={(e) => setPaymentNote(e.target.value)}
+                          />
+                        </div>
+                        <button 
+                          className={styles.savePaymentBtn}
+                          onClick={handleAddPayment}
+                          disabled={!newPaymentAmount}
+                        >
+                          পেমেন্ট সেভ করুন
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {order.paymentHistory && order.paymentHistory.length > 0 && (
+                    <div className={styles.paymentHistory}>
+                      <div className={styles.historyTitle}>পেমেন্ট ইতিহাস</div>
+                      <div className={styles.historyList}>
+                        {order.paymentHistory.map((history, idx) => (
+                          <div key={idx} className={styles.historyItem}>
+                            <div className={styles.historyInfo}>
+                              <span className={styles.historyDate}>
+                                {new Date(history.date || history.timestamp).toLocaleDateString('bn-BD')}
+                              </span>
+                              <span className={styles.paymentHistoryNote}>{history.note}</span>
+                            </div>
+                            <span className={styles.historyAmount}>+ ৳{history.amount.toLocaleString('bn-BD')}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
