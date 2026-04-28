@@ -1,0 +1,114 @@
+.sidebar {
+  width: 260px;
+  background: #2c3e50;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  padding: 0 10px;
+}
+
+.brandIcon {
+  font-size: 24px;
+  color: var(--honey);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandName {
+  font-weight: 700;
+  font-size: 16px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+
+.brandRole {
+  font-size: 11px;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.sectionLabel {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 10px;
+  color: #9E7455; /* bark-soft */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 20px 0 10px 10px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.active {
+  background: var(--walnut) !important;
+  color: white !important;
+}
+
+.navItem svg {
+  font-size: 18px;
+}
+
+.badge {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-family: 'Fira Code', monospace;
+}
+
+.honeyBadge {
+  background: var(--honey);
+  color: white;
+}
+
+.pulse {
+  animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 136, 42, 0.7); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(212, 136, 42, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 136, 42, 0); }
+}

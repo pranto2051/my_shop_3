@@ -1,0 +1,540 @@
+/* [project]/Desktop/My Shop/Backup Shop 3/Css Convart V2/my_shop_3/src/app/styles/animations.css [app-client] (css) */
+@keyframes floatUpDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    opacity: .7;
+    transform: scale(1);
+  }
+
+  70% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+@keyframes pinBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  40% {
+    transform: translateY(-12px);
+  }
+
+  60% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(.92)translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1)translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+
+  15% {
+    transform: translateX(-8px);
+  }
+
+  30% {
+    transform: translateX(8px);
+  }
+
+  45% {
+    transform: translateX(-6px);
+  }
+
+  60% {
+    transform: translateX(6px);
+  }
+
+  75% {
+    transform: translateX(-3px);
+  }
+
+  90% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes slideInTop {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0%;
+  }
+
+  50% {
+    background-position: 100%;
+  }
+
+  100% {
+    background-position: 0%;
+  }
+}
+
+@keyframes borderPulse {
+  0%, 100% {
+    border-color: var(--accent);
+  }
+
+  50% {
+    border-color: var(--accent-light);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in-up {
+  opacity: 0;
+  transition: opacity .5s, transform .5s;
+  transform: translateY(30px);
+}
+
+.fade-in-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in-left {
+  opacity: 0;
+  transition: opacity .5s, transform .5s;
+  transform: translateX(-30px);
+}
+
+.fade-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-in-right {
+  opacity: 0;
+  transition: opacity .5s, transform .5s;
+  transform: translateX(30px);
+}
+
+.fade-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.skeleton {
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%) 0 0 / 400px 100%;
+  animation: 1.5s infinite shimmer;
+}
+
+.skeleton-img {
+  aspect-ratio: 6 / 5;
+  width: 100%;
+}
+
+.skeleton-text {
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+.skeleton-title {
+  width: 80%;
+  height: 20px;
+  margin-bottom: 10px;
+}
+
+.skeleton-price {
+  width: 40%;
+  height: 24px;
+}
+
+.skeleton-btn {
+  border-radius: var(--radius-sm);
+  height: 38px;
+}
+
+.hero-slider-section {
+  animation: .6s forwards fadeInUp;
+}
+
+.search-section {
+  animation: .6s .1s both fadeInUp;
+}
+
+.cat-section-title, .section-header h2 {
+  opacity: 0;
+  transition: opacity .5s, transform .5s;
+  transform: translateX(-20px);
+}
+
+.cat-section-title.visible, .section-header h2.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.product-card {
+  opacity: 0;
+  transition: opacity .4s, transform .4s, box-shadow .3s, border-color .3s;
+  transform: translateY(20px);
+}
+
+.product-card.card-visible {
+  opacity: 1;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.product-card:hover {
+  transform: translateY(-6px) !important;
+}
+
+.slide-img {
+  animation: 4s ease-in-out infinite floatUpDown;
+}
+
+.slide-text-side > * {
+  opacity: 0;
+  transition: opacity .5s, transform .5s;
+  transform: translateY(20px);
+}
+
+.slide.active .slide-text-side > :first-child {
+  opacity: 1;
+  transition-delay: .1s;
+  transform: translateY(0);
+}
+
+.slide.active .slide-text-side > :nth-child(2) {
+  opacity: 1;
+  transition-delay: .2s;
+  transform: translateY(0);
+}
+
+.slide.active .slide-text-side > :nth-child(3) {
+  opacity: 1;
+  transition-delay: .3s;
+  transform: translateY(0);
+}
+
+.slide.active .slide-text-side > :nth-child(4) {
+  opacity: 1;
+  transition-delay: .4s;
+  transform: translateY(0);
+}
+
+.slide.active .slide-text-side > :nth-child(5) {
+  opacity: 1;
+  transition-delay: .5s;
+  transform: translateY(0);
+}
+
+.slide.active .slide-img-wrap {
+  animation: .6s both slideInTop;
+}
+
+.modal-box {
+  animation: .3s cubic-bezier(.4, 0, .2, 1) modalIn;
+}
+
+.step-item {
+  opacity: 0;
+  transition: opacity .5s, transform .5s, background .3s, box-shadow .3s;
+  transform: translateY(25px);
+}
+
+.step-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.logo:hover .logo-icon svg {
+  animation: .8s floatUpDown;
+}
+
+.btn-whatsapp-cta, .whatsapp-big-btn, .modal-wa-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-whatsapp-cta:before, .whatsapp-big-btn:before, .modal-wa-btn:before {
+  content: "";
+  background: linear-gradient(90deg, #0000, #ffffff26, #0000);
+  width: 100%;
+  height: 100%;
+  transition: left .4s;
+  position: absolute;
+  top: 0;
+  left: -100%;
+}
+
+.btn-whatsapp-cta:hover:before, .whatsapp-big-btn:hover:before, .modal-wa-btn:hover:before {
+  left: 100%;
+}
+
+.whatsapp-fab a {
+  animation: none;
+}
+
+.fab-ring {
+  animation: 2.2s ease-out infinite pulseRing;
+}
+
+.search-bar-form {
+  animation: .5s .2s both fadeInUp;
+}
+
+.dropdown-menu {
+  animation: .25s slideInTop;
+}
+
+.mobile-menu-content {
+  transition: transform .4s cubic-bezier(.4, 0, .2, 1);
+}
+
+.cat-section-icon {
+  transition: transform .3s, box-shadow .3s;
+}
+
+.category-section:hover .cat-section-icon {
+  transform: rotate(-5deg)scale(1.05);
+}
+
+.page-loading {
+  background: var(--bg);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  transition: opacity .4s;
+  display: flex;
+  position: fixed;
+  inset: 0;
+}
+
+.page-loading.done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-spinner {
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: .8s linear infinite spin;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.badge {
+  animation: .3s cubic-bezier(.4, 0, .2, 1) scaleIn;
+}
+
+.card-image-wrap {
+  overflow: hidden;
+}
+
+.card-img {
+  transition: transform .45s cubic-bezier(.4, 0, .2, 1);
+}
+
+.nav-link {
+  position: relative;
+}
+
+.nav-link:after {
+  content: "";
+  background: var(--primary);
+  border-radius: 1px;
+  width: 0;
+  height: 2px;
+  transition: width .3s, left .3s;
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+}
+
+.nav-link:hover:after, .nav-link.active:after {
+  width: 80%;
+  left: 10%;
+}
+
+.footer-social a {
+  transition: background .3s, transform .3s, color .3s;
+}
+
+.toast {
+  transition: opacity .35s cubic-bezier(.4, 0, .2, 1), transform .35s cubic-bezier(.4, 0, .2, 1);
+}
+
+.slider-dots .dot {
+  transition: background .3s, width .3s;
+}
+
+.rv-item {
+  transition: opacity .3s, transform .3s;
+  animation: .4s both fadeInUp;
+}
+
+.product-id-badge {
+  transition: background .25s, color .25s, transform .25s;
+}
+
+.product-id-badge:active {
+  transform: scale(.95);
+}
+
+[data-animate] {
+  opacity: 0;
+  transition: opacity .55s, transform .55s;
+  transform: translateY(25px);
+}
+
+[data-animate].animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cat-nav-pill {
+  transition: background .25s, color .25s, transform .2s;
+}
+
+.cat-nav-pill:hover {
+  transform: translateY(-1px);
+}
+
+.map-pin-icon {
+  animation: 2.5s ease-in-out infinite pinBounce;
+}
+
+.price-row .price {
+  transition: color .3s;
+}
+
+.product-card:hover .price {
+  color: var(--primary-dark);
+}
+
+.site-header {
+  transition: background .3s, box-shadow .3s;
+}
+
+.filter-sidebar {
+  transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+}
+
+/*# sourceMappingURL=0bde_Backup%20Shop%203_Css%20Convart%20V2_my_shop_3_src_app_styles_animations_css_0w3-wzy._.single.css.map*/

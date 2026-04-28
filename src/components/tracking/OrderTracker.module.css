@@ -1,0 +1,215 @@
+.trackerContainer {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.searchBox {
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+  border: 1px solid var(--border);
+  margin-bottom: 30px;
+}
+
+.title {
+  font-family: 'Rozha One', serif;
+  font-size: 32px;
+  color: var(--walnut-deep);
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  color: var(--bark-soft);
+  margin-bottom: 30px;
+}
+
+.form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+  background: var(--parchment-2);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 6px 6px 6px 16px;
+  transition: all 0.3s;
+}
+
+.inputGroup:focus-within {
+  border-color: var(--honey);
+  box-shadow: 0 0 0 4px rgba(224, 169, 109, 0.1);
+}
+
+.icon {
+  color: var(--bark-soft);
+  font-size: 18px;
+  margin-right: 12px;
+}
+
+.inputGroup input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 16px;
+  padding: 10px 0;
+}
+
+.trackBtn {
+  background: var(--walnut);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.trackBtn:hover:not(:disabled) {
+  background: var(--walnut-deep);
+  transform: scale(1.02);
+}
+
+.trackBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.errorMsg {
+  color: #e53e3e;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.resultCard {
+  background: white;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  padding: 30px;
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.orderId span {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  color: var(--bark-soft);
+  margin-right: 8px;
+}
+
+.orderId strong {
+  font-family: 'Fira Code', monospace;
+  font-size: 18px;
+  color: var(--walnut-deep);
+}
+
+.statusBadge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.active { background: #EBF8FF; color: #2B6CB0; }
+.completed { background: #F0FFF4; color: #2F855A; }
+.cancelled { background: #FFF5F5; color: #C53030; }
+
+.orderInfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 12px;
+  color: var(--bark-soft);
+}
+
+.value {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--walnut-deep);
+}
+
+.timelineSection {
+  background: var(--parchment-2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.timelineTitle {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 18px;
+  color: var(--walnut-deep);
+  margin-bottom: 20px;
+}
+
+.deliveryEstimate {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--walnut);
+  color: white;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.truckIcon {
+  font-size: 28px;
+}
+
+.deliveryEstimate p {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 13px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.deliveryEstimate strong {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 18px;
+}
+
+@media (max-width: 600px) {
+  .orderInfo { grid-template-columns: 1fr; }
+  .orderHeader { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .title { font-size: 26px; }
+}

@@ -1,0 +1,3 @@
+module.exports=[82890,a=>{"use strict";a.s(["default",0,{name:"মা ফার্নিচার",contactLabel:"যোগাযোগ করুন",showroomAddress:{label:"শোরুমের ঠিকানা",address:"সাতারপাড়া বাজার, দৌলতপুর, কুষ্টিয়া"},callNumbers:{label:"সরাসরি কল করুন",numbers:["+8801979728818","+8801729728818"]},whatsapp:{label:"WhatsApp মেসেজ",number:"+8801979728818"},email:{label:"ইমেইল",address:"info@my-shop.com"},directMessageLabel:"সরাসরি মেসেজ দিন",openingHours:{label:"খোলা থাকার সময়",schedule:["প্রতিদিন: সকাল ৯:০০ - রাত ৯:০০","শুক্রবার: সকাল ১০:০০ - রাত ৯:০০"]}}])}];
+
+//# sourceMappingURL=Desktop_My%20Shop_Backup%20Shop%203_Css%20Convart%20V2_my_shop_3_src_data_shopInfo_01ylcmu.js.map

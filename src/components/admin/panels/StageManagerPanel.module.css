@@ -1,0 +1,261 @@
+.container {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  font-family: 'Rozha One', serif;
+  font-size: 32px;
+  color: var(--walnut-deep);
+  margin: 0;
+}
+
+.subtitle {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 13px;
+  color: var(--bark-soft);
+  margin: 4px 0 0 0;
+}
+
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--walnut);
+  color: var(--parchment);
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addBtn:hover {
+  background: var(--walnut-deep);
+  transform: translateY(-2px);
+}
+
+.editorCard {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 30px;
+  box-shadow: var(--shadow-md);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.editorTitle {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 18px;
+  color: var(--walnut-deep);
+  margin: 0 0 20px 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .formGrid { grid-template-columns: 1fr; }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bark-mid);
+}
+
+.formGroup input, .formGroup textarea {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--linen-dark);
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  outline: none;
+}
+
+.formGroup input:focus, .formGroup textarea:focus {
+  border-color: var(--honey);
+}
+
+.colorPickerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.colorPickerWrapper input[type="color"] {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.colorValue {
+  font-family: 'Fira Code', monospace;
+  font-size: 14px;
+  color: var(--bark-soft);
+}
+
+.editorActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.cancelBtn, .saveBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelBtn {
+  background: var(--parchment-2);
+  color: var(--bark-soft);
+  border: 1px solid var(--border);
+}
+
+.saveBtn {
+  background: var(--honey);
+  color: white;
+  border: none;
+}
+
+.saveBtn:hover { opacity: 0.9; }
+
+.stageList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stageCard {
+  background: var(--parchment-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s;
+}
+
+.stageCard:hover {
+  background: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.dragHandle {
+  color: var(--linen-dark);
+  cursor: grab;
+}
+
+.stageColor {
+  width: 12px;
+  height: 40px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.stageMain { flex: 1; }
+
+.stageNameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.stageNameBn {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--walnut-deep);
+}
+
+.stageNameEn {
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  color: var(--bark-soft);
+}
+
+.defaultBadge {
+  background: var(--linen-dark);
+  color: var(--bark-soft);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+
+.stageDesc {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 12px;
+  color: var(--bark-soft);
+  margin: 0;
+}
+
+.stageActions {
+  display: flex;
+  gap: 8px;
+}
+
+.iconBtn {
+  background: white;
+  border: 1px solid var(--border);
+  color: var(--bark-soft);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.iconBtn:hover {
+  color: var(--walnut);
+  border-color: var(--walnut);
+}
+
+.deleteBtn:hover {
+  color: var(--stage-cancelled);
+  border-color: var(--stage-cancelled);
+}

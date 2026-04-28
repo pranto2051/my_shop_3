@@ -1,0 +1,26 @@
+{
+  "pages": {
+    "/_app": []
+  },
+  "devFiles": [],
+  "polyfillFiles": [
+    "static/chunks/0_2y_next_dist_build_polyfills_polyfill-nomodule.js"
+  ],
+  "lowPriorityFiles": [
+    "static/development/_buildManifest.js",
+    "static/development/_ssgManifest.js",
+    "static/development/_clientMiddlewareManifest.js"
+  ],
+  "rootMainFiles": [
+    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_043kdmx._.js",
+    "static/chunks/0_2y_next_dist_compiled_next-devtools_index_0gtwvn4.js",
+    "static/chunks/0_2y_next_dist_compiled_react-dom_0_gg.ee._.js",
+    "static/chunks/0_2y_next_dist_compiled_react-server-dom-turbopack_0d0idjj._.js",
+    "static/chunks/0_2y_next_dist_compiled_0uvqiav._.js",
+    "static/chunks/0_2y_next_dist_client_0yg4l5c._.js",
+    "static/chunks/0_2y_next_dist_0vpq.6k._.js",
+    "static/chunks/0_2y_@swc_helpers_cjs_0dzkj3g._.js",
+    "static/chunks/Desktop_My Shop_Backup Shop 3_Css Convart V2_my_shop_3_0rqeker._.js",
+    "static/chunks/turbopack-Desktop_My Shop_Backup Shop 3_Css Convart V2_my_shop_3_040kz63._.js"
+  ]
+}

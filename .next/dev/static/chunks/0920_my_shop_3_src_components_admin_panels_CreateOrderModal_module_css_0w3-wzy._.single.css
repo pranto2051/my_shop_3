@@ -1,0 +1,362 @@
+/* [project]/Desktop/My Shop/Backup Shop 3/Css Convart V2/my_shop_3/src/components/admin/panels/CreateOrderModal.module.css [app-client] (css) */
+.CreateOrderModal-module__jtqtdG__overlay {
+  z-index: 900;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  background: #3b1f0c99;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  display: flex;
+  position: fixed;
+  inset: 0;
+}
+
+.CreateOrderModal-module__jtqtdG__modal {
+  background: var(--parchment);
+  border: 2px solid var(--honey);
+  width: min(580px, 100%);
+  box-shadow: var(--shadow-lg);
+  border-radius: 18px;
+  animation: .3s CreateOrderModal-module__jtqtdG__scaleIn;
+  overflow: hidden;
+}
+
+@keyframes CreateOrderModal-module__jtqtdG__scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.CreateOrderModal-module__jtqtdG__decorativeBand {
+  background: repeating-linear-gradient(45deg,
+    var(--parchment-2),
+    var(--parchment-2) 10px,
+    var(--parchment-3) 10px,
+    var(--parchment-3) 20px);
+  border-bottom: 2px solid var(--honey);
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  display: flex;
+  position: relative;
+}
+
+.CreateOrderModal-module__jtqtdG__newBadge {
+  background: var(--honey);
+  color: #fff;
+  border-radius: 20px;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-family: Bebas Neue, cursive;
+  font-size: 12px;
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+}
+
+.CreateOrderModal-module__jtqtdG__modalTitle {
+  color: var(--walnut-deep);
+  margin: 0;
+  font-family: Rozha One, serif;
+  font-size: 26px;
+}
+
+.CreateOrderModal-module__jtqtdG__closeBtn {
+  color: var(--bark-soft);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 8px;
+  font-size: 20px;
+  transition: color .2s;
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+}
+
+.CreateOrderModal-module__jtqtdG__closeBtn:hover {
+  color: var(--walnut);
+}
+
+.CreateOrderModal-module__jtqtdG__form {
+  padding: 24px;
+}
+
+.CreateOrderModal-module__jtqtdG__formGrid {
+  flex-direction: column;
+  gap: 18px;
+  display: flex;
+}
+
+.CreateOrderModal-module__jtqtdG__formGroup {
+  flex-direction: column;
+  gap: 6px;
+  display: flex;
+}
+
+.CreateOrderModal-module__jtqtdG__label {
+  color: var(--walnut-deep);
+  font-family: Noto Sans Bengali, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.CreateOrderModal-module__jtqtdG__inputWrapper {
+  position: relative;
+}
+
+.CreateOrderModal-module__jtqtdG__inputIcon {
+  color: var(--honey);
+  font-size: 14px;
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+}
+
+.CreateOrderModal-module__jtqtdG__input {
+  border: 1.5px solid var(--linen-dark);
+  background: var(--parchment-2);
+  border-radius: 12px;
+  outline: none;
+  width: 100%;
+  height: 50px;
+  padding: 0 15px 0 40px;
+  font-family: Noto Sans Bengali, sans-serif;
+  font-size: 14px;
+  transition: all .2s;
+}
+
+.CreateOrderModal-module__jtqtdG__input:focus {
+  border-color: var(--honey);
+  background: #fff;
+  box-shadow: 0 0 0 3px #d4882a1a;
+}
+
+.CreateOrderModal-module__jtqtdG__inputError {
+  border-color: var(--stage-cancelled);
+}
+
+.CreateOrderModal-module__jtqtdG__errorText {
+  color: var(--stage-cancelled);
+  margin-top: 2px;
+  font-family: Noto Sans Bengali, sans-serif;
+  font-size: 11px;
+}
+
+.CreateOrderModal-module__jtqtdG__fira {
+  font-family: Fira Code, monospace;
+}
+
+.CreateOrderModal-module__jtqtdG__row {
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  display: grid;
+}
+
+.CreateOrderModal-module__jtqtdG__productSelector {
+  position: relative;
+}
+
+.CreateOrderModal-module__jtqtdG__selectedProductCard {
+  background: var(--parchment-3);
+  border: 1.5px solid var(--honey);
+  border-radius: 10px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  display: flex;
+  position: relative;
+}
+
+.CreateOrderModal-module__jtqtdG__pThumb {
+  object-fit: cover;
+  background: var(--linen-dark);
+  border-radius: 8px;
+  width: 60px;
+  height: 50px;
+}
+
+.CreateOrderModal-module__jtqtdG__pInfo {
+  flex: 1;
+}
+
+.CreateOrderModal-module__jtqtdG__pName {
+  color: var(--walnut-deep);
+  font-family: Noto Sans Bengali, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.CreateOrderModal-module__jtqtdG__pDetails {
+  gap: 10px;
+  margin-top: 2px;
+  display: flex;
+}
+
+.CreateOrderModal-module__jtqtdG__pId {
+  color: var(--bark-soft);
+  font-family: Fira Code, monospace;
+  font-size: 11px;
+}
+
+.CreateOrderModal-module__jtqtdG__pPrice {
+  color: var(--honey);
+  font-family: Fira Code, monospace;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.CreateOrderModal-module__jtqtdG__clearProduct {
+  color: var(--bark-soft);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 5px;
+}
+
+.CreateOrderModal-module__jtqtdG__dropdown {
+  border: 1.5px solid var(--honey);
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+  background: #fff;
+  border-radius: 10px;
+  max-height: 250px;
+  margin-top: 5px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+}
+
+.CreateOrderModal-module__jtqtdG__dropdownItem {
+  cursor: pointer;
+  gap: 12px;
+  padding: 10px;
+  transition: background .2s;
+  display: flex;
+}
+
+.CreateOrderModal-module__jtqtdG__dropdownItem:hover {
+  background: var(--parchment-2);
+}
+
+.CreateOrderModal-module__jtqtdG__miniThumb {
+  object-fit: cover;
+  border-radius: 6px;
+  width: 44px;
+  height: 36px;
+}
+
+.CreateOrderModal-module__jtqtdG__itemName {
+  color: var(--walnut-deep);
+  font-family: Noto Sans Bengali, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.CreateOrderModal-module__jtqtdG__itemId {
+  color: var(--bark-soft);
+  font-family: Fira Code, monospace;
+  font-size: 11px;
+}
+
+.CreateOrderModal-module__jtqtdG__noResults {
+  text-align: center;
+  color: var(--bark-soft);
+  padding: 15px;
+  font-size: 13px;
+}
+
+.CreateOrderModal-module__jtqtdG__qtySelector {
+  background: var(--parchment-2);
+  border: 1.5px solid var(--linen-dark);
+  border-radius: 12px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  height: 50px;
+  padding: 0 15px;
+  display: flex;
+}
+
+.CreateOrderModal-module__jtqtdG__qtySelector button {
+  border: 1.5px solid var(--walnut);
+  color: var(--walnut);
+  cursor: pointer;
+  background: none;
+  border-radius: 6px;
+  justify-content: center;
+  align-items: center;
+  width: 26px;
+  height: 26px;
+  font-size: 10px;
+  display: flex;
+}
+
+.CreateOrderModal-module__jtqtdG__priceDisplay {
+  height: 50px;
+  color: var(--walnut);
+  background: var(--parchment-3);
+  border-radius: 12px;
+  align-items: center;
+  padding: 0 15px;
+  font-family: Rozha One, serif;
+  font-size: 20px;
+  display: flex;
+}
+
+.CreateOrderModal-module__jtqtdG__sienna {
+  color: var(--stage-cancelled);
+}
+
+.CreateOrderModal-module__jtqtdG__textarea {
+  border: 1.5px solid var(--linen-dark);
+  background: var(--parchment-2);
+  resize: none;
+  border-radius: 12px;
+  outline: none;
+  width: 100%;
+  padding: 10px 15px 10px 40px;
+  font-family: Noto Sans Bengali, sans-serif;
+  font-size: 14px;
+}
+
+.CreateOrderModal-module__jtqtdG__submitBtn {
+  background: linear-gradient(135deg, var(--walnut), var(--honey));
+  color: #fff;
+  cursor: pointer;
+  border: none;
+  border-radius: 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 54px;
+  margin-top: 24px;
+  font-family: Noto Sans Bengali, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all .3s;
+  display: flex;
+  box-shadow: 0 4px 15px #7c4b2a33;
+}
+
+.CreateOrderModal-module__jtqtdG__submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px #7c4b2a4d;
+}
+
+/*# sourceMappingURL=0920_my_shop_3_src_components_admin_panels_CreateOrderModal_module_css_0w3-wzy._.single.css.map*/

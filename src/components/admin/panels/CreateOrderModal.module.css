@@ -1,0 +1,330 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(59, 31, 12, 0.6);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+  padding: 20px;
+}
+
+.modal {
+  width: min(580px, 100%);
+  background: var(--parchment);
+  border: 2px solid var(--honey);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.decorativeBand {
+  height: 60px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--parchment-2),
+    var(--parchment-2) 10px,
+    var(--parchment-3) 10px,
+    var(--parchment-3) 20px
+  );
+  border-bottom: 2px solid var(--honey);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.newBadge {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--honey);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: 'Bebas Neue', cursive;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modalTitle {
+  font-family: 'Rozha One', serif;
+  font-size: 26px;
+  color: var(--walnut-deep);
+  margin: 0;
+}
+
+.closeBtn {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--bark-soft);
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.2s;
+}
+
+.closeBtn:hover { color: var(--walnut); }
+
+.form { padding: 24px; }
+
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.formGroup { display: flex; flex-direction: column; gap: 6px; }
+
+.label {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--walnut-deep);
+}
+
+.inputWrapper { position: relative; }
+
+.inputIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--honey);
+  font-size: 14px;
+}
+
+.input {
+  width: 100%;
+  height: 50px;
+  padding: 0 15px 0 40px;
+  border-radius: 12px;
+  border: 1.5px solid var(--linen-dark);
+  background: var(--parchment-2);
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  border-color: var(--honey);
+  box-shadow: 0 0 0 3px rgba(212, 136, 42, 0.1);
+  background: white;
+}
+
+.inputError { border-color: var(--stage-cancelled); }
+
+.errorText {
+  color: var(--stage-cancelled);
+  font-size: 11px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  margin-top: 2px;
+}
+
+.fira { font-family: 'Fira Code', monospace; }
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.productSelector { position: relative; }
+
+.selectedProductCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: var(--parchment-3);
+  border: 1.5px solid var(--honey);
+  border-radius: 10px;
+  position: relative;
+}
+
+.pThumb {
+  width: 60px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--linen-dark);
+}
+
+.pInfo { flex: 1; }
+
+.pName {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--walnut-deep);
+}
+
+.pDetails { display: flex; gap: 10px; margin-top: 2px; }
+
+.pId {
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  color: var(--bark-soft);
+}
+
+.pPrice {
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  color: var(--honey);
+  font-weight: 600;
+}
+
+.clearProduct {
+  background: none;
+  border: none;
+  color: var(--bark-soft);
+  cursor: pointer;
+  padding: 5px;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1.5px solid var(--honey);
+  border-radius: 10px;
+  margin-top: 5px;
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.dropdownItem {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dropdownItem:hover { background: var(--parchment-2); }
+
+.miniThumb {
+  width: 44px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.itemName {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--walnut-deep);
+}
+
+.itemId {
+  font-family: 'Fira Code', monospace;
+  font-size: 11px;
+  color: var(--bark-soft);
+}
+
+.noResults {
+  padding: 15px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--bark-soft);
+}
+
+.qtySelector {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  height: 50px;
+  padding: 0 15px;
+  background: var(--parchment-2);
+  border: 1.5px solid var(--linen-dark);
+  border-radius: 12px;
+  justify-content: space-between;
+}
+
+.qtySelector button {
+  background: none;
+  border: 1.5px solid var(--walnut);
+  color: var(--walnut);
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.priceDisplay {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  font-family: 'Rozha One', serif;
+  font-size: 20px;
+  color: var(--walnut);
+  padding: 0 15px;
+  background: var(--parchment-3);
+  border-radius: 12px;
+}
+
+.sienna { color: var(--stage-cancelled); }
+
+.textarea {
+  width: 100%;
+  padding: 10px 15px 10px 40px;
+  border-radius: 12px;
+  border: 1.5px solid var(--linen-dark);
+  background: var(--parchment-2);
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  outline: none;
+  resize: none;
+}
+
+.submitBtn {
+  width: 100%;
+  height: 54px;
+  background: linear-gradient(135deg, var(--walnut), var(--honey));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  margin-top: 24px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(124, 75, 42, 0.2);
+}
+
+.submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 75, 42, 0.3);
+}

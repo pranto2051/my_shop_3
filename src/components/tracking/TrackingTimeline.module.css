@@ -1,0 +1,119 @@
+.timeline {
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+}
+
+.timelineItem {
+  display: flex;
+  gap: 24px;
+  min-height: 80px;
+  position: relative;
+}
+
+.iconWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.iconCompleted {
+  color: #38a169;
+  font-size: 24px;
+  background: white;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.iconActive {
+  color: var(--walnut);
+  font-size: 22px;
+  background: white;
+  border-radius: 50%;
+  z-index: 2;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(118, 79, 53, 0.4); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(118, 79, 53, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(118, 79, 53, 0); }
+}
+
+.iconPending {
+  color: #cbd5e0;
+  font-size: 20px;
+  background: white;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.connector {
+  width: 2px;
+  flex: 1;
+  background: #e2e8f0;
+  margin: 4px 0;
+}
+
+.completed .connector {
+  background: #38a169;
+}
+
+.content {
+  padding-bottom: 30px;
+  flex: 1;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.stageName {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--walnut-deep);
+  margin: 0;
+}
+
+.completed .stageName {
+  color: #2f855a;
+}
+
+.timestamp {
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  color: var(--bark-soft);
+}
+
+.currentIndicator {
+  display: inline-block;
+  background: var(--walnut);
+  color: white;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.note {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  color: var(--bark-mid);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.pendingDesc {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 13px;
+  color: var(--bark-soft);
+  margin: 0;
+  font-style: italic;
+}

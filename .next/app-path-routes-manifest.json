@@ -1,0 +1,12 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/admin/page": "/admin",
+  "/category/[id]/page": "/category/[id]",
+  "/category/page": "/category",
+  "/contact/page": "/contact",
+  "/order-process/page": "/order-process",
+  "/order-tracking/page": "/order-tracking",
+  "/page": "/",
+  "/search/page": "/search"
+}

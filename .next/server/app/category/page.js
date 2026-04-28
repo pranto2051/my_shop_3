@@ -1,0 +1,13 @@
+var R=require("../../chunks/ssr/[turbopack]_runtime.js")("server/app/category/page.js")
+R.c("server/chunks/ssr/[root-of-the-server]__13kt~u3._.js")
+R.c("server/chunks/ssr/0_2y_next_dist_esm_build_templates_app-page_0sql1yl.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0wlmobd._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0zj37ru._.js")
+R.c("server/chunks/ssr/Desktop_My Shop_Backup Shop 3_Css Convart V2_my_shop_3_0w0q7aa._.js")
+R.c("server/chunks/ssr/0_2y_next_dist_client_components_0qkx9hq._.js")
+R.c("server/chunks/ssr/0_2y_next_dist_client_components_builtin_forbidden_0z-pxe9.js")
+R.c("server/chunks/ssr/0_2y_next_dist_client_components_builtin_unauthorized_0c~peoe.js")
+R.c("server/chunks/ssr/0_2y_next_dist_client_components_builtin_global-error_06482f6.js")
+R.c("server/chunks/ssr/0920_my_shop_3__next-internal_server_app_category_page_actions_0~byaks.js")
+R.m(67806)
+module.exports=R.m(67806).exports

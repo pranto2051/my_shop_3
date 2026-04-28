@@ -1,0 +1,448 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import productsRaw from '@/data/products';
+import categoriesRaw from '@/data/categories';
+import designsRaw from '@/data/designs';
+import galleryRaw from '@/data/gallery';
+import storeInfoRaw from '@/data/shopInfo';
+
+import Sidebar from '@/components/admin/Sidebar';
+import OrdersPanel from '@/components/admin/panels/OrdersPanel';
+import OrderDetailDrawer from '@/components/admin/panels/OrderDetailDrawer';
+import CreateOrderModal from '@/components/admin/panels/CreateOrderModal';
+import StageManagerPanel from '@/components/admin/panels/StageManagerPanel';
+
+export default function AdminPage() {
+  const getArray = (val) => {
+    if (!val) return [];
+    if (Array.isArray(val)) return val;
+    if (val.default && Array.isArray(val.default)) return val.default;
+    if (val.allProducts && Array.isArray(val.allProducts)) return val.allProducts;
+    return [];
+  };
+
+  const productsData = getArray(productsRaw);
+  const categories = getArray(categoriesRaw);
+  const designs = getArray(designsRaw);
+  const gallery = getArray(galleryRaw);
+  const storeInfo = storeInfoRaw.default || storeInfoRaw;
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState(false);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [products, setProducts] = useState(productsData);
+  const [showModal, setShowModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+
+  // Order Management State
+  const [showCreateOrder, setShowCreateOrder] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  // Login logic
+  const handleLogin = () => {
+    if (password === 'furniture2024') {
+      setIsLoggedIn(true);
+      setLoginError(false);
+      localStorage.setItem('adminLoggedIn', 'true');
+    } else {
+      setLoginError(true);
+    }
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem('adminLoggedIn') === 'true') {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('adminLoggedIn');
+  };
+
+  // Product CRUD
+  const handleSaveProduct = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const productData = {
+      id: formData.get('id') || `PRD-${String(products.length + 1).padStart(3, '0')}`,
+      name: formData.get('name'),
+      nameEn: formData.get('nameEn'),
+      categoryId: formData.get('categoryId'),
+      price: parseInt(formData.get('price')),
+      originalPrice: parseInt(formData.get('originalPrice')),
+      image: formData.get('image'),
+      description: formData.get('description'),
+      material: formData.get('material'),
+      dimensions: formData.get('dimensions'),
+      color: formData.get('color'),
+      inStock: formData.get('inStock') === 'on',
+      isFeatured: formData.get('isFeatured') === 'on',
+      isTopSelling: formData.get('isTopSelling') === 'on',
+      rating: editingProduct ? editingProduct.rating : 4.0,
+      reviewCount: editingProduct ? editingProduct.reviewCount : 0,
+    };
+
+    if (editingProduct) {
+      setProducts(products.map(p => p.id === editingProduct.id ? { ...p, ...productData } : p));
+    } else {
+      setProducts([productData, ...products]);
+    }
+    setShowModal(false);
+    setEditingProduct(null);
+  };
+
+  const handleDeleteProduct = (id) => {
+    if (confirm('আপনি কি নিশ্চিত যে এই পণ্যটি মুছে ফেলতে চান?')) {
+      setProducts(products.filter(p => p.id !== id));
+    }
+  };
+
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.id.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || p.categoryId === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  if (!isLoggedIn) {
+    return (
+      <main className="admin-wrapper">
+        <section className="admin-login-overlay" style={{ display: 'flex', opacity: 1, visibility: 'visible' }}>
+          <div className="login-card">
+            <div className="login-header">
+              <div className="logo-circle"><i className="fas fa-lock"></i></div>
+              <h1 className="login-title">{storeInfo.name}</h1>
+              <p className="login-subtitle">অ্যাডমিন প্রবেশাধিকার</p>
+            </div>
+            <div className="login-body">
+              <div className="form-group">
+                <label className="form-label">অ্যাডমিন পাসওয়ার্ড</label>
+                <div className="input-with-icon">
+                  <i className="fas fa-key"></i>
+                  <input 
+                    type="password" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                    placeholder="পাসওয়ার্ড লিখুন..." 
+                    className="admin-input" 
+                  />
+                </div>
+                {loginError && <p className="error-msg" style={{ display: 'block' }}>ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।</p>}
+              </div>
+              <button className="login-submit-btn" onClick={handleLogin}>প্রবেশ করুন</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <main className="admin-wrapper">
+      <section className="admin-dashboard-layout" style={{ display: 'flex' }}>
+        <Sidebar 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          handleLogout={handleLogout} 
+          storeInfo={storeInfo} 
+        />
+
+        <div className="admin-main-content">
+          <header className="dashboard-top-bar">
+            <div className="breadcrumb">
+              <span className="root-path">অ্যাডমিন</span>
+              <i className="fas fa-chevron-right separator"></i>
+              <span className="current-path">
+                {activeTab === 'dashboard' ? 'ড্যাশবোর্ড' : 
+                 activeTab === 'products' ? 'পণ্য ব্যবস্থাপনা' : 
+                 activeTab === 'orders' ? 'অর্ডার তালিকা' : 
+                 activeTab === 'order-stages' ? 'অর্ডার স্টেজ' : 'অর্ডার ব্যবস্থাপনা'}
+              </span>
+            </div>
+          </header>
+
+          <div className="dashboard-content-scroll">
+            {activeTab === 'dashboard' && (
+              <div className="tab-pane active">
+                <div className="stats-grid">
+                  <div className="stat-card primary">
+                    <div className="stat-icon"><i className="fas fa-couch"></i></div>
+                    <div className="stat-info"><h3>মোট পণ্য</h3><p>{products.length}</p></div>
+                  </div>
+                  <div className="stat-card accent">
+                    <div className="stat-icon"><i className="fas fa-th-large"></i></div>
+                    <div className="stat-info"><h3>ক্যাটাগরি</h3><p>{categories.length}</p></div>
+                  </div>
+                  <div className="stat-card success">
+                    <div className="stat-icon"><i className="fas fa-drafting-compass"></i></div>
+                    <div className="stat-info"><h3>ডিজাইন</h3><p>{designs.length}</p></div>
+                  </div>
+                  <div className="stat-card error">
+                    <div className="stat-icon"><i className="fas fa-images"></i></div>
+                    <div className="stat-info"><h3>গ্যালারি</h3><p>{gallery.length}</p></div>
+                  </div>
+                </div>
+
+                <div className="recent-products-card" style={{ marginTop: '30px' }}>
+                  <div className="card-header">
+                    <h3 className="visual-title">সাম্প্রতিক পণ্যসমূহ</h3>
+                    <button className="view-all-btn" onClick={() => setActiveTab('products')}>সব দেখুন <i className="fas fa-arrow-right"></i></button>
+                  </div>
+                  <div className="table-responsive">
+                    <table className="premium-table">
+                      <thead>
+                        <tr>
+                          <th>পণ্য</th>
+                          <th>ক্যাটাগরি</th>
+                          <th>মূল্য</th>
+                          <th>স্টক</th>
+                          <th>অ্যাকশন</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {products.slice(0, 5).map(product => (
+                          <tr key={product.id}>
+                            <td>
+                              <div className="product-cell">
+                                <img src={product.image} alt="" className="mini-img" />
+                                <div className="product-names">
+                                  <span className="name-bn">{product.name}</span>
+                                  <span className="name-en">{product.nameEn}</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td><span className="badge category-badge">{(categories.find(c => c.id === product.categoryId) || {}).name}</span></td>
+                            <td>৳{product.price.toLocaleString('bn-BD')}</td>
+                            <td><span className={`badge ${product.inStock ? 'stock-in' : 'stock-out'}`}>{product.inStock ? 'স্টকে আছে' : 'স্টক শেষ'}</span></td>
+                            <td>
+                              <div className="action-btns">
+                                <button className="action-btn edit" onClick={() => { setEditingProduct(product); setShowModal(true); }}><i className="fas fa-edit"></i></button>
+                                <button className="action-btn delete" onClick={() => handleDeleteProduct(product.id)}><i className="fas fa-trash-alt"></i></button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'products' && (
+              <div className="tab-pane active">
+                <div className="section-header">
+                  <div className="title-group">
+                    <h2 className="section-title">পণ্য ব্যবস্থাপনা</h2>
+                    <p className="section-subtitle">আপনার শোরুমের সব পণ্যের তালিকা ও নিয়ন্ত্রণ</p>
+                  </div>
+                  <button className="add-new-btn" onClick={() => { setEditingProduct(null); setShowModal(true); }}>
+                    <i className="fas fa-plus-circle"></i> নতুন পণ্য যোগ করুন
+                  </button>
+                </div>
+
+                <div className="filter-bar">
+                  <div className="search-field">
+                    <i className="fas fa-search"></i>
+                    <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="নাম বা আইডি দিয়ে খুঁজুন..." />
+                  </div>
+                  <div className="filter-group">
+                    <select className="admin-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+                      <option value="all">সব ক্যাটাগরি</option>
+                      {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="table-responsive">
+                  <table className="premium-table">
+                    <thead>
+                      <tr>
+                        <th>আইডি</th>
+                        <th>পণ্য</th>
+                        <th>ক্যাটাগরি</th>
+                        <th>মূল্য</th>
+                        <th>স্টক</th>
+                        <th>অ্যাকশন</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredProducts.map(product => (
+                        <tr key={product.id}>
+                          <td>#{product.id}</td>
+                          <td>
+                            <div className="product-cell">
+                              <img src={product.image} alt="" className="mini-img" />
+                              <div className="product-names">
+                                <span className="name-bn">{product.name}</span>
+                                <span className="name-en">{product.nameEn}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td><span className="badge category-badge">{(categories.find(c => c.id === product.categoryId) || {}).name}</span></td>
+                          <td>৳{product.price.toLocaleString('bn-BD')}</td>
+                          <td><span className={`badge ${product.inStock ? 'stock-in' : 'stock-out'}`}>{product.inStock ? 'স্টকে আছে' : 'স্টক শেষ'}</span></td>
+                          <td>
+                            <div className="action-btns">
+                              <button className="action-btn edit" onClick={() => { setEditingProduct(product); setShowModal(true); }}><i className="fas fa-edit"></i></button>
+                              <button className="action-btn delete" onClick={() => handleDeleteProduct(product.id)}><i className="fas fa-trash-alt"></i></button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'orders' && (
+              <OrdersPanel 
+                openCreateModal={() => setShowCreateOrder(true)} 
+                openOrderDetail={(order) => setSelectedOrder(order)} 
+              />
+            )}
+
+            {activeTab === 'create-order' && (
+              <CreateOrderModal onClose={() => setActiveTab('orders')} />
+            )}
+
+            {activeTab === 'order-stages' && (
+              <StageManagerPanel />
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Modals & Drawers */}
+      {showCreateOrder && (
+        <CreateOrderModal onClose={() => setShowCreateOrder(false)} />
+      )}
+
+      {selectedOrder && (
+        <OrderDetailDrawer 
+          order={selectedOrder} 
+          onClose={() => setSelectedOrder(null)} 
+        />
+      )}
+
+      {showModal && (
+        <div className="modal-overlay" style={{ display: 'flex' }}>
+          <div className="modal-card premium-card">
+            <div className="modal-header">
+              <div className="title-group">
+                <h2>{editingProduct ? 'পণ্য এডিট করুন' : 'পণ্য যোগ করুন'}</h2>
+              </div>
+              <button className="close-btn" onClick={() => setShowModal(false)}><i className="fas fa-times"></i></button>
+            </div>
+            <div className="modal-body">
+              <form className="premium-form" onSubmit={handleSaveProduct}>
+                <input type="hidden" name="id" defaultValue={editingProduct?.id || ''} />
+                <div className="form-row">
+                  <div className="form-group flex-2">
+                    <label className="form-label">পণ্যের নাম (বাংলা)</label>
+                    <input type="text" name="name" defaultValue={editingProduct?.name || ''} required />
+                  </div>
+                  <div className="form-group flex-2">
+                    <label className="form-label">Product Name (English)</label>
+                    <input type="text" name="nameEn" defaultValue={editingProduct?.nameEn || ''} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">ক্যাটাগরি</label>
+                    <select name="categoryId" defaultValue={editingProduct?.categoryId || categories[0]?.id} required>
+                      {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">মূল্য (৳)</label>
+                    <input type="number" name="price" defaultValue={editingProduct?.price || ''} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">আগের মূল্য (৳)</label>
+                    <input type="number" name="originalPrice" defaultValue={editingProduct?.originalPrice || ''} />
+                  </div>
+                  <div className="form-group flex-2">
+                    <label className="form-label">ছবির লিঙ্ক (URL)</label>
+                    <input type="text" name="image" defaultValue={editingProduct?.image || ''} />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">পণ্যের বর্ণনা</label>
+                  <textarea name="description" rows="3" defaultValue={editingProduct?.description || ''}></textarea>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">উপাদান (Material)</label>
+                    <input type="text" name="material" defaultValue={editingProduct?.material || ''} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">মাপ (Dimensions)</label>
+                    <input type="text" name="dimensions" defaultValue={editingProduct?.dimensions || ''} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">রঙ (Color)</label>
+                    <input type="text" name="color" defaultValue={editingProduct?.color || ''} />
+                  </div>
+                </div>
+                <div className="form-toggles">
+                   <label><input type="checkbox" name="inStock" defaultChecked={editingProduct ? editingProduct.inStock : true} /> স্টকে আছে</label>
+                   <label><input type="checkbox" name="isFeatured" defaultChecked={editingProduct ? editingProduct.isFeatured : false} /> ফিচার্ড পণ্য</label>
+                   <label><input type="checkbox" name="isTopSelling" defaultChecked={editingProduct ? editingProduct.isTopSelling : false} /> টপ সেলিং</label>
+                </div>
+                <div className="form-actions">
+                  <button type="button" className="btn-secondary" onClick={() => setShowModal(false)}>বাতিল</button>
+                  <button type="submit" className="btn-primary">সংরক্ষণ করুন</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        .admin-wrapper { min-height: 100vh; background: #f8f9fa; }
+        .admin-login-overlay { position: fixed; inset: 0; background: #FDF6E8; z-index: 2000; justify-content: center; align-items: center; }
+        .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .logo-circle { width: 60px; height: 60px; background: #7C4B2A; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 24px; }
+        .login-submit-btn { width: 100%; background: #7C4B2A; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; margin-top: 20px; }
+        .admin-dashboard-layout { min-height: 100vh; }
+        .admin-sidebar { width: 260px; background: #2c3e50; color: white; padding: 20px; }
+        .admin-main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .stat-card { background: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .premium-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .premium-table th, .premium-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .mini-img { width: 40px; height: 40px; border-radius: 5px; object-fit: cover; }
+        .product-cell { display: flex; align-items: center; gap: 10px; }
+        .product-names { display: flex; flex-direction: column; }
+        .name-bn { font-weight: 600; font-size: 14px; }
+        .name-en { font-size: 12px; color: #777; }
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; }
+        .stock-in { background: #e8f5e9; color: #2e7d32; }
+        .stock-out { background: #ffebee; color: #c62828; }
+        .action-btns { display: flex; gap: 5px; }
+        .action-btn { border: none; background: none; cursor: pointer; padding: 5px; border-radius: 5px; transition: 0.2s; }
+        .action-btn.edit { color: #1976d2; }
+        .action-btn.delete { color: #d32f2f; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 3000; justify-content: center; align-items: center; }
+        .modal-card { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-label { font-weight: 600; font-size: 14px; }
+        .form-toggles { display: flex; gap: 20px; margin: 20px 0; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px; }
+        .btn-primary { background: #7C4B2A; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+        .btn-secondary { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+      `}</style>
+    </main>
+  );
+}

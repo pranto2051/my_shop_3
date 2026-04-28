@@ -1,0 +1,223 @@
+export const orders = [ 
+  { 
+    id: "ORD-001", 
+    customerPhone: "01700000001", 
+    customerName: "রহিম সাহেব", 
+    productId: "PRD-001", 
+    productName: "রয়্যাল ডাইনিং চেয়ার", 
+    productImage: "https://placehold.co/200x160/7C4B2A/FDF6E8?text=PRD-001", 
+    quantity: 2, 
+    totalPrice: 9000, 
+    advancePaid: 3000, 
+    remainingAmount: 6000, 
+    deliveryAddress: "কুষ্টিয়া, দৌলতপুর", 
+    estimatedDelivery: "2024-02-15", 
+    orderNote: "বিশেষ রং: গাঢ় বাদামী চাই", 
+    currentStageId: "stage_004", 
+    currentStageIndex: 3, 
+    stageHistory: [ 
+      { 
+        stageId: "stage_001", 
+        stageName: "অর্ডার গ্রহণ", 
+        timestamp: "2024-01-20T10:30:00", 
+        adminNote: "অর্ডার সফলভাবে গ্রহণ করা হয়েছে। ধন্যবাদ!", 
+        completedBy: "Admin" 
+      }, 
+      { 
+        stageId: "stage_002", 
+        stageName: "অর্ডার অনুমোদন", 
+        timestamp: "2024-01-20T14:00:00", 
+        adminNote: "অর্ডার অনুমোদন হয়েছে। কাজ শুরু হবে ২১ জানুয়ারি।", 
+        completedBy: "Admin" 
+      }, 
+      { 
+        stageId: "stage_004", 
+        stageName: "তৈরি হচ্ছে", 
+        timestamp: "2024-01-22T10:00:00", 
+        adminNote: "পণ্য তৈরির কাজ চলছে। আরও ২-৩ দিন লাগবে।", 
+        completedBy: "Admin" 
+      } 
+    ], 
+    createdAt: "2024-01-20T10:30:00", 
+    updatedAt: "2024-01-22T10:00:00", 
+    status: "active" 
+  },
+  { 
+    id: "ORD-002", 
+    customerPhone: "01800000002", 
+    customerName: "করিম উদ্দিন", 
+    productId: "PRD-002", 
+    productName: "ডাইনিং চেয়ার সেট", 
+    productImage: "https://placehold.co/200x160/7C4B2A/FDF6E8?text=PRD-002", 
+    quantity: 1, 
+    totalPrice: 12000, 
+    advancePaid: 5000, 
+    remainingAmount: 7000, 
+    deliveryAddress: "ঢাকা, মিরপুর ১০", 
+    estimatedDelivery: "2024-02-20", 
+    orderNote: "", 
+    currentStageId: "stage_001", 
+    currentStageIndex: 0, 
+    stageHistory: [ 
+      { 
+        stageId: "stage_001", 
+        stageName: "অর্ডার গ্রহণ", 
+        timestamp: "2024-01-25T09:00:00", 
+        adminNote: "অর্ডার গ্রহণ করা হয়েছে।", 
+        completedBy: "Admin" 
+      }
+    ], 
+    createdAt: "2024-01-25T09:00:00", 
+    updatedAt: "2024-01-25T09:00:00", 
+    status: "active" 
+  },
+  { 
+    id: "ORD-003", 
+    customerPhone: "01900000003", 
+    customerName: "ফারুক আহমেদ", 
+    productId: "PRD-003", 
+    productName: "কিং সাইজ বেড", 
+    productImage: "https://placehold.co/200x160/7C4B2A/FDF6E8?text=PRD-003", 
+    quantity: 1, 
+    totalPrice: 45000, 
+    advancePaid: 15000, 
+    remainingAmount: 30000, 
+    deliveryAddress: "চট্টগ্রাম, হালিশহর", 
+    estimatedDelivery: "2024-03-05", 
+    orderNote: "ম্যাট ফিনিশ চাই", 
+    currentStageId: "stage_007", 
+    currentStageIndex: 6, 
+    stageHistory: [ 
+      { stageId: "stage_001", stageName: "অর্ডার গ্রহণ", timestamp: "2024-01-15T11:00:00", adminNote: "অর্ডার কনফার্ম।", completedBy: "Admin" },
+      { stageId: "stage_002", stageName: "অর্ডার অনুমোদন", timestamp: "2024-01-16T10:00:00", adminNote: "কাজ শুরু হয়েছে।", completedBy: "Admin" },
+      { stageId: "stage_003", stageName: "কাঠ কাটা হচ্ছে", timestamp: "2024-01-18T14:00:00", adminNote: "কাঠ কাটার কাজ শেষ।", completedBy: "Admin" },
+      { stageId: "stage_004", stageName: "তৈরি হচ্ছে", timestamp: "2024-01-22T16:00:00", adminNote: "অ্যাসেম্বলিং চলছে।", completedBy: "Admin" },
+      { stageId: "stage_005", stageName: "বার্নিশ/ফিনিশিং", timestamp: "2024-01-25T10:00:00", adminNote: "পলিশের কাজ চলছে।", completedBy: "Admin" },
+      { stageId: "stage_006", stageName: "মান নিয়ন্ত্রণ", timestamp: "2024-01-27T12:00:00", adminNote: "কিউসি পাস।", completedBy: "Admin" },
+      { stageId: "stage_007", stageName: "ডেলিভারির জন্য প্রস্তুত", timestamp: "2024-01-28T15:00:00", adminNote: "ডেলিভারির জন্য প্যাকিং করা হচ্ছে।", completedBy: "Admin" }
+    ], 
+    createdAt: "2024-01-15T11:00:00", 
+    updatedAt: "2024-01-28T15:00:00", 
+    status: "active" 
+  },
+  { 
+    id: "ORD-004", 
+    customerPhone: "01700000004", 
+    customerName: "সেলিম রেজা", 
+    productId: "PRD-004", 
+    productName: "লাক্সারি সোফা সেট", 
+    productImage: "https://placehold.co/200x160/7C4B2A/FDF6E8?text=PRD-004", 
+    quantity: 1, 
+    totalPrice: 65000, 
+    advancePaid: 20000, 
+    remainingAmount: 45000, 
+    deliveryAddress: "ঢাকা, বনানী", 
+    estimatedDelivery: "2024-02-10", 
+    orderNote: "", 
+    currentStageId: "stage_009", 
+    currentStageIndex: 8, 
+    stageHistory: [ 
+      { stageId: "stage_001", stageName: "অর্ডার গ্রহণ", timestamp: "2024-01-05T10:00:00", adminNote: "অর্ডার রিসিভড।", completedBy: "Admin" },
+      { stageId: "stage_009", stageName: "ডেলিভারি সম্পন্ন", timestamp: "2024-01-20T17:00:00", adminNote: "সফলভাবে ডেলিভারি করা হয়েছে। ধন্যবাদ!", completedBy: "Admin" }
+    ], 
+    createdAt: "2024-01-05T10:00:00", 
+    updatedAt: "2024-01-20T17:00:00", 
+    status: "completed" 
+  },
+  { 
+    id: "ORD-005", 
+    customerPhone: "01500000005", 
+    customerName: "জসিম উদ্দিন", 
+    productId: "PRD-005", 
+    productName: "আলমারি - ৬ ফিট", 
+    productImage: "https://placehold.co/200x160/7C4B2A/FDF6E8?text=PRD-005", 
+    quantity: 1, 
+    totalPrice: 32000, 
+    advancePaid: 10000, 
+    remainingAmount: 22000, 
+    deliveryAddress: "নারায়ণগঞ্জ", 
+    estimatedDelivery: "2024-02-28", 
+    orderNote: "খুব দ্রুত দরকার", 
+    currentStageId: "stage_002", 
+    currentStageIndex: 1, 
+    stageHistory: [ 
+      { stageId: "stage_001", stageName: "অর্ডার গ্রহণ", timestamp: "2024-01-28T12:00:00", adminNote: "অর্ডার গ্রহণ করা হয়েছে।", completedBy: "Admin" },
+      { stageId: "stage_002", stageName: "অর্ডার অনুমোদন", timestamp: "2024-01-29T10:00:00", adminNote: "কাজ অনুমোদিত হয়েছে।", completedBy: "Admin" }
+    ], 
+    createdAt: "2024-01-28T12:00:00", 
+    updatedAt: "2024-01-29T10:00:00", 
+    status: "active" 
+  },
+  { 
+    id: "ORD-006", 
+    customerPhone: "01300000006", 
+    customerName: "তানভীর হাসান", 
+    productId: "PRD-006", 
+    productName: "অফিস টেবিল", 
+    productImage: "https://placehold.co/200x160/7C4B2A/FDF6E8?text=PRD-006", 
+    quantity: 3, 
+    totalPrice: 24000, 
+    advancePaid: 8000, 
+    remainingAmount: 16000, 
+    deliveryAddress: "ঢাকা, ধানমন্ডি", 
+    estimatedDelivery: "2024-02-05", 
+    orderNote: "", 
+    currentStageId: "stage_010", 
+    currentStageIndex: 9, 
+    stageHistory: [ 
+      { stageId: "stage_001", stageName: "অর্ডার গ্রহণ", timestamp: "2024-01-10T11:00:00", adminNote: "অর্ডার রিসিভড।", completedBy: "Admin" },
+      { stageId: "stage_010", stageName: "বাতিল", timestamp: "2024-01-12T15:00:00", adminNote: "গ্রাহক অর্ডারটি বাতিল করেছেন।", completedBy: "Admin" }
+    ], 
+    createdAt: "2024-01-10T11:00:00", 
+    updatedAt: "2024-01-12T15:00:00", 
+    status: "cancelled" 
+  },
+  { 
+    id: "ORD-007", 
+    customerPhone: "01711111111", 
+    customerName: "আরিফ খান", 
+    productId: "PRD-007", 
+    productName: "বুক শেলফ", 
+    productImage: "https://placehold.co/200x160/7C4B2A/FDF6E8?text=PRD-007", 
+    quantity: 1, 
+    totalPrice: 15000, 
+    advancePaid: 5000, 
+    remainingAmount: 10000, 
+    deliveryAddress: "গাজীপুর", 
+    estimatedDelivery: "2024-02-25", 
+    orderNote: "", 
+    currentStageId: "stage_008", 
+    currentStageIndex: 7, 
+    stageHistory: [ 
+      { stageId: "stage_001", stageName: "অর্ডার গ্রহণ", timestamp: "2024-01-15T09:00:00", adminNote: "অর্ডার কনফার্ম।", completedBy: "Admin" },
+      { stageId: "stage_008", stageName: "ডেলিভারি হচ্ছে", timestamp: "2024-01-29T08:00:00", adminNote: "ডেলিভারি ম্যানের কাছে হস্তান্তর করা হয়েছে।", completedBy: "Admin" }
+    ], 
+    createdAt: "2024-01-15T09:00:00", 
+    updatedAt: "2024-01-29T08:00:00", 
+    status: "active" 
+  },
+  { 
+    id: "ORD-008", 
+    customerPhone: "01722222222", 
+    customerName: "মামুন রশিদ", 
+    productId: "PRD-008", 
+    productName: "শু র‍্যাক", 
+    productImage: "https://placehold.co/200x160/7C4B2A/FDF6E8?text=PRD-008", 
+    quantity: 1, 
+    totalPrice: 7500, 
+    advancePaid: 2000, 
+    remainingAmount: 5500, 
+    deliveryAddress: "ঢাকা, সাভার", 
+    estimatedDelivery: "2024-02-12", 
+    orderNote: "", 
+    currentStageId: "stage_006", 
+    currentStageIndex: 5, 
+    stageHistory: [ 
+      { stageId: "stage_001", stageName: "অর্ডার গ্রহণ", timestamp: "2024-01-20T10:00:00", adminNote: "অর্ডার গ্রহণ করা হয়েছে।", completedBy: "Admin" },
+      { stageId: "stage_006", stageName: "মান নিয়ন্ত্রণ", timestamp: "2024-01-28T16:00:00", adminNote: "ফিনিশিং কোয়ালিটি চেক করা হচ্ছে।", completedBy: "Admin" }
+    ], 
+    createdAt: "2024-01-20T10:00:00", 
+    updatedAt: "2024-01-28T16:00:00", 
+    status: "active" 
+  }
+]; 
