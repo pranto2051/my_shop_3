@@ -12,7 +12,7 @@ import HeroSlider from '@/components/HeroSlider';
 import SearchSection from '@/components/SearchSection';
 import ProductRow from '@/components/ProductRow';
 import OrderTrackingSection from '@/components/home/OrderTrackingSection';
-import LoadingScreen from '@/components/LoadingScreen';
+import PremiumLoading from '@/components/PremiumLoading';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -85,7 +85,7 @@ export default function Home() {
 
   return (
     <>
-      {isLoading && <LoadingScreen onComplete={handleLoadingComplete} />}
+      {isLoading && <PremiumLoading onComplete={handleLoadingComplete} />}
       
       <main className={`main-content ${isLoading ? 'is-loading' : 'is-loaded'}`}>
         <div className={`sticky-cat-nav ${showStickyNav ? 'visible' : ''}`}>
