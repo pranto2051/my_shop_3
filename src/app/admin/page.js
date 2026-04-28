@@ -15,6 +15,7 @@ import CreateOrderModal from '@/components/admin/panels/CreateOrderModal';
 import StageManagerPanel from '@/components/admin/panels/StageManagerPanel';
 import CategoriesPanel from '@/components/admin/panels/CategoriesPanel';
 import AdminLogin from '@/components/admin/login/AdminLogin';
+import OrderTrackingPanel from '@/components/admin/panels/OrderTrackingPanel';
 
 export default function AdminPage() {
   const getArray = (val) => {
@@ -140,11 +141,13 @@ export default function AdminPage() {
               <span className="root-path">অ্যাডমিন</span>
               <i className="fas fa-chevron-right separator"></i>
               <span className="current-path">
-                {activeTab === 'dashboard' ? 'ড্যাশবোর্ড' : 
-                 activeTab === 'products' ? 'পণ্য ব্যবস্থাপনা' : 
+                {activeTab === 'dashboard' ? 'ড্যাশবোর্ড' :
+                 activeTab === 'products' ? 'পণ্য ব্যবস্থাপনা' :
                  activeTab === 'categories' ? 'ক্যাটাগরি সমূহ' :
-                 activeTab === 'orders' ? 'অর্ডার তালিকা' : 
-                 activeTab === 'order-stages' ? 'অর্ডার স্টেজ' : 'অর্ডার ব্যবস্থাপনা'}
+                 activeTab === 'orders' ? 'অর্ডার তালিকা' :
+                 activeTab === 'create-order' ? 'নতুন অর্ডার' :
+                 activeTab === 'order-stages' ? 'অর্ডার স্টেজ' :
+                 activeTab === 'order-tracking' ? 'অর্ডার ট্র্যাকিং' : 'অর্ডার ব্যবস্থাপনা'}
               </span>
             </div>
           </header>
@@ -297,6 +300,10 @@ export default function AdminPage() {
 
             {activeTab === 'order-stages' && (
               <StageManagerPanel />
+            )}
+
+            {activeTab === 'order-tracking' && (
+              <OrderTrackingPanel />
             )}
 
             {activeTab === 'categories' && (

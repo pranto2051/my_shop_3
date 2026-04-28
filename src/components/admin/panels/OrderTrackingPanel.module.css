@@ -1,0 +1,600 @@
+.panelContainer {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-family: 'Rozha One', serif;
+  font-size: 32px;
+  color: var(--walnut-deep);
+  margin: 0;
+}
+
+.subtitle {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 13px;
+  color: var(--bark-soft);
+  margin: 4px 0 0 0;
+}
+
+.searchSection {
+  background: var(--parchment);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(124, 75, 42, 0.1);
+}
+
+.searchForm {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: 12px;
+  padding: 8px 16px;
+  border: 2px solid var(--linen);
+  transition: border-color 0.3s ease;
+}
+
+.inputGroup:focus-within {
+  border-color: var(--walnut);
+}
+
+.icon {
+  color: var(--walnut);
+  display: flex;
+  align-items: center;
+}
+
+.inputGroup input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 16px;
+  padding: 12px 0;
+  direction: ltr;
+  text-align: left;
+}
+
+.inputGroup input::placeholder {
+  color: var(--bark-soft);
+}
+
+.searchBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--walnut-deep) 0%, var(--walnut) 100%);
+  color: var(--parchment);
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.searchBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(124, 75, 42, 0.35);
+}
+
+.searchBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.errorMsg {
+  text-align: center;
+  color: #e53935;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  margin-top: 16px;
+  padding: 12px;
+  background: #ffebee;
+  border-radius: 8px;
+}
+
+.resultSection {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.customerHeader {
+  background: linear-gradient(135deg, var(--walnut-deep) 0%, var(--walnut) 100%);
+  color: var(--parchment);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.customerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.customerName {
+  font-family: 'Rozha One', serif;
+  font-size: 28px;
+  margin: 0;
+}
+
+.customerPhone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  opacity: 0.9;
+  direction: ltr;
+}
+
+.totalOrders {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.ordersTabs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.orderTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--parchment);
+  border: 2px solid var(--linen);
+  border-radius: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Noto Sans Bengali', sans-serif;
+}
+
+.orderTab:hover {
+  border-color: var(--walnut);
+}
+
+.activeTab {
+  border-color: var(--walnut-deep);
+  background: white;
+  box-shadow: 0 4px 15px rgba(124, 75, 42, 0.15);
+}
+
+.tabOrderId {
+  font-weight: 700;
+  color: var(--walnut-deep);
+}
+
+.tabProduct {
+  font-size: 13px;
+  color: var(--bark-soft);
+}
+
+.tabStatus {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.orderDetail {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(124, 75, 42, 0.08);
+}
+
+.orderDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--linen);
+}
+
+.orderIdSection {
+  display: flex;
+  flex-direction: column;
+}
+
+.orderIdLabel {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 12px;
+  color: var(--bark-soft);
+}
+
+.orderIdValue {
+  font-family: 'Rozha One', serif;
+  font-size: 24px;
+  color: var(--walnut-deep);
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  border: 2px solid;
+}
+
+.orderInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.infoCard {
+  background: var(--parchment);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.infoLabel {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 12px;
+  color: var(--bark-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.infoValue {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--walnut-deep);
+  display: flex;
+  align-items: center;
+}
+
+.deliveryAddress,
+.orderNote {
+  background: var(--parchment);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.addressText,
+.noteText {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  color: var(--walnut);
+  margin: 8px 0 0 0;
+  line-height: 1.6;
+}
+
+.timelineSection {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-family: 'Rozha One', serif;
+  font-size: 18px;
+  color: var(--walnut-deep);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 30px;
+}
+
+.timelineItem {
+  position: relative;
+  padding-bottom: 24px;
+}
+
+.timelineDot {
+  position: absolute;
+  left: -30px;
+  top: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.timelineContent {
+  background: var(--parchment);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.timelineHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.timelineStage {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--walnut-deep);
+}
+
+.timelineDate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 12px;
+  color: var(--bark-soft);
+}
+
+.timelineNote {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  color: var(--walnut);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.timelineAdmin {
+  display: inline-block;
+  margin-top: 8px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 11px;
+  color: var(--bark-soft);
+  background: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.timelineLine {
+  position: absolute;
+  left: -25px;
+  top: 24px;
+  width: 2px;
+  height: calc(100% - 20px);
+  background: linear-gradient(to bottom, var(--linen), transparent);
+}
+
+.progressSection {
+  margin-bottom: 24px;
+}
+
+.progressBar {
+  height: 12px;
+  background: var(--linen);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.progressStages {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stageItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 60px;
+}
+
+.stageIndicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid;
+  transition: all 0.3s ease;
+}
+
+.currentStage .stageIndicator {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(124, 75, 42, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(124, 75, 42, 0);
+  }
+}
+
+.stageName {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 11px;
+  color: var(--bark-soft);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.completedStage .stageName {
+  color: var(--walnut-deep);
+}
+
+.currentStage .stageName {
+  font-weight: 700;
+  color: var(--walnut-deep);
+}
+
+.updateSection {
+  background: var(--parchment);
+  border-radius: 16px;
+  padding: 24px;
+  border: 2px solid var(--walnut);
+}
+
+.nextStageInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.nextStageLabel {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  color: var(--bark-soft);
+}
+
+.nextStageName {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.noteInput {
+  width: 100%;
+  border: 2px solid var(--linen);
+  border-radius: 10px;
+  padding: 12px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  resize: vertical;
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.noteInput:focus {
+  border-color: var(--walnut);
+}
+
+.updateBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.updateBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(124, 75, 42, 0.35);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--bark-soft);
+  text-align: center;
+}
+
+.emptyIcon {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.emptyState p {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 16px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .panelContainer {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .customerName {
+    font-size: 22px;
+  }
+
+  .orderDetailHeader {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .orderInfoGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .progressStages {
+    gap: 4px;
+  }
+
+  .stageName {
+    font-size: 9px;
+  }
+}

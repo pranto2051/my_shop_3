@@ -11,7 +11,8 @@ import {
   FaListCheck, 
   FaRightFromBracket,
   FaShield,
-  FaLayerGroup
+  FaLayerGroup,
+  FaTruckFast
 } from 'react-icons/fa6';
 
 export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeInfo }) {
@@ -79,6 +80,13 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
           <FaListCheck /> 
           <span>অর্ডার স্টেজ</span>
           <span className={styles.badge}>{stagesCount}</span>
+        </button>
+
+        <button 
+          className={`${styles.navItem} ${activeTab === 'order-tracking' ? styles.active : ''}`} 
+          onClick={() => setActiveTab('order-tracking')}
+        >
+          <FaTruckFast /> <span>অর্ডার ট্র্যাকিং</span>
         </button>
 
         <div className={styles.sectionLabel}>অন্যান্য</div>
