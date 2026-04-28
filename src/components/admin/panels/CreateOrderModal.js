@@ -6,13 +6,16 @@ import styles from './CreateOrderModal.module.css';
 import { 
   FaXmark, FaUser, FaPhone, FaMagnifyingGlass, 
   FaMinus, FaPlus, FaLocationDot, FaNoteSticky,
-  FaCalendarDays, FaFloppyDisk, FaStar
+  FaCalendarDays, FaFloppyDisk, FaStar,
+  FaCircleCheck, FaArrowRight
 } from 'react-icons/fa6';
 import productsRaw from '@/data/products';
 
 export default function CreateOrderModal({ onClose }) {
   const { state, dispatch } = useAdmin();
   const { orderStages } = state;
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [newOrderId, setNewOrderId] = useState('');
   
   const getArray = (val) => {
     if (!val) return [];
@@ -84,8 +87,9 @@ export default function CreateOrderModal({ onClose }) {
     const totalPrice = selectedProduct.price * formData.quantity;
     const remainingAmount = totalPrice - formData.advancePaid;
 
+    const createdOrderId = `ORD-${String(state.orders.length + 1).padStart(3, '0')}`;
     const newOrder = {
-      id: `ORD-${String(state.orders.length + 1).padStart(3, '0')}`,
+      id: createdOrderId,
       customerName: formData.customerName,
       customerPhone: formData.customerPhone,
       productId: selectedProduct.id,
@@ -115,9 +119,50 @@ export default function CreateOrderModal({ onClose }) {
     };
 
     dispatch({ type: 'CREATE_ORDER', payload: newOrder });
-    alert('নতুন অর্ডার সফলভাবে তৈরি হয়েছে ✅');
-    onClose();
+    setNewOrderId(createdOrderId);
+    setIsSuccess(true);
   };
+
+  if (isSuccess) {
+    return (
+      <div className={styles.overlay}>
+        <div className={styles.successModal}>
+          <div className={styles.successIconWrapper}>
+            <div className={styles.successCircle}>
+              <FaCircleCheck className={styles.successCheck} />
+            </div>
+            <div className={styles.confetti}></div>
+          </div>
+          
+          <div className={styles.successContent}>
+            <h2 className={styles.successTitle}>অর্ডার সফল হয়েছে!</h2>
+            <p className={styles.successText}>
+              অভিনন্দন! আপনার নতুন অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।
+            </p>
+            
+            <div className={styles.orderSummaryCard}>
+              <div className={styles.summaryRow}>
+                <span>অর্ডার আইডি:</span>
+                <span className={styles.summaryValue}>{newOrderId}</span>
+              </div>
+              <div className={styles.summaryRow}>
+                <span>গ্রাহক:</span>
+                <span className={styles.summaryValue}>{formData.customerName}</span>
+              </div>
+              <div className={styles.summaryRow}>
+                <span>মোট মূল্য:</span>
+                <span className={styles.summaryValue}>৳{(selectedProduct.price * formData.quantity).toLocaleString()}</span>
+              </div>
+            </div>
+
+            <button className={styles.successCloseBtn} onClick={onClose}>
+              ড্যাশবোর্ডে ফিরে যান <FaArrowRight />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.overlay}>
@@ -129,39 +174,42 @@ export default function CreateOrderModal({ onClose }) {
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.formGrid}>
-            <div className={styles.formGroup}>
-              <label className={styles.label}>গ্রাহকের নাম *</label>
-              <div className={styles.inputWrapper}>
-                <FaUser className={styles.inputIcon} />
-                <input 
-                  type="text" 
-                  placeholder="গ্রাহকের নাম লিখুন..."
-                  className={`${styles.input} ${errors.customerName ? styles.inputError : ''}`}
-                  value={formData.customerName}
-                  onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-                />
-              </div>
-              {errors.customerName && <span className={styles.errorText}>{errors.customerName}</span>}
-            </div>
+          <div className={styles.scrollArea}>
+            <div className={styles.formGrid}>
+              <div className={styles.row}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>গ্রাহকের নাম *</label>
+                  <div className={styles.inputWrapper}>
+                    <FaUser className={styles.inputIcon} />
+                    <input 
+                      type="text" 
+                      placeholder="গ্রাহকের নাম লিখুন..."
+                      className={`${styles.input} ${errors.customerName ? styles.inputError : ''}`}
+                      value={formData.customerName}
+                      onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+                    />
+                  </div>
+                  {errors.customerName && <span className={styles.errorText}>{errors.customerName}</span>}
+                </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.label}>মোবাইল নম্বর *</label>
-              <div className={styles.inputWrapper}>
-                <FaPhone className={styles.inputIcon} />
-                <input 
-                  type="text" 
-                  placeholder="01XXXXXXXXX"
-                  className={`${styles.input} ${styles.fira} ${errors.customerPhone ? styles.inputError : ''}`}
-                  value={formData.customerPhone}
-                  onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
-                  maxLength={11}
-                />
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>মোবাইল নম্বর *</label>
+                  <div className={styles.inputWrapper}>
+                    <FaPhone className={styles.inputIcon} />
+                    <input 
+                      type="text" 
+                      placeholder="01XXXXXXXXX"
+                      className={`${styles.input} ${styles.fira} ${errors.customerPhone ? styles.inputError : ''}`}
+                      value={formData.customerPhone}
+                      onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
+                      maxLength={11}
+                    />
+                  </div>
+                  {errors.customerPhone && <span className={styles.errorText}>{errors.customerPhone}</span>}
+                </div>
               </div>
-              {errors.customerPhone && <span className={styles.errorText}>{errors.customerPhone}</span>}
-            </div>
 
-            <div className={styles.formGroup}>
+              <div className={styles.formGroup}>
               <label className={styles.label}>পণ্য নির্বাচন *</label>
               <div className={styles.productSelector} ref={dropdownRef}>
                 {!selectedProduct ? (
@@ -261,32 +309,34 @@ export default function CreateOrderModal({ onClose }) {
               </div>
             </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.label}>ডেলিভারি ঠিকানা</label>
-              <div className={styles.inputWrapper}>
-                <FaLocationDot className={styles.inputIcon} />
-                <input 
-                  type="text" 
-                  placeholder="পুরো ঠিকানা লিখুন..."
-                  className={styles.input}
-                  value={formData.deliveryAddress}
-                  onChange={(e) => setFormData({ ...formData, deliveryAddress: e.target.value })}
-                />
-              </div>
-            </div>
+              <div className={styles.row}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>ডেলিভারি ঠিকানা</label>
+                  <div className={styles.inputWrapper}>
+                    <FaLocationDot className={styles.inputIcon} />
+                    <input 
+                      type="text" 
+                      placeholder="পুরো ঠিকানা লিখুন..."
+                      className={styles.input}
+                      value={formData.deliveryAddress}
+                      onChange={(e) => setFormData({ ...formData, deliveryAddress: e.target.value })}
+                    />
+                  </div>
+                </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.label}>সম্ভাব্য ডেলিভারি তারিখ</label>
-              <div className={styles.inputWrapper}>
-                <FaCalendarDays className={styles.inputIcon} />
-                <input 
-                  type="date" 
-                  className={`${styles.input} ${styles.fira}`}
-                  value={formData.estimatedDelivery}
-                  onChange={(e) => setFormData({ ...formData, estimatedDelivery: e.target.value })}
-                />
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>সম্ভাব্য ডেলিভারি তারিখ</label>
+                  <div className={styles.inputWrapper}>
+                    <FaCalendarDays className={styles.inputIcon} />
+                    <input 
+                      type="date" 
+                      className={`${styles.input} ${styles.fira}`}
+                      value={formData.estimatedDelivery}
+                      onChange={(e) => setFormData({ ...formData, estimatedDelivery: e.target.value })}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
 
             <div className={styles.formGroup}>
               <label className={styles.label}>অর্ডার নোট</label>
@@ -300,6 +350,7 @@ export default function CreateOrderModal({ onClose }) {
                   onChange={(e) => setFormData({ ...formData, orderNote: e.target.value })}
                 />
               </div>
+            </div>
             </div>
           </div>
 
