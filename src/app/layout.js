@@ -50,11 +50,13 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Rozha+One&family=Bebas+Neue&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
       </head>
       <body suppressHydrationWarning>
-        <AdminProvider>
+        <AdminProvider suppressHydrationWarning>
           <AdminBodyClass />
           <Header storeInfo={storeInfo} categories={categories} />
           <AnimationManager />
-          {children}
+          <div suppressHydrationWarning>
+            {children}
+          </div>
           <Footer storeInfo={storeInfo} categories={categories} />
         </AdminProvider>
       </body>

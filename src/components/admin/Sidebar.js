@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAdmin } from '@/app/context/AdminContext';
 import styles from './Sidebar.module.css';
 import { 
@@ -24,6 +24,19 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
   
   const activeOrdersCount = state.orders.filter(o => o.status === 'active').length;
   const stagesCount = state.orderStages.length;
+
+  // Handle background scroll lock for mobile sidebar
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+    
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, [isOpen]);
 
   return (
     <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>

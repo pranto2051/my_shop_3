@@ -62,6 +62,19 @@ export default function CategoryPage({ params: paramsPromise }) {
     setFilteredProducts(result);
   }, [categoryId, minPrice, maxPrice, sortBy]);
 
+  // Handle background scroll lock for sidebar
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+    
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, [isSidebarOpen]);
+
   if (!category) {
     return (
       <div className="container" style={{ padding: '100px 20px', textAlign: 'center' }}>

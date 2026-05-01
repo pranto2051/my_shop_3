@@ -24,6 +24,16 @@ export default function OrderDetailDrawer({ order, onClose }) {
     }
   }, [order, orderStages]);
 
+  // Handle background scroll lock
+  useEffect(() => {
+    if (order) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+    return () => document.body.classList.remove('no-scroll');
+  }, [order]);
+
   if (!order) return null;
 
   const progress = getOrderProgress(order, orderStages);

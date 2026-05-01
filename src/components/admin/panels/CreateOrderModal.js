@@ -54,6 +54,12 @@ export default function CreateOrderModal({ onClose }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Handle background scroll lock
+  useEffect(() => {
+    document.body.classList.add('no-scroll');
+    return () => document.body.classList.remove('no-scroll');
+  }, []);
+
   const filteredProducts = allProducts.filter(p => 
     p.name.toLowerCase().includes(productSearch.toLowerCase()) || 
     p.id.toLowerCase().includes(productSearch.toLowerCase())

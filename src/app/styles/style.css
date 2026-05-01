@@ -77,6 +77,10 @@ body {
   overflow-x: hidden;
 }
 
+body.no-scroll {
+  overflow: hidden !important;
+}
+
 img {
   max-width: 100%;
   height: auto;
@@ -454,7 +458,7 @@ h4 { font-size: clamp(0.95rem, 1.8vw, 1.15rem); font-weight: 600; }
   font-weight: 700;
 }
 
-.mobile-nav ul { display: flex; flex-direction: column; gap: 0.25rem; }
+.mobile-nav > ul { display: flex; flex-direction: column; gap: 0.25rem; }
 
 .mobile-nav a {
   display: flex;

@@ -11,6 +11,19 @@ export default function ProductModal({ isOpen, onClose, product, categories, sto
     }
   }, [product]);
 
+  // Handle background scroll lock
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+    
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, [isOpen]);
+
   if (!isOpen || !product) return null;
 
   const cat = categories.find(c => c.id === product.categoryId);

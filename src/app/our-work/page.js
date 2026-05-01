@@ -8,32 +8,32 @@ export default function OurWorkPage() {
   const { gallery } = state;
 
   return (
-    <main className="gallery-page">
+    <main className="gallery-page" suppressHydrationWarning>
       {/* Page Header */}
-      <section className="gallery-header">
-        <div className="container">
-          <div className="header-content">
-            <span className="subtitle">গ্যালারি</span>
-            <h1>আমাদের বাস্তব কাজসমূহ</h1>
-            <div className="title-divider"></div>
-            <p>আমাদের শোরুম থেকে সরবরাহকৃত কিছু পণ্যের বাস্তব ছবি। আমরা বিশ্বাস করি কাজের গুণমানই আমাদের মূল পরিচয়।</p>
+      <section className="gallery-header" suppressHydrationWarning>
+        <div className="container" suppressHydrationWarning>
+          <div className="header-content" suppressHydrationWarning>
+            <span className="subtitle" suppressHydrationWarning>গ্যালারি</span>
+            <h1 suppressHydrationWarning>আমাদের বাস্তব কাজসমূহ</h1>
+            <div className="title-divider" suppressHydrationWarning></div>
+            <p suppressHydrationWarning>আমাদের শোরুম থেকে সরবরাহকৃত কিছু পণ্যের বাস্তব ছবি। আমরা বিশ্বাস করি কাজের গুণমানই আমাদের মূল পরিচয়।</p>
           </div>
         </div>
       </section>
 
       {/* Gallery Grid */}
-      <section className="gallery-grid-section">
-        <div className="container">
-          <div className="gallery-masonry">
+      <section className="gallery-grid-section" suppressHydrationWarning>
+        <div className="container" suppressHydrationWarning>
+          <div className="gallery-masonry" suppressHydrationWarning>
             {gallery.map((item, index) => (
-              <div key={item.id} className="gallery-item-premium" style={{ '--delay': `${index * 0.1}s` }}>
-                <div className="image-container">
-                  <img src={item.image} alt={item.title} className="gallery-img" />
-                  <div className="image-overlay">
-                    <div className="overlay-content">
-                      <h3>{item.title}</h3>
-                      <p>সফল ডেলিভারি ও সন্তুষ্ট গ্রাহক</p>
-                      <div className="zoom-icon">
+              <div key={item.id} className="gallery-item-premium" style={{ '--delay': `${index * 0.1}s` }} suppressHydrationWarning>
+                <div className="image-container" suppressHydrationWarning>
+                  <img src={item.image} alt={item.title} className="gallery-img" suppressHydrationWarning />
+                  <div className="image-overlay" suppressHydrationWarning>
+                    <div className="overlay-content" suppressHydrationWarning>
+                      <h3 suppressHydrationWarning>{item.title}</h3>
+                      <p suppressHydrationWarning>সফল ডেলিভারি ও সন্তুষ্ট গ্রাহক</p>
+                      <div className="zoom-icon" suppressHydrationWarning>
                         <i className="fas fa-search-plus"></i>
                       </div>
                     </div>
@@ -44,23 +44,23 @@ export default function OurWorkPage() {
           </div>
 
           {gallery.length === 0 && (
-            <div className="empty-gallery">
+            <div className="empty-gallery" suppressHydrationWarning>
               <i className="fas fa-hammer"></i>
-              <p>গ্যালারিতে বর্তমানে কোন ছবি নেই।</p>
+              <p suppressHydrationWarning>গ্যালারিতে বর্তমানে কোন ছবি নেই।</p>
             </div>
           )}
         </div>
       </section>
 
       {/* Quality Commitment Section */}
-      <section className="commitment-section">
-        <div className="container">
-          <div className="commitment-card">
-            <div className="card-icon">
+      <section className="commitment-section" suppressHydrationWarning>
+        <div className="container" suppressHydrationWarning>
+          <div className="commitment-card" suppressHydrationWarning>
+            <div className="card-icon" suppressHydrationWarning>
               <i className="fas fa-check-circle"></i>
             </div>
-            <h2>সেরা মানের নিশ্চয়তা</h2>
-            <p>আমরা প্রতিটি আসবাবপত্র তৈরিতে সর্বোচ্চ মানের কাঠ এবং আধুনিক প্রযুক্তি ব্যবহার করি। আমাদের প্রতিটি কাজ আমাদের কারিগরদের দক্ষতার স্বাক্ষর বহন করে।</p>
+            <h2 suppressHydrationWarning>সেরা মানের নিশ্চয়তা</h2>
+            <p suppressHydrationWarning>আমরা প্রতিটি আসবাবপত্র তৈরিতে সর্বোচ্চ মানের কাঠ এবং আধুনিক প্রযুক্তি ব্যবহার করি। আমাদের প্রতিটি কাজ আমাদের কারিগরদের দক্ষতার স্বাক্ষর বহন করে।</p>
           </div>
         </div>
       </section>
