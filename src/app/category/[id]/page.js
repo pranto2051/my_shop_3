@@ -32,8 +32,29 @@ export default function CategoryPage({ params: paramsPromise }) {
   const [maxPrice, setMaxPrice] = useState('');
   const [sortBy, setSortBy] = useState('newest');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Close sort dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isSortOpen && !event.target.closest('.custom-sort-dropdown')) {
+        setIsSortOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isSortOpen]);
+
+  const sortOptions = [
+    { value: 'newest', label: 'সর্বশেষ যোগ' },
+    { value: 'price_asc', label: 'মূল্য (কম–বেশি)' },
+    { value: 'price_desc', label: 'মূল্য (বেশি–কম)' },
+    { value: 'popular', label: 'জনপ্রিয়তা' }
+  ];
+
+  const currentSortLabel = sortOptions.find(opt => opt.value === sortBy)?.label;
 
   useEffect(() => {
     let result = productsData.filter(p => p.categoryId === categoryId);
@@ -184,12 +205,29 @@ export default function CategoryPage({ params: paramsPromise }) {
                 <span className="result-count">{filteredProducts.length}টি পণ্য</span>
               </div>
               <div className="toolbar-right">
-                <select className="sort-select-toolbar" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                  <option value="newest">সর্বশেষ যোগ</option>
-                  <option value="price_asc">মূল্য (কম–বেশি)</option>
-                  <option value="price_desc">মূল্য (বেশি–কম)</option>
-                  <option value="popular">জনপ্রিয়তা</option>
-                </select>
+                <div className={`custom-sort-dropdown ${isSortOpen ? 'active' : ''}`}>
+                  <button className="sort-trigger" onClick={() => setIsSortOpen(!isSortOpen)}>
+                    <span>{currentSortLabel}</span>
+                    <i className="fas fa-chevron-down"></i>
+                  </button>
+                  {isSortOpen && (
+                    <div className="sort-options-menu">
+                      {sortOptions.map((opt) => (
+                        <button 
+                          key={opt.value} 
+                          className={`sort-option-item ${sortBy === opt.value ? 'active' : ''}`}
+                          onClick={() => {
+                            setSortBy(opt.value);
+                            setIsSortOpen(false);
+                          }}
+                        >
+                          {opt.label}
+                          {sortBy === opt.value && <i className="fas fa-check"></i>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
