@@ -18,9 +18,20 @@ import AdminLogin from '@/components/admin/login/AdminLogin';
 import OrderTrackingPanel from '@/components/admin/panels/OrderTrackingPanel';
 import ProductsPanel from '@/components/admin/panels/ProductsPanel';
 import SettingsPanel from '@/components/admin/panels/SettingsPanel';
+import DesignsPanel from '@/components/admin/panels/DesignsPanel';
+import GalleryPanel from '@/components/admin/panels/GalleryPanel';
+import { useAdmin } from '@/app/context/AdminContext';
 import { FaBars, FaXmark } from 'react-icons/fa6';
 
 export default function AdminPage() {
+  const { state, dispatch } = useAdmin();
+  const { 
+    products, 
+    categories: categoriesData, 
+    designs, 
+    gallery 
+  } = state;
+
   const getArray = (val) => {
     if (!val) return [];
     if (Array.isArray(val)) return val;
@@ -29,18 +40,12 @@ export default function AdminPage() {
     return [];
   };
 
-  const productsData = getArray(productsRaw);
-  const categories = getArray(categoriesRaw);
-  const designs = getArray(designsRaw);
-  const gallery = getArray(galleryRaw);
   const storeInfo = storeInfoRaw.default || storeInfoRaw;
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [products, setProducts] = useState(productsData);
-  const [categoriesData, setCategoriesData] = useState(categories);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Order Management State
@@ -135,6 +140,8 @@ export default function AdminPage() {
                   {activeTab === 'dashboard' ? 'ড্যাশবোর্ড' :
                    activeTab === 'products' ? 'পণ্য ব্যবস্থাপনা' :
                    activeTab === 'categories' ? 'ক্যাটাগরি সমূহ' :
+                   activeTab === 'designs' ? 'ডিজাইন সমূহ' :
+                   activeTab === 'gallery' ? 'আমাদের কাজ' :
                    activeTab === 'orders' ? 'অর্ডার তালিকা' :
                    activeTab === 'create-order' ? 'নতুন অর্ডার' :
                    activeTab === 'order-stages' ? 'অর্ডার স্টেজ' :
@@ -158,12 +165,12 @@ export default function AdminPage() {
                     <div className="stat-info"><h3>ক্যাটাগরি</h3><p>{categoriesData.length}</p></div>
                   </div>
                   <div className="stat-card success">
-                    <div className="stat-icon"><i className="fas fa-drafting-compass"></i></div>
+                    <div className="stat-icon"><i className="fas fa-palette"></i></div>
                     <div className="stat-info"><h3>ডিজাইন</h3><p>{designs.length}</p></div>
                   </div>
                   <div className="stat-card error">
-                    <div className="stat-icon"><i className="fas fa-images"></i></div>
-                    <div className="stat-info"><h3>গ্যালারি</h3><p>{gallery.length}</p></div>
+                    <div className="stat-icon"><i className="fas fa-hammer"></i></div>
+                    <div className="stat-info"><h3>আমাদের কাজ</h3><p>{gallery.length}</p></div>
                   </div>
                 </div>
 
@@ -213,7 +220,7 @@ export default function AdminPage() {
             {activeTab === 'products' && (
               <ProductsPanel 
                 products={products} 
-                setProducts={setProducts} 
+                setProducts={(newProducts) => dispatch({ type: 'SET_INITIAL_DATA', payload: { products: newProducts, categories: categoriesData } })} 
                 categoriesData={categoriesData} 
               />
             )}
@@ -240,8 +247,16 @@ export default function AdminPage() {
             {activeTab === 'categories' && (
               <CategoriesPanel 
                 categories={categoriesData} 
-                onUpdateCategories={setCategoriesData} 
+                onUpdateCategories={(newCategories) => dispatch({ type: 'SET_INITIAL_DATA', payload: { products, categories: newCategories } })} 
               />
+            )}
+
+            {activeTab === 'designs' && (
+              <DesignsPanel />
+            )}
+
+            {activeTab === 'gallery' && (
+              <GalleryPanel />
             )}
 
             {activeTab === 'settings' && (

@@ -84,6 +84,8 @@ export default function Header({ storeInfo, categories }) {
                   </div>
                 </li>
                 <li><Link href="/order-process" className="nav-link">অর্ডার প্রক্রিয়া</Link></li>
+                <li><Link href="/designs" className="nav-link">ডিজাইন</Link></li>
+                <li><Link href="/our-work" className="nav-link">আমাদের কাজ</Link></li>
                 <li><Link href="/order-tracking" className="nav-link">অর্ডার ট্র্যাকিং</Link></li>
                 <li><Link href="/contact" className="nav-link">যোগাযোগ</Link></li>
               </ul>
@@ -137,6 +139,8 @@ export default function Header({ storeInfo, categories }) {
                 </div>
               </li>
               <li><Link href="/order-process" className="nav-link">অর্ডার প্রক্রিয়া</Link></li>
+              <li><Link href="/designs" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>ডিজাইন</Link></li>
+              <li><Link href="/our-work" className="nav-link" onClick={() => setIsMobileMenuOpen(false)}>আমাদের কাজ</Link></li>
               <li><Link href="/order-tracking" className="nav-link">অর্ডার ট্র্যাকিং</Link></li>
               <li><Link href="/contact" className="nav-link">যোগাযোগ</Link></li>
               <li><Link href="/admin" className="nav-link admin-link">অ্যাডমিন প্যানেল</Link></li>

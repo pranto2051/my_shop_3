@@ -29,8 +29,9 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="bn" suppressHydrationWarning className="loading">
-      <head>
+      <head suppressHydrationWarning>
         <script
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `
               document.documentElement.classList.add('loading');

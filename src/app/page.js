@@ -11,10 +11,21 @@ import ContactSection from '@/components/ContactSection';
 import HeroSlider from '@/components/HeroSlider';
 import SearchSection from '@/components/SearchSection';
 import ProductRow from '@/components/ProductRow';
+import DesignSection from '@/components/DesignSection';
+import OurWorkSection from '@/components/OurWorkSection';
 import OrderTrackingSection from '@/components/home/OrderTrackingSection';
 import PremiumLoading from '@/components/PremiumLoading';
+import { useAdmin } from '@/app/context/AdminContext';
 
 export default function Home() {
+  const { state } = useAdmin();
+  const { 
+    products: allProducts, 
+    categories: allCategories, 
+    designs, 
+    gallery 
+  } = state;
+
   const [isLoading, setIsLoading] = useState(true);
   
   const getArray = (val) => {
@@ -25,8 +36,6 @@ export default function Home() {
     return [];
   };
 
-  const allProducts = getArray(productsRaw);
-  const allCategories = getArray(categoriesRaw);
   const storeInfo = storeInfoRaw.default || storeInfoRaw;
   
   console.log('Home Page - allProducts:', allProducts);
@@ -146,6 +155,9 @@ export default function Home() {
           />
         )
       ))}
+
+      <DesignSection designs={designs} />
+      <OurWorkSection gallery={gallery} />
 
       <OrderProcess storeInfo={storeInfo} />
       <OrderTrackingSection />

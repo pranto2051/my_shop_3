@@ -6,6 +6,8 @@ import { defaultOrderStages } from '@/data/orderStages';
 
 import productsRaw from '@/data/products';
 import categoriesRaw from '@/data/categories';
+import designsRaw from '@/data/designs';
+import galleryRaw from '@/data/gallery';
 
 const AdminContext = createContext();
 
@@ -25,6 +27,8 @@ const initialState = {
   orderSearch: '',
   products: getArray(productsRaw),
   categories: getArray(categoriesRaw),
+  designs: getArray(designsRaw),
+  gallery: getArray(galleryRaw),
   settings: {
     showAdminHeader: false,
     showAdminFooter: false,
@@ -181,6 +185,40 @@ function adminReducer(state, action) {
       return {
         ...state,
         orderSearch: action.payload,
+      };
+
+    // Designs actions
+    case 'ADD_DESIGN':
+      return {
+        ...state,
+        designs: [action.payload, ...state.designs],
+      };
+    case 'UPDATE_DESIGN':
+      return {
+        ...state,
+        designs: state.designs.map(d => d.id === action.payload.id ? action.payload : d),
+      };
+    case 'DELETE_DESIGN':
+      return {
+        ...state,
+        designs: state.designs.filter(d => d.id !== action.payload),
+      };
+
+    // Gallery actions
+    case 'ADD_GALLERY_ITEM':
+      return {
+        ...state,
+        gallery: [action.payload, ...state.gallery],
+      };
+    case 'UPDATE_GALLERY_ITEM':
+      return {
+        ...state,
+        gallery: state.gallery.map(g => g.id === action.payload.id ? action.payload : g),
+      };
+    case 'DELETE_GALLERY_ITEM':
+      return {
+        ...state,
+        gallery: state.gallery.filter(g => g.id !== action.payload),
       };
 
     default:

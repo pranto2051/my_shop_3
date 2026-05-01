@@ -14,7 +14,9 @@ import {
   FaLayerGroup,
   FaTruckFast,
   FaGear,
-  FaXmark
+  FaXmark,
+  FaPalette,
+  FaHammer
 } from 'react-icons/fa6';
 
 export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeInfo, isOpen, onClose }) {
@@ -57,6 +59,20 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
           onClick={() => setActiveTab('categories')}
         >
           <FaLayerGroup /> <span>ক্যাটাগরি সমূহ</span>
+        </button>
+
+        <button 
+          className={`${styles.navItem} ${activeTab === 'designs' ? styles.active : ''}`} 
+          onClick={() => setActiveTab('designs')}
+        >
+          <FaPalette /> <span>ডিজাইন সমূহ</span>
+        </button>
+
+        <button 
+          className={`${styles.navItem} ${activeTab === 'gallery' ? styles.active : ''}`} 
+          onClick={() => setActiveTab('gallery')}
+        >
+          <FaHammer /> <span>আমাদের কাজ</span>
         </button>
 
         <div className={`${styles.sectionLabel} ${styles.orderMgmtLabel}`}>অর্ডার ব্যবস্থাপনা</div>
