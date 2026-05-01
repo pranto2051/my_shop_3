@@ -13,7 +13,10 @@ export default function DesignsPanel() {
   const [formData, setFormData] = useState({
     name: '',
     image: '',
-    category: 'ক্লাসিক'
+    category: 'ক্লাসিক',
+    woodType: '',
+    cost: '',
+    duration: ''
   });
 
   const handleOpenModal = (design = null) => {
@@ -22,11 +25,21 @@ export default function DesignsPanel() {
       setFormData({
         name: design.name,
         image: design.image,
-        category: design.category
+        category: design.category,
+        woodType: design.woodType || '',
+        cost: design.cost || '',
+        duration: design.duration || ''
       });
     } else {
       setEditingDesign(null);
-      setFormData({ name: '', image: '', category: 'ক্লাসিক' });
+      setFormData({ 
+        name: '', 
+        image: '', 
+        category: 'ক্লাসিক',
+        woodType: '',
+        cost: '',
+        duration: ''
+      });
     }
     setShowModal(true);
   };
@@ -156,6 +169,39 @@ export default function DesignsPanel() {
                     <option value="কারিগরী">কারিগরী</option>
                     <option value="প্রিমিয়াম">প্রিমিয়াম</option>
                   </select>
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>কাঠের ধরন</label>
+                  <input
+                    type="text"
+                    className={styles.formInput}
+                    placeholder="যেমন: সেগুন কাঠ"
+                    value={formData.woodType}
+                    onChange={(e) => setFormData({...formData, woodType: e.target.value})}
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>আনুমানিক খরচ (টাকা)</label>
+                  <input
+                    type="text"
+                    className={styles.formInput}
+                    placeholder="যেমন: ৪৫,০০০"
+                    value={formData.cost}
+                    onChange={(e) => setFormData({...formData, cost: e.target.value})}
+                  />
+                </div>
+
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>তৈরি করতে সময় লাগবে</label>
+                  <input
+                    type="text"
+                    className={styles.formInput}
+                    placeholder="যেমন: ১৫-২০ দিন"
+                    value={formData.duration}
+                    onChange={(e) => setFormData({...formData, duration: e.target.value})}
+                  />
                 </div>
 
                 <div className={styles.formActions}>
