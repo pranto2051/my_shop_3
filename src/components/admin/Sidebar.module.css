@@ -27,7 +27,8 @@
     position: fixed;
     left: 0;
     top: 0;
-    bottom: 0;
+    height: 100vh !important;
+    height: 100dvh !important;
     transform: translateX(-100%);
     box-shadow: 5px 0 25px rgba(0,0,0,0.3);
   }

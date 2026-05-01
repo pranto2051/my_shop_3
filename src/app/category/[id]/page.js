@@ -137,6 +137,12 @@ export default function CategoryPage({ params: paramsPromise }) {
 
       <div className="container">
         <div className="category-layout">
+          {/* Sidebar Overlay for mobile */}
+          <div 
+            className={`sidebar-overlay ${isSidebarOpen ? 'visible' : ''}`} 
+            onClick={() => setIsSidebarOpen(false)}
+          ></div>
+
           <aside className={`filter-sidebar ${isSidebarOpen ? 'open' : ''}`} id="filterSidebar">
             <div className="sidebar-header">
               <h3><i className="fas fa-sliders-h"></i> ফিল্টার</h3>
