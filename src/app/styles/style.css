@@ -407,6 +407,10 @@ h4 { font-size: clamp(0.95rem, 1.8vw, 1.15rem); font-weight: 600; }
   transition: var(--transition);
 }
 
+@media (min-width: 1024px) {
+  .mobile-overlay { display: none !important; }
+}
+
 .mobile-overlay.open {
   opacity: 1;
   visibility: visible;
