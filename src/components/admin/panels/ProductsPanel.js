@@ -9,6 +9,7 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [galleryUrls, setGalleryUrls] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
@@ -38,6 +39,7 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
       is_top_selling: formData.get('isTopSelling') === 'on',
       rating: editingProduct ? editingProduct.rating : 4.0,
       review_count: editingProduct ? editingProduct.reviewCount : 0,
+      images: galleryUrls.filter(url => url.trim() !== ''),
     };
 
     const productDataForState = {
@@ -57,6 +59,7 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
       isTopSelling: productDataForDb.is_top_selling,
       rating: productDataForDb.rating,
       reviewCount: productDataForDb.review_count,
+      images: productDataForDb.images,
     };
 
     try {
@@ -131,7 +134,11 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
         <h2>পণ্য ব্যবস্থাপনা</h2>
         <button 
           className={styles.addButton}
-          onClick={() => { setEditingProduct(null); setShowModal(true); }}
+          onClick={() => { 
+            setEditingProduct(null); 
+            setGalleryUrls([]);
+            setShowModal(true); 
+          }}
         >
           <i className="fas fa-plus"></i> নতুন পণ্য যোগ করুন
         </button>
@@ -204,7 +211,11 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
                     <div className={styles.actions}>
                       <button 
                         className={`${styles.actionBtn} ${styles.editBtn}`}
-                        onClick={() => { setEditingProduct(product); setShowModal(true); }}
+                        onClick={() => { 
+                          setEditingProduct(product); 
+                          setGalleryUrls(product.images || []);
+                          setShowModal(true); 
+                        }}
                         title="এডিট করুন"
                       >
                         <i className="fas fa-edit"></i>
@@ -286,8 +297,52 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
                     </select>
                   </div>
                   <div className={styles.formGroup}>
-                    <label>ছবির লিঙ্ক (URL)</label>
+                    <label>প্রধান ছবির লিঙ্ক (Primary Image URL)</label>
                     <input type="text" name="image" defaultValue={editingProduct?.image || ''} placeholder="https://example.com/image.jpg" />
+                  </div>
+                  
+                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <label style={{ margin: 0 }}>গ্যালারি ছবি (সর্বোচ্চ ৪টি অতিরিক্ত ছবি)</label>
+                      {galleryUrls.length < 4 && (
+                        <button 
+                          type="button" 
+                          onClick={() => setGalleryUrls([...galleryUrls, ''])}
+                          style={{
+                            background: '#0d6efd', color: 'white', border: 'none', 
+                            padding: '5px 10px', borderRadius: '4px', cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                        >
+                          <i className="fas fa-plus"></i> ছবি যোগ করুন
+                        </button>
+                      )}
+                    </div>
+                    {galleryUrls.map((url, index) => (
+                      <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                        <input 
+                          type="text" 
+                          value={url}
+                          onChange={(e) => {
+                            const newUrls = [...galleryUrls];
+                            newUrls[index] = e.target.value;
+                            setGalleryUrls(newUrls);
+                          }}
+                          placeholder="https://example.com/gallery-image.jpg" 
+                          style={{ flex: 1 }}
+                        />
+                        <button 
+                          type="button" 
+                          onClick={() => setGalleryUrls(galleryUrls.filter((_, i) => i !== index))}
+                          style={{
+                            background: '#dc3545', color: 'white', border: 'none', 
+                            padding: '0 15px', borderRadius: '4px', cursor: 'pointer'
+                          }}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    ))}
                   </div>
                   <div className={styles.formGroup}>
                     <label>মূল্য (৳)</label>
