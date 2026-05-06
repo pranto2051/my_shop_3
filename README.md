@@ -34,37 +34,35 @@ Diff
 
 ## Tech Stack
 
-- Node.js + Express.js
-- EJS templates
-- Pure CSS (no frameworks)
-- Vanilla JavaScript
+- Next.js (React Framework)
+- Supabase (PostgreSQL Database & Auth)
+- Pure CSS (Custom styles & animations)
+- Vanilla JavaScript (ES6+)
 
 ## Project Structure
 
-```
-furniture-shop/
-├── server.js
+```text
+my_shop_3/
 ├── package.json
-├── data/
-│   ├── categories.js
-│   └── products.js
+├── next.config.mjs
+├── supabase_schema.sql
 ├── public/
-│   ├── css/
-│   │   ├── style.css
-│   │   ├── responsive.css
-│   │   └── animations.css
-│   └── js/
-│       ├── main.js
-│       ├── search.js
-│       └── modal.js
-└── views/
-    ├── layout/
-    │   ├── header.ejs
-    │   └── footer.ejs
-    ├── index.ejs
-    ├── category.ejs
-    ├── search.ejs
-    └── admin.ejs
+└── src/
+    ├── app/
+    │   ├── admin/
+    │   ├── category/
+    │   ├── search/
+    │   ├── order-tracking/
+    │   ├── layout.js
+    │   └── page.js
+    ├── components/
+    │   ├── admin/
+    │   ├── home/
+    │   ├── tracking/
+    │   ├── Header.js
+    │   └── Footer.js
+    └── lib/
+        └── supabaseClient.js
 ```
 
 ## Features
@@ -81,11 +79,13 @@ furniture-shop/
 - Floating WhatsApp button
 - 48 products across 8 categories
 
+## Admin Dashboard Features
 
+The platform includes a powerful, fully-featured Admin Dashboard. Key capabilities include:
 
-## Login 
-``
-- Main Password : furniture2024
-- Demo Password : demo123
-
-``
+- **Comprehensive Product Management**: Easily add, edit, track, and delete products from your catalog.
+- **Advanced Multi-Image Upload**: Dynamically add and manage up to 5 images per product to create immersive product galleries.
+- **Order Lifecycle & Tracking System**: Define custom tracking stages and manage the complete lifecycle of customer orders.
+- **Order Management & Review**: View all orders automatically sorted in chronological order (newest first). Securely delete orders with a built-in safety confirmation modal.
+- **Store Profile & Settings**: Manage your store's profile information, metadata, and design specifications directly from the admin panel.
+- **Real-Time Data Sync**: All dashboard interactions and data updates are instantly synchronized with the Supabase backend for full data persistence.
