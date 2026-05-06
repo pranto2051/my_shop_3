@@ -60,6 +60,13 @@ export async function fetchAllData() {
       };
     }
 
+    console.log('Fetched data counts:', {
+      orders: orders?.length || 0,
+      products: products?.length || 0,
+      categories: categories?.length || 0,
+      orderStages: orderStages?.length || 0
+    });
+
     return {
       orders: mappedOrders,
       orderStages: orderStages || [],

@@ -2,6 +2,8 @@
 
 A complete production-ready Bangladeshi furniture e-commerce website.
 
+![Website Preview](Demo.png)
+
 ## Quick Start
 
 ```bash

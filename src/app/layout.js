@@ -32,8 +32,10 @@ export default async function RootLayout({ children }) {
   const { data: shopInfoArray } = await supabase.from('shop_info').select('*').limit(1);
 
   const categories = categoriesArray || [];
+  console.log('Layout - Fetched Categories:', categories.length);
   
   let storeInfo = null;
+  console.log('Layout - Fetched Shop Info:', !!shopInfoArray);
   if (shopInfoArray && shopInfoArray.length > 0) {
     const rawInfo = shopInfoArray[0];
     storeInfo = {
