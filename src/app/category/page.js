@@ -1,9 +1,10 @@
 'use client';
 import Link from 'next/link';
-import categoriesRaw from '@/data/categories';
+import { useAdmin } from '@/app/context/AdminContext';
 
 export default function CategoriesPage() {
-  const categories = Array.isArray(categoriesRaw) ? categoriesRaw : (categoriesRaw.default || []);
+  const { state } = useAdmin();
+  const { categories } = state;
   
   return (
     <div className="container" style={{ padding: '100px 20px', textAlign: 'center' }}>

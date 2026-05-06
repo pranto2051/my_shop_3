@@ -2,11 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import productsRaw from '@/data/products';
-import categoriesRaw from '@/data/categories';
-import designsRaw from '@/data/designs';
-import galleryRaw from '@/data/gallery';
-import storeInfoRaw from '@/data/shopInfo';
 
 import Sidebar from '@/components/admin/Sidebar';
 import OrdersPanel from '@/components/admin/panels/OrdersPanel';
@@ -22,6 +17,7 @@ import DesignsPanel from '@/components/admin/panels/DesignsPanel';
 import GalleryPanel from '@/components/admin/panels/GalleryPanel';
 import { useAdmin } from '@/app/context/AdminContext';
 import { FaBars, FaXmark } from 'react-icons/fa6';
+import { supabase } from '@/lib/supabase';
 
 export default function AdminPage() {
   const { state, dispatch } = useAdmin();
@@ -29,20 +25,23 @@ export default function AdminPage() {
     products, 
     categories: categoriesData, 
     designs, 
-    gallery 
+    gallery,
+    shopInfo: fetchedShopInfo
   } = state;
 
-  const getArray = (val) => {
-    if (!val) return [];
-    if (Array.isArray(val)) return val;
-    if (val.default && Array.isArray(val.default)) return val.default;
-    if (val.allProducts && Array.isArray(val.allProducts)) return val.allProducts;
-    return [];
+  const storeInfo = fetchedShopInfo || {
+    name: "মা ফার্নিচার",
+    contactLabel: "যোগাযোগ করুন",
+    showroomAddress: { label: "শোরুমের ঠিকানা", address: "মিরপুর ১০, ঢাকা" },
+    callNumbers: { label: "সরাসরি কল করুন", numbers: ["01711-000000"] },
+    whatsapp: { label: "WhatsApp মেসেজ", number: "01711000000" },
+    email: { label: "ইমেইল", address: "মিরপুর ১০, ঢাকা" },
+    directMessageLabel: "সরাসরি মেসেজ দিন",
+    openingHours: { label: "খোলা থাকার সময়", schedule: ["09:00 AM - 09:00 PM"] }
   };
 
-  const storeInfo = storeInfoRaw.default || storeInfoRaw;
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -64,11 +63,19 @@ export default function AdminPage() {
   };
 
   // Login logic
-  const handleLogin = () => {
-    if (password === 'furniture2024' || password === 'demo123') {
+  const handleLogin = async () => {
+    // Check against Supabase admins table
+    const { data: admins, error } = await supabase
+      .from('admins')
+      .select('*')
+      .or(`email.eq.${email},mobile.eq.${email}`)
+      .eq('password', password);
+
+    if (!error && admins && admins.length > 0) {
       setIsLoggedIn(true);
       setLoginError(false);
       localStorage.setItem('adminLoggedIn', 'true');
+      localStorage.setItem('adminInfo', JSON.stringify(admins[0]));
     } else {
       setLoginError(true);
     }
@@ -102,6 +109,8 @@ export default function AdminPage() {
   if (!isLoggedIn) {
     return (
       <AdminLogin 
+        email={email}
+        setEmail={setEmail}
         password={password}
         setPassword={setPassword}
         handleLogin={handleLogin}
@@ -279,9 +288,9 @@ export default function AdminPage() {
       )}
 
       <style jsx>{`
-        .admin-wrapper { min-height: 100vh; background: #f8f9fa; position: relative; }
-        .admin-dashboard-layout { display: flex; min-height: 100vh; transition: all 0.3s ease; }
-        .admin-main-content { flex: 1; padding: 30px; overflow-y: auto; transition: all 0.3s ease; width: 100%; }
+        .admin-wrapper { height: 100vh; overflow: hidden; background: #f8f9fa; position: relative; }
+        .admin-dashboard-layout { display: flex; height: 100vh; transition: all 0.3s ease; }
+        .admin-main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; transition: all 0.3s ease; width: 100%; }
         
         .dashboard-top-bar { 
           background: white; 

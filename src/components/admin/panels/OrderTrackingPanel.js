@@ -29,7 +29,9 @@ export default function OrderTrackingPanel() {
     setSelectedOrder(null);
 
     setTimeout(() => {
-      const foundOrders = orders.filter(order => order.customerPhone.includes(phone));
+      const foundOrders = orders
+        .filter(order => order.customerPhone.includes(phone))
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
       if (foundOrders.length > 0) {
         setSearchResult(foundOrders[0]);

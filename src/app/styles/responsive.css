@@ -54,9 +54,10 @@
   .modal-content { grid-template-columns: 1fr; }
   .modal-left { max-height: 280px; }
 
-  .category-layout { grid-template-columns: 1fr; }
+  .category-layout { flex-direction: column; }
   .filter-sidebar {
     position: fixed;
+    flex: none;
     left: 0;
     top: 0;
     height: 100vh !important;
@@ -142,7 +143,7 @@
   }
 
   .slide-title { font-size: 1.4rem; }
-  .slide-desc { font-size: 0.85rem; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+  .slide-desc { font-size: 0.85rem; -webkit-line-clamp: 2; line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
 
   .slide-price-row { justify-content: center; }
   .slide-actions { justify-content: center; }
@@ -212,7 +213,7 @@
   .cat-hero-inner { flex-direction: column; text-align: center; gap: 1rem; }
   .cat-hero-icon { margin: 0 auto; }
 
-  .category-layout { grid-template-columns: 1fr; padding: 1rem 0; }
+  .category-layout { flex-direction: column; padding: 1rem 0; }
 
   .products-toolbar {
     padding: 0.6rem;

@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAdmin, getOrderProgress, getNextStage } from '@/app/context/AdminContext';
+import { supabase } from '@/lib/supabase';
 import styles from './OrderDetailsView.module.css';
 import { 
   FaXmark, FaPhone, FaLocationDot, FaCalendar, FaTruck, 
   FaNoteSticky, FaCheck, FaFloppyDisk, FaWhatsapp, FaPenToSquare,
   FaBan, FaCircleInfo, FaClipboardList, FaUser, FaMoneyBillWave,
-  FaBoxesStacked, FaClockRotateLeft, FaCircleCheck
+  FaBoxesStacked, FaClockRotateLeft, FaCircleCheck, FaTrash
 } from 'react-icons/fa6';
+import ConfirmModal from '../ConfirmModal';
 
 export default function OrderDetailsView({ order: initialOrder, onClose }) {
   const { state, dispatch } = useAdmin();
@@ -24,6 +26,12 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
   const [newPaymentAmount, setNewPaymentAmount] = useState('');
   const [paymentNote, setPaymentNote] = useState('');
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (order) {
@@ -39,76 +47,183 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
   const currentStage = orderStages.find(s => s.id === order.currentStageId);
   const nextStage = orderStages.find(s => s.id === selectedStageId);
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (!selectedStageId) return;
 
     setIsUpdating(true);
     
     const stageIndex = orderStages.findIndex(s => s.id === selectedStageId);
     const stageName = orderStages.find(s => s.id === selectedStageId).name;
+    const now = new Date().toISOString();
 
-    // 1. Update order stage
-    dispatch({
-      type: 'UPDATE_ORDER_STAGE',
-      payload: {
-        orderId: order.id,
-        stageId: selectedStageId,
-        stageIndex: stageIndex
-      }
-    });
+    let status = order.status;
+    if (selectedStageId === 'stage_009') status = 'completed';
+    if (selectedStageId === 'stage_010') status = 'cancelled';
 
-    // 2. Add to history
-    dispatch({
-      type: 'ADD_STAGE_HISTORY',
-      payload: {
-        orderId: order.id,
-        historyItem: {
+    try {
+      // 1. Update order stage in DB
+      const { error: orderError } = await supabase
+        .from('orders')
+        .update({
+          current_stage_id: selectedStageId,
+          current_stage_index: stageIndex,
+          status: status,
+          updated_at: now
+        })
+        .eq('id', order.id);
+      
+      if (orderError) throw orderError;
+
+      // 2. Add to history in DB
+      const { error: historyError } = await supabase
+        .from('order_stage_history')
+        .insert({
+          order_id: order.id,
+          stage_id: selectedStageId,
+          stage_name: stageName,
+          timestamp: now,
+          admin_note: adminNote || `${stageName} ধাপে আপডেট করা হয়েছে।`,
+          completed_by: 'Admin'
+        });
+
+      if (historyError) throw historyError;
+
+      // 3. Update local state
+      dispatch({
+        type: 'UPDATE_ORDER_STAGE',
+        payload: {
+          orderId: order.id,
           stageId: selectedStageId,
-          stageName: stageName,
-          timestamp: new Date().toISOString(),
-          adminNote: adminNote || `${stageName} ধাপে আপডেট করা হয়েছে।`,
-          completedBy: 'Admin'
+          stageIndex: stageIndex
         }
-      }
-    });
+      });
 
-    // 3. Show success UI
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-    
-    setIsUpdating(false);
-    setAdminNote('');
+      dispatch({
+        type: 'ADD_STAGE_HISTORY',
+        payload: {
+          orderId: order.id,
+          historyItem: {
+            stageId: selectedStageId,
+            stageName: stageName,
+            timestamp: now,
+            adminNote: adminNote || `${stageName} ধাপে আপডেট করা হয়েছে।`,
+            completedBy: 'Admin'
+          }
+        }
+      });
+
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+      setAdminNote('');
+    } catch (error) {
+      console.error('Error updating order:', error);
+      alert('অর্ডার আপডেট করতে সমস্যা হয়েছে!');
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
-  const handleAddPayment = () => {
+  const handleAddPayment = async () => {
     const amount = parseFloat(newPaymentAmount);
     if (isNaN(amount) || amount <= 0) return;
+    setIsUpdating(true);
 
-    dispatch({
-      type: 'ADD_PAYMENT_HISTORY',
-      payload: {
-        orderId: order.id,
-        amount: amount,
-        note: paymentNote || 'অতিরিক্ত পেমেন্ট যোগ করা হয়েছে'
-      }
-    });
+    const now = new Date().toISOString();
+    const newAdvance = (order.advancePaid || 0) + amount;
+    const newRemaining = Math.max(0, order.totalPrice - newAdvance);
 
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-    
-    setNewPaymentAmount('');
-    setPaymentNote('');
-    setShowPaymentForm(false);
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          advance_paid: newAdvance,
+          remaining_amount: newRemaining,
+          updated_at: now
+        })
+        .eq('id', order.id);
+
+      if (error) throw error;
+
+      dispatch({
+        type: 'ADD_PAYMENT_HISTORY',
+        payload: {
+          orderId: order.id,
+          amount: amount,
+          note: paymentNote || 'অতিরিক্ত পেমেন্ট যোগ করা হয়েছে'
+        }
+      });
+
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+      setNewPaymentAmount('');
+      setPaymentNote('');
+      setShowPaymentForm(false);
+    } catch (error) {
+      console.error('Error adding payment:', error);
+      alert('পেমেন্ট সেভ করতে সমস্যা হয়েছে!');
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
-  const handleCancelOrder = () => {
+  const handleCancelOrder = async () => {
     if (confirm('আপনি কি নিশ্চিত যে এই অর্ডারটি বাতিল করতে চান?')) {
-      dispatch({
-        type: 'CANCEL_ORDER',
-        payload: { orderId: order.id }
-      });
-      alert('অর্ডার বাতিল করা হয়েছে ❌');
+      const now = new Date().toISOString();
+      try {
+        const { error } = await supabase
+          .from('orders')
+          .update({
+            status: 'cancelled',
+            current_stage_id: 'stage_010',
+            current_stage_index: 9,
+            updated_at: now
+          })
+          .eq('id', order.id);
+
+        if (error) throw error;
+
+        // Add to history
+        await supabase.from('order_stage_history').insert({
+          order_id: order.id,
+          stage_id: 'stage_010',
+          stage_name: 'বাতিল',
+          timestamp: now,
+          admin_note: "অর্ডারটি বাতিল করা হয়েছে।",
+          completed_by: 'Admin'
+        });
+
+        dispatch({
+          type: 'CANCEL_ORDER',
+          payload: { orderId: order.id }
+        });
+        alert('অর্ডার বাতিল করা হয়েছে ❌');
+        onClose();
+      } catch (error) {
+        console.error('Error cancelling order:', error);
+        alert('অর্ডার বাতিল করতে সমস্যা হয়েছে!');
+      }
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', order.id);
+
+      if (error) throw error;
+
+      dispatch({ type: 'DELETE_ORDER', payload: order.id });
+      alert('অর্ডারটি স্থায়ীভাবে মুছে ফেলা হয়েছে ✅');
       onClose();
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      alert('অর্ডার মুছে ফেলতে সমস্যা হয়েছে!');
+    } finally {
+      setIsUpdating(false);
+      setConfirmDelete(false);
     }
   };
 
@@ -136,8 +251,10 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
     "ডেলিভারির জন্য প্রস্তুত"
   ];
 
+  if (!mounted) return null;
+
   return (
-    <div className={styles.overlay}>
+    <div className={styles.overlay} suppressHydrationWarning>
       <div className={styles.backdrop} onClick={onClose} />
       <div className={styles.modal}>
         {showSuccess && (
@@ -421,8 +538,11 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
                       <button className={styles.editBtn}>
                         <FaPenToSquare />
                       </button>
-                      <button className={styles.cancelBtn} onClick={handleCancelOrder}>
+                      <button className={styles.cancelBtn} onClick={handleCancelOrder} title="বাতিল করুন">
                         <FaBan />
+                      </button>
+                      <button className={styles.deleteBtn} onClick={() => setConfirmDelete(true)} title="মুছে ফেলুন">
+                        <FaTrash />
                       </button>
                     </div>
                   </div>
@@ -433,6 +553,16 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
           </div>
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={confirmDelete}
+        title="অর্ডারটি মুছে ফেলতে চান?"
+        message="আপনি কি নিশ্চিত যে এই অর্ডারটি স্থায়ীভাবে মুছে ফেলতে চান? এটি আর ফিরে পাওয়া যাবে না।"
+        confirmText="হ্যাঁ, মুছে ফেলুন"
+        cancelText="বাতিল"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDelete(false)}
+      />
     </div>
   );
 }

@@ -6,7 +6,7 @@ export default function ProductCard({ product, categories, storeInfo, openProduc
     ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
 
   return (
-    <div className="product-card" style={{ animationDelay: `${index * 0.08}s` }}>
+    <div className="product-card" style={{ animationDelay: `${index * 0.08}s` }} suppressHydrationWarning>
       <div className="card-image-wrap">
         <img src={product.image} alt={product.name} loading="lazy" className="card-img" />
         <div className="card-badges">

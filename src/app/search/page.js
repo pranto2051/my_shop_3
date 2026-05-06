@@ -3,24 +3,26 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import productsRaw from '@/data/products';
-import categoriesRaw from '@/data/categories';
-import storeInfoRaw from '@/data/shopInfo';
+import { useAdmin } from '@/app/context/AdminContext';
 import ProductModal from '@/components/ProductModal';
 import ProductCard from '@/components/ProductCard';
 
 function SearchResults() {
-  const getArray = (val) => {
-    if (!val) return [];
-    if (Array.isArray(val)) return val;
-    if (val.default && Array.isArray(val.default)) return val.default;
-    if (val.allProducts && Array.isArray(val.allProducts)) return val.allProducts;
-    return [];
+  const { state } = useAdmin();
+  const { products: productsData, categories, shopInfo: fetchedShopInfo } = state;
+  
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  const storeInfo = fetchedShopInfo || {
+    name: "মা ফার্নিচার",
+    contactLabel: "যোগাযোগ করুন",
+    showroomAddress: { label: "শোরুমের ঠিকানা", address: "মিরপুর ১০, ঢাকা" },
+    callNumbers: { label: "সরাসরি কল করুন", numbers: ["01711-000000"] },
+    whatsapp: { label: "WhatsApp মেসেজ", number: "01711000000" },
+    email: { label: "ইমেইল", address: "মিরপুর ১০, ঢাকা" },
+    directMessageLabel: "সরাসরি মেসেজ দিন",
+    openingHours: { label: "খোলা থাকার সময়", schedule: ["09:00 AM - 09:00 PM"] }
   };
-
-  const productsData = getArray(productsRaw);
-  const categories = getArray(categoriesRaw);
-  const storeInfo = storeInfoRaw.default || storeInfoRaw;
 
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
@@ -93,72 +95,108 @@ function SearchResults() {
         </div>
       </div>
 
-      <div className="search-filter-bar">
-        <div className="container">
-          <form action="/search" method="GET" className="search-bar-form compact">
-            <div className="search-fields">
-              <div className="search-field">
-                <i className="fas fa-search field-icon"></i>
-                <input type="text" name="q" defaultValue={query} placeholder="পণ্যের নাম বা ID..." className="search-input" />
-              </div>
-              <div className="search-field">
-                <i className="fas fa-th-large field-icon"></i>
-                <select name="categoryId" defaultValue={categoryId} className="search-select">
+      <div className="container" suppressHydrationWarning>
+        <div className="category-layout" suppressHydrationWarning>
+          {/* Sidebar Overlay for mobile */}
+          <div 
+            className={`sidebar-overlay ${isSidebarOpen ? 'visible' : ''}`} 
+            onClick={() => setIsSidebarOpen(false)}
+          ></div>
+
+          <aside className={`filter-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+            <div className="sidebar-header">
+              <h3><i className="fas fa-search"></i> খুঁজুন</h3>
+              <button className="sidebar-close-btn" onClick={() => setIsSidebarOpen(false)} aria-label="ফিল্টার বন্ধ করুন"><i className="fas fa-times"></i></button>
+            </div>
+            
+            <div className="filter-group">
+              <form action="/search" method="GET">
+                <div className="search-field" style={{ marginBottom: '1rem' }}>
+                  <input 
+                    type="text" 
+                    name="q" 
+                    defaultValue={query} 
+                    placeholder="পণ্যের নাম বা ID..." 
+                    className="filter-input" 
+                  />
+                </div>
+                
+                <h4>ক্যাটাগরি</h4>
+                <select name="categoryId" defaultValue={categoryId} className="filter-input" style={{ marginBottom: '1rem' }}>
                   <option value="">সকল ক্যাটাগরি</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
-              </div>
-              <div className="search-field price-range-field">
-                <input type="number" name="minPrice" defaultValue={minPrice} placeholder="সর্বনিম্ন ৳" className="search-input price-input" min="0" />
-                <span className="price-sep">—</span>
-                <input type="number" name="maxPrice" defaultValue={maxPrice} placeholder="সর্বোচ্চ ৳" className="search-input price-input" min="0" />
-              </div>
-              <div className="search-field">
-                <select name="sort" defaultValue={sort} className="search-select">
+
+                <h4>মূল্য পরিসীমা</h4>
+                <div className="price-range-inputs">
+                  <input type="number" name="minPrice" defaultValue={minPrice} placeholder="সর্বনিম্ন" className="filter-input" min="0" />
+                  <span>—</span>
+                  <input type="number" name="maxPrice" defaultValue={maxPrice} placeholder="সর্বোচ্চ" className="filter-input" min="0" />
+                </div>
+
+                <h4>সাজানো</h4>
+                <select name="sort" defaultValue={sort} className="filter-input" style={{ marginBottom: '1rem' }}>
                   <option value="">সর্বশেষ যোগ</option>
                   <option value="price_asc">মূল্য (কম–বেশি)</option>
                   <option value="price_desc">মূল্য (বেশি–কম)</option>
                   <option value="popular">জনপ্রিয়তা</option>
                 </select>
-              </div>
-              <button type="submit" className="search-btn"><i className="fas fa-search"></i> খুঁজুন</button>
-            </div>
-          </form>
-        </div>
-      </div>
 
-      <div className="container">
-        {results.length === 0 ? (
-          <div className="empty-state large-empty">
-            <div className="empty-icon"><i className="fas fa-search"></i></div>
-            <h2>কোন পণ্য পাওয়া যায়নি</h2>
-            <p>অন্য কীওয়ার্ড দিয়ে চেষ্টা করুন অথবা ক্যাটাগরি পরিবর্তন করুন।</p>
-            <div className="empty-suggestions">
-              <p>পরামর্শ:</p>
-              <ul>
+                <button type="submit" className="apply-filter-btn" style={{ marginTop: '0.5rem' }}>
+                  ফিল্টার প্রয়োগ করুন
+                </button>
+              </form>
+            </div>
+
+            <div className="filter-group">
+              <h4>ক্যাটাগরি তালিকা</h4>
+              <ul className="sidebar-cat-list">
                 {categories.map((cat) => (
-                  <li key={cat.id}><Link href={`/search?categoryId=${cat.id}`}>{cat.name}</Link></li>
+                  <li key={cat.id}>
+                    <Link href={`/category/${cat.id}`} className={cat.id === categoryId ? 'active' : ''}>
+                      <i className={`fas fa-${cat.icon}`}></i> {cat.name}
+                    </Link>
+                  </li>
                 ))}
               </ul>
             </div>
-            <Link href="/" className="btn-go-home">হোমে ফিরুন</Link>
+          </aside>
+
+          <div className="products-main">
+            <div className="products-toolbar">
+              <div className="toolbar-left">
+                <button className="filter-toggle-btn" onClick={() => setIsSidebarOpen(true)}>
+                  <i className="fas fa-sliders-h"></i> ফিল্টার
+                </button>
+                <span className="result-count">{results.length}টি পণ্য পাওয়া গেছে</span>
+              </div>
+            </div>
+
+            {results.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon"><i className="fas fa-search"></i></div>
+                <h3>কোন পণ্য পাওয়া যায়নি</h3>
+                <p>অন্য কীওয়ার্ড দিয়ে চেষ্টা করুন অথবা ক্যাটাগরি পরিবর্তন করুন।</p>
+                <Link href="/" className="btn-go-home">হোমে ফিরুন</Link>
+              </div>
+            ) : (
+              <div className="products-grid" id="searchResultGrid">
+                {results.map((product, index) => (
+                  <ProductCard 
+                    key={product.id} 
+                    product={product} 
+                    categories={categories} 
+                    storeInfo={storeInfo} 
+                    openProductDetail={openProductDetail} 
+                    index={index} 
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="products-grid search-grid" id="searchResultGrid">
-            {results.map((product, index) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
-                categories={categories} 
-                storeInfo={storeInfo} 
-                openProductDetail={openProductDetail} 
-                index={index} 
-              />
-            ))}
-          </div>
-        )}
+        </div>
       </div>
 
       <ProductModal 
@@ -174,9 +212,9 @@ function SearchResults() {
 
 export default function SearchPage() {
   return (
-    <main className="inner-page">
-      <div className="breadcrumb-bar">
-        <div className="container">
+    <main className="inner-page" suppressHydrationWarning>
+      <div className="breadcrumb-bar" suppressHydrationWarning>
+        <div className="container" suppressHydrationWarning>
           <nav className="breadcrumb" aria-label="ব্রেডক্রাম্ব">
             <Link href="/">হোম</Link>
             <i className="fas fa-chevron-right"></i>

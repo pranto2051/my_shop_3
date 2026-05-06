@@ -16,8 +16,8 @@ export default function ProductRow({ title, products, categories, storeInfo, ope
   if (!products || products.length === 0) return null;
 
   return (
-    <section className={icon ? "category-section" : "top-selling-section"} id={id}>
-      <div className="container">
+    <section className={icon ? "category-section" : "top-selling-section"} id={id} suppressHydrationWarning>
+      <div className="container" suppressHydrationWarning>
         <div className="section-header">
           <div className="section-title-wrap">
             {icon && <div className="cat-section-icon"><i className={`fas fa-${icon}`}></i></div>}

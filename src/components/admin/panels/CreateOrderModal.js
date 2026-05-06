@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAdmin } from '@/app/context/AdminContext';
+import { supabase } from '@/lib/supabase';
 import styles from './CreateOrderModal.module.css';
 import { 
   FaXmark, FaUser, FaPhone, FaMagnifyingGlass, 
@@ -9,23 +10,13 @@ import {
   FaCalendarDays, FaFloppyDisk, FaStar,
   FaCircleCheck, FaArrowRight
 } from 'react-icons/fa6';
-import productsRaw from '@/data/products';
 
 export default function CreateOrderModal({ onClose }) {
   const { state, dispatch } = useAdmin();
-  const { orderStages } = state;
+  const { orderStages, products: allProducts } = state;
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [newOrderId, setNewOrderId] = useState('');
-  
-  const getArray = (val) => {
-    if (!val) return [];
-    if (Array.isArray(val)) return val;
-    if (val.default && Array.isArray(val.default)) return val.default;
-    if (val.allProducts && Array.isArray(val.allProducts)) return val.allProducts;
-    return [];
-  };
-
-  const allProducts = getArray(productsRaw);
 
   const [formData, setFormData] = useState({
     customerName: '',
@@ -86,47 +77,102 @@ export default function CreateOrderModal({ onClose }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    setIsSaving(true);
 
     const totalPrice = selectedProduct.price * formData.quantity;
     const remainingAmount = totalPrice - formData.advancePaid;
 
-    const createdOrderId = `ORD-${String(state.orders.length + 1).padStart(3, '0')}`;
-    const newOrder = {
+    const createdOrderId = `ORD-${String(state.orders.length + 1).padStart(3, '0')}-${Date.now().toString().slice(-4)}`;
+    
+    const now = new Date().toISOString();
+    
+    const newOrderDb = {
       id: createdOrderId,
-      customerName: formData.customerName,
-      customerPhone: formData.customerPhone,
-      productId: selectedProduct.id,
-      productName: selectedProduct.name,
-      productImage: selectedProduct.image,
+      customer_name: formData.customerName,
+      customer_phone: formData.customerPhone,
+      product_id: selectedProduct.id,
+      product_name: selectedProduct.name,
+      product_image: selectedProduct.image,
       quantity: formData.quantity,
-      totalPrice: totalPrice,
-      advancePaid: formData.advancePaid,
-      remainingAmount: remainingAmount,
-      deliveryAddress: formData.deliveryAddress,
-      estimatedDelivery: formData.estimatedDelivery,
-      orderNote: formData.orderNote,
-      currentStageId: orderStages[0].id,
-      currentStageIndex: 0,
-      stageHistory: [
-        {
-          stageId: orderStages[0].id,
-          stageName: orderStages[0].name,
-          timestamp: new Date().toISOString(),
-          adminNote: "অর্ডার সফলভাবে গ্রহণ করা হয়েছে। ধন্যবাদ!",
-          completedBy: "Admin"
-        }
-      ],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      status: "active"
+      total_price: totalPrice,
+      advance_paid: formData.advancePaid,
+      remaining_amount: remainingAmount,
+      delivery_address: formData.deliveryAddress,
+      estimated_delivery: formData.estimatedDelivery,
+      order_note: formData.orderNote,
+      current_stage_id: orderStages[0].id,
+      current_stage_index: 0,
+      status: "active",
+      created_at: now,
+      updated_at: now
     };
 
-    dispatch({ type: 'CREATE_ORDER', payload: newOrder });
-    setNewOrderId(createdOrderId);
-    setIsSuccess(true);
+    const historyItemDb = {
+      order_id: createdOrderId,
+      stage_id: orderStages[0].id,
+      stage_name: orderStages[0].name,
+      timestamp: now,
+      admin_note: "অর্ডার সফলভাবে গ্রহণ করা হয়েছে। ধন্যবাদ!",
+      completed_by: "Admin"
+    };
+
+    try {
+      // 1. Save order to orders table
+      const { error: orderError } = await supabase
+        .from('orders')
+        .insert(newOrderDb);
+      
+      if (orderError) throw orderError;
+
+      // 2. Save initial history to order_stage_history table
+      const { error: historyError } = await supabase
+        .from('order_stage_history')
+        .insert(historyItemDb);
+      
+      if (historyError) throw historyError;
+
+      const newOrderState = {
+        id: createdOrderId,
+        customerName: formData.customerName,
+        customerPhone: formData.customerPhone,
+        productId: selectedProduct.id,
+        productName: selectedProduct.name,
+        productImage: selectedProduct.image,
+        quantity: formData.quantity,
+        totalPrice: totalPrice,
+        advancePaid: formData.advancePaid,
+        remainingAmount: remainingAmount,
+        deliveryAddress: formData.deliveryAddress,
+        estimatedDelivery: formData.estimatedDelivery,
+        orderNote: formData.orderNote,
+        currentStageId: orderStages[0].id,
+        currentStageIndex: 0,
+        stageHistory: [
+          {
+            stageId: historyItemDb.stage_id,
+            stageName: historyItemDb.stage_name,
+            timestamp: historyItemDb.timestamp,
+            adminNote: historyItemDb.admin_note,
+            completedBy: historyItemDb.completed_by
+          }
+        ],
+        createdAt: now,
+        updatedAt: now,
+        status: "active"
+      };
+
+      dispatch({ type: 'CREATE_ORDER', payload: newOrderState });
+      setNewOrderId(createdOrderId);
+      setIsSuccess(true);
+    } catch (error) {
+      console.error('Error creating order:', error);
+      alert('অর্ডার সংরক্ষণ করতে সমস্যা হয়েছে! আবার চেষ্টা করুন।');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (isSuccess) {
@@ -360,8 +406,8 @@ export default function CreateOrderModal({ onClose }) {
             </div>
           </div>
 
-          <button type="submit" className={styles.submitBtn}>
-            <FaFloppyDisk /> অর্ডার সংরক্ষণ করুন
+          <button type="submit" className={styles.submitBtn} disabled={isSaving}>
+            <FaFloppyDisk /> {isSaving ? 'সংরক্ষণ হচ্ছে...' : 'অর্ডার সংরক্ষণ করুন'}
           </button>
         </form>
       </div>

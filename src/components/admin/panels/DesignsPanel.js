@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaPalette } from 'react-icons/fa';
+import { supabase } from '@/lib/supabase';
 import styles from './CategoriesPanel.module.css';
 import { useAdmin } from '@/app/context/AdminContext';
 
@@ -9,6 +10,7 @@ export default function DesignsPanel() {
   const { state, dispatch } = useAdmin();
   const { designs } = state;
   const [showModal, setShowModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [editingDesign, setEditingDesign] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -44,32 +46,79 @@ export default function DesignsPanel() {
     setShowModal(true);
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    if (editingDesign) {
-      dispatch({
-        type: 'UPDATE_DESIGN',
-        payload: { ...editingDesign, ...formData }
-      });
-    } else {
-      const newDesign = {
-        id: `design-${Date.now()}`,
-        ...formData
-      };
-      dispatch({
-        type: 'ADD_DESIGN',
-        payload: newDesign
-      });
+    setIsSaving(true);
+
+    const designDataForDb = {
+      name: formData.name,
+      image: formData.image,
+      category: formData.category,
+      wood_type: formData.woodType,
+      cost: formData.cost,
+      duration: formData.duration
+    };
+
+    try {
+      if (editingDesign) {
+        const { error } = await supabase
+          .from('designs')
+          .update(designDataForDb)
+          .eq('id', editingDesign.id);
+        
+        if (error) throw error;
+
+        dispatch({
+          type: 'UPDATE_DESIGN',
+          payload: { ...editingDesign, ...formData }
+        });
+      } else {
+        const newDesign = {
+          id: `design-${Date.now()}`,
+          ...formData
+        };
+
+        const { error } = await supabase
+          .from('designs')
+          .insert({
+            id: newDesign.id,
+            ...designDataForDb
+          });
+        
+        if (error) throw error;
+
+        dispatch({
+          type: 'ADD_DESIGN',
+          payload: newDesign
+        });
+      }
+      setShowModal(false);
+    } catch (err) {
+      console.error('Error saving design:', err);
+      alert('ডিজাইন সংরক্ষণ করতে সমস্যা হয়েছে!');
+    } finally {
+      setIsSaving(false);
     }
-    setShowModal(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (confirm('আপনি কি নিশ্চিত যে এই ডিজাইনটি মুছে ফেলতে চান?')) {
-      dispatch({
-        type: 'DELETE_DESIGN',
-        payload: id
-      });
+      try {
+        const { error } = await supabase
+          .from('designs')
+          .delete()
+          .eq('id', id);
+        
+        if (error) throw error;
+
+        dispatch({
+          type: 'DELETE_DESIGN',
+          payload: id
+        });
+      } catch (err) {
+        console.error('Error deleting design:', err);
+        alert('ডিজাইন মুছে ফেলতে সমস্যা হয়েছে!');
+      }
     }
   };
 
@@ -205,11 +254,11 @@ export default function DesignsPanel() {
                 </div>
 
                 <div className={styles.formActions}>
-                  <button type="button" className={styles.cancelBtn} onClick={() => setShowModal(false)}>
+                  <button type="button" className={styles.cancelBtn} onClick={() => setShowModal(false)} disabled={isSaving}>
                     বাতিল
                   </button>
-                  <button type="submit" className={styles.submitBtn}>
-                    <FaPlus /> সংরক্ষণ করুন
+                  <button type="submit" className={styles.submitBtn} disabled={isSaving}>
+                    <FaPlus /> {isSaving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
                   </button>
                 </div>
               </form>

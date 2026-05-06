@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const AdminLogin = ({ password, setPassword, handleLogin, loginError, storeInfo }) => {
+const AdminLogin = ({ email, setEmail, password, setPassword, handleLogin, loginError, storeInfo }) => {
   return (
     <main className="admin-gate" suppressHydrationWarning>
       <div className="admin-login-card" suppressHydrationWarning>
@@ -13,6 +13,21 @@ const AdminLogin = ({ password, setPassword, handleLogin, loginError, storeInfo 
         <p suppressHydrationWarning>অ্যাডমিন প্রবেশাধিকার</p>
         
         <div className="admin-login-form" suppressHydrationWarning>
+          <div className="form-group" suppressHydrationWarning>
+            <label suppressHydrationWarning>অ্যাডমিন ইমেইল / মোবাইল</label>
+            <div className="input-wrap" suppressHydrationWarning>
+              <i className="fas fa-user field-icon"></i>
+              <input 
+                type="text" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="ইমেইল বা মোবাইল নাম্বার লিখুন..." 
+                className={`admin-pw-input ${loginError ? 'shake' : ''}`}
+                suppressHydrationWarning
+              />
+            </div>
+          </div>
+          
           <div className="form-group" suppressHydrationWarning>
             <label suppressHydrationWarning>অ্যাডমিন পাসওয়ার্ড</label>
             <div className="input-wrap" suppressHydrationWarning>
@@ -27,7 +42,7 @@ const AdminLogin = ({ password, setPassword, handleLogin, loginError, storeInfo 
                 suppressHydrationWarning
               />
             </div>
-            {loginError && <p className="admin-login-error" suppressHydrationWarning>ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।</p>}
+            {loginError && <p className="admin-login-error" suppressHydrationWarning>ভুল ইমেইল বা পাসওয়ার্ড! আবার চেষ্টা করুন।</p>}
           </div>
           
           <button className="admin-login-btn" onClick={handleLogin} suppressHydrationWarning>

@@ -6,26 +6,73 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AdminBodyClass from '@/components/AdminBodyClass';
 import AnimationManager from '@/components/AnimationManager';
-import storeInfoRaw from '@/data/shopInfo';
-import categoriesRaw from '@/data/categories';
 import { AdminProvider } from './context/AdminContext';
+import { supabase } from '@/lib/supabase';
 
-export const metadata = {
-  title: {
-    default: (storeInfoRaw.default || storeInfoRaw).name,
-    template: `%s | ${(storeInfoRaw.default || storeInfoRaw).name}`,
-  },
-  description: `${(storeInfoRaw.default || storeInfoRaw).name} - মানসম্পন্ন আসবাবপত্র। মিরপুর, ঢাকা।`,
-};
+export async function generateMetadata() {
+  const { data: shopInfoArray } = await supabase.from('shop_info').select('*').limit(1);
+  const name = shopInfoArray && shopInfoArray.length > 0 ? shopInfoArray[0].name : "মা ফার্নিচার";
+  
+  return {
+    title: {
+      default: name,
+      template: `%s | ${name}`,
+    },
+    description: `${name} - মানসম্পন্ন আসবাবপত্র। মিরপুর, ঢাকা।`,
+  };
+}
 
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
 };
 
-export default function RootLayout({ children }) {
-  const storeInfo = storeInfoRaw.default || storeInfoRaw;
-  const categories = Array.isArray(categoriesRaw) ? categoriesRaw : (categoriesRaw.default || []);
+export default async function RootLayout({ children }) {
+  const { data: categoriesArray } = await supabase.from('categories').select('id, name, nameEn:name_en, icon, description, productCount:product_count');
+  const { data: shopInfoArray } = await supabase.from('shop_info').select('*').limit(1);
+
+  const categories = categoriesArray || [];
+  
+  let storeInfo = null;
+  if (shopInfoArray && shopInfoArray.length > 0) {
+    const rawInfo = shopInfoArray[0];
+    storeInfo = {
+      name: rawInfo.name,
+      contactLabel: rawInfo.contact_label,
+      showroomAddress: {
+        label: rawInfo.showroom_address_label,
+        address: rawInfo.showroom_address
+      },
+      callNumbers: {
+        label: rawInfo.call_numbers_label,
+        numbers: rawInfo.call_numbers || []
+      },
+      whatsapp: {
+        label: rawInfo.whatsapp_label,
+        number: rawInfo.whatsapp_number
+      },
+      email: {
+        label: rawInfo.email_label,
+        address: rawInfo.email_address
+      },
+      directMessageLabel: rawInfo.direct_message_label,
+      openingHours: {
+        label: rawInfo.opening_hours_label,
+        schedule: rawInfo.opening_hours_schedule || []
+      }
+    };
+  } else {
+    storeInfo = {
+        name: "মা ফার্নিচার",
+        contactLabel: "যোগাযোগ করুন",
+        showroomAddress: { label: "শোরুমের ঠিকানা", address: "মিরপুর ১০, ঢাকা" },
+        callNumbers: { label: "সরাসরি কল করুন", numbers: ["01711-000000"] },
+        whatsapp: { label: "WhatsApp মেসেজ", number: "01711000000" },
+        email: { label: "ইমেইল", address: "মিরপুর ১০, ঢাকা" },
+        directMessageLabel: "সরাসরি মেসেজ দিন",
+        openingHours: { label: "খোলা থাকার সময়", schedule: ["09:00 AM - 09:00 PM"] }
+    };
+  }
 
   return (
     <html lang="bn" suppressHydrationWarning className="loading">

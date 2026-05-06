@@ -1,10 +1,20 @@
 'use client';
 
 import OrderProcess from '@/components/OrderProcess';
-import storeInfoRaw from '@/data/shopInfo';
+import { useAdmin } from '@/app/context/AdminContext';
 
 export default function OrderProcessPage() {
-  const storeInfo = storeInfoRaw.default || storeInfoRaw;
+  const { state } = useAdmin();
+  const storeInfo = state.shopInfo || {
+    name: "মা ফার্নিচার",
+    contactLabel: "যোগাযোগ করুন",
+    showroomAddress: { label: "শোরুমের ঠিকানা", address: "মিরপুর ১০, ঢাকা" },
+    callNumbers: { label: "সরাসরি কল করুন", numbers: ["01711-000000"] },
+    whatsapp: { label: "WhatsApp মেসেজ", number: "01711000000" },
+    email: { label: "ইমেইল", address: "মিরপুর ১০, ঢাকা" },
+    directMessageLabel: "সরাসরি মেসেজ দিন",
+    openingHours: { label: "খোলা থাকার সময়", schedule: ["09:00 AM - 09:00 PM"] }
+  };
 
   return (
     <div className="order-process-page-wrapper">

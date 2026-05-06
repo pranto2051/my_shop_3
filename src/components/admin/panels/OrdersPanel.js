@@ -1,25 +1,39 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAdmin, getOrderProgress } from '@/app/context/AdminContext';
+import { supabase } from '@/lib/supabase';
 import styles from './OrdersPanel.module.css';
-import { FaPlus, FaPhone, FaClipboardList, FaCheckCircle, FaBan, FaCalendarDay, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
+import { FaPlus, FaPhone, FaClipboardList, FaCheckCircle, FaBan, FaCalendarDay, FaChevronLeft, FaChevronRight, FaTrash } from 'react-icons/fa6';
+import ConfirmModal from '../ConfirmModal';
 
 export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
   const { state, dispatch } = useAdmin();
   const { orders, orderStages, orderFilter, orderSearch } = state;
   const [currentPage, setCurrentPage] = useState(1);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    id: null
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const itemsPerPage = 20;
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.customerPhone.includes(orderSearch) || 
-                          order.id.toLowerCase().includes(orderSearch.toLowerCase()) ||
-                          order.customerName.toLowerCase().includes(orderSearch.toLowerCase());
-    
-    const matchesFilter = orderFilter === 'all' || order.status === orderFilter;
-    
-    return matchesSearch && matchesFilter;
-  });
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const filteredOrders = orders
+    .filter(order => {
+      const matchesSearch = order.customerPhone.includes(orderSearch) || 
+                            order.id.toLowerCase().includes(orderSearch.toLowerCase()) ||
+                            order.customerName.toLowerCase().includes(orderSearch.toLowerCase());
+      
+      const matchesFilter = orderFilter === 'all' || order.status === orderFilter;
+      
+      return matchesSearch && matchesFilter;
+    })
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   // Pagination Logic
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
@@ -60,12 +74,48 @@ export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
   };
 
   const getStageIcon = (stageId) => {
-    // For simplicity, returning a default icon if not found
     return <FaClipboardList size={12} />;
   };
+  
+  const handleDeleteClick = (e, orderId) => {
+    e.stopPropagation();
+    setConfirmModal({
+      isOpen: true,
+      id: orderId
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const orderId = confirmModal.id;
+    setIsDeleting(true);
+    try {
+      // 1. Delete from Supabase
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      // 2. Update local state
+      dispatch({ type: 'DELETE_ORDER', payload: orderId });
+      
+      // 3. Optional: Delete from stage history if not CASCADE
+      // The schema says REFERENCES orders(id) ON DELETE CASCADE for order_stage_history
+      
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      alert('অর্ডার মুছে ফেলতে সমস্যা হয়েছে!');
+    } finally {
+      setIsDeleting(false);
+      setConfirmModal({ isOpen: false, id: null });
+    }
+  };
+
+  if (!mounted) return <div className={styles.panelContainer} style={{ opacity: 0 }} />;
 
   return (
-    <div className={styles.panelContainer}>
+    <div className={styles.panelContainer} suppressHydrationWarning>
       <header className={styles.header}>
         <div className={styles.headerLeft}>
           <h1 className={styles.title}>অর্ডার তালিকা</h1>
@@ -150,12 +200,21 @@ export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
             >
               <div className={styles.cardTop}>
                 <div className={styles.idBadge}>#{order.id}</div>
-                <div 
-                  className={styles.statusBadge} 
-                  style={{ backgroundColor: `${stageColor}15`, color: stageColor }}
-                >
-                  {getStageIcon(order.currentStageId)}
-                  <span>{getStageName(order.currentStageId)}</span>
+                <div className={styles.topActions}>
+                  <div 
+                    className={styles.statusBadge} 
+                    style={{ backgroundColor: `${stageColor}15`, color: stageColor }}
+                  >
+                    {getStageIcon(order.currentStageId)}
+                    <span>{getStageName(order.currentStageId)}</span>
+                  </div>
+                  <button 
+                    className={styles.deleteBtn} 
+                    onClick={(e) => handleDeleteClick(e, order.id)}
+                    title="অর্ডার মুছে ফেলুন"
+                  >
+                    <FaTrash size={14} />
+                  </button>
                 </div>
               </div>
 
@@ -254,6 +313,16 @@ export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
           </button>
         </div>
       )}
+
+      <ConfirmModal 
+        isOpen={confirmModal.isOpen}
+        title="অর্ডারটি মুছে ফেলতে চান?"
+        message="আপনি কি নিশ্চিত যে এই অর্ডারটি মুছে ফেলতে চান? এটি স্থায়ীভাবে ডেটাবেস থেকে মুছে যাবে এবং আর ফিরে পাওয়া যাবে না।"
+        confirmText={isDeleting ? "মুছা হচ্ছে..." : "হ্যাঁ, মুছে ফেলুন"}
+        cancelText="বাতিল"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmModal({ isOpen: false, id: null })}
+      />
     </div>
   );
 }

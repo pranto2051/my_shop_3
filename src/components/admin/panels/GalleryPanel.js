@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaHammer } from 'react-icons/fa';
+import { supabase } from '@/lib/supabase';
 import styles from './CategoriesPanel.module.css';
 import { useAdmin } from '@/app/context/AdminContext';
 
@@ -9,6 +10,7 @@ export default function GalleryPanel() {
   const { state, dispatch } = useAdmin();
   const { gallery } = state;
   const [showModal, setShowModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
@@ -29,32 +31,67 @@ export default function GalleryPanel() {
     setShowModal(true);
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    if (editingItem) {
-      dispatch({
-        type: 'UPDATE_GALLERY_ITEM',
-        payload: { ...editingItem, ...formData }
-      });
-    } else {
-      const newItem = {
-        id: `gal-${Date.now()}`,
-        ...formData
-      };
-      dispatch({
-        type: 'ADD_GALLERY_ITEM',
-        payload: newItem
-      });
+    setIsSaving(true);
+
+    try {
+      if (editingItem) {
+        const { error } = await supabase
+          .from('gallery')
+          .update(formData)
+          .eq('id', editingItem.id);
+        
+        if (error) throw error;
+
+        dispatch({
+          type: 'UPDATE_GALLERY_ITEM',
+          payload: { ...editingItem, ...formData }
+        });
+      } else {
+        const newItem = {
+          id: `gal-${Date.now()}`,
+          ...formData
+        };
+        
+        const { error } = await supabase
+          .from('gallery')
+          .insert(newItem);
+        
+        if (error) throw error;
+
+        dispatch({
+          type: 'ADD_GALLERY_ITEM',
+          payload: newItem
+        });
+      }
+      setShowModal(false);
+    } catch (err) {
+      console.error('Error saving gallery item:', err);
+      alert('গ্যালারি আইটেম সংরক্ষণ করতে সমস্যা হয়েছে!');
+    } finally {
+      setIsSaving(false);
     }
-    setShowModal(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (confirm('আপনি কি নিশ্চিত যে এই আইটেমটি মুছে ফেলতে চান?')) {
-      dispatch({
-        type: 'DELETE_GALLERY_ITEM',
-        payload: id
-      });
+      try {
+        const { error } = await supabase
+          .from('gallery')
+          .delete()
+          .eq('id', id);
+        
+        if (error) throw error;
+
+        dispatch({
+          type: 'DELETE_GALLERY_ITEM',
+          payload: id
+        });
+      } catch (err) {
+        console.error('Error deleting gallery item:', err);
+        alert('আইটেম মুছে ফেলতে সমস্যা হয়েছে!');
+      }
     }
   };
 
@@ -142,11 +179,11 @@ export default function GalleryPanel() {
                 </div>
 
                 <div className={styles.formActions}>
-                  <button type="button" className={styles.cancelBtn} onClick={() => setShowModal(false)}>
+                  <button type="button" className={styles.cancelBtn} onClick={() => setShowModal(false)} disabled={isSaving}>
                     বাতিল
                   </button>
-                  <button type="submit" className={styles.submitBtn}>
-                    <FaPlus /> সংরক্ষণ করুন
+                  <button type="submit" className={styles.submitBtn} disabled={isSaving}>
+                    <FaPlus /> {isSaving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
                   </button>
                 </div>
               </form>

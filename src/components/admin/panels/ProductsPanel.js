@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { supabase } from '@/lib/supabase';
 import styles from './ProductsPanel.module.css';
 
 export default function ProductsPanel({ products, setProducts, categoriesData }) {
@@ -11,40 +12,85 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  const handleSaveProduct = (e) => {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveProduct = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
+    
     const formData = new FormData(e.target);
-    const productData = {
-      id: formData.get('id') || `PRD-${String(products.length + 1).padStart(3, '0')}`,
+    const productId = formData.get('id') || `PRD-${String(products.length + 1).padStart(3, '0')}-${Date.now().toString().slice(-4)}`;
+    
+    const productDataForDb = {
+      id: productId,
       name: formData.get('name'),
-      nameEn: formData.get('nameEn'),
-      categoryId: formData.get('categoryId'),
-      price: parseInt(formData.get('price')),
-      originalPrice: parseInt(formData.get('originalPrice')),
+      name_en: formData.get('nameEn'),
+      category_id: formData.get('categoryId'),
+      price: parseInt(formData.get('price')) || 0,
+      original_price: parseInt(formData.get('originalPrice')) || 0,
       image: formData.get('image'),
       description: formData.get('description'),
       material: formData.get('material'),
       dimensions: formData.get('dimensions'),
       color: formData.get('color'),
-      inStock: formData.get('inStock') === 'on',
-      isFeatured: formData.get('isFeatured') === 'on',
-      isTopSelling: formData.get('isTopSelling') === 'on',
+      in_stock: formData.get('inStock') === 'on',
+      is_featured: formData.get('isFeatured') === 'on',
+      is_top_selling: formData.get('isTopSelling') === 'on',
       rating: editingProduct ? editingProduct.rating : 4.0,
-      reviewCount: editingProduct ? editingProduct.reviewCount : 0,
+      review_count: editingProduct ? editingProduct.reviewCount : 0,
     };
 
-    if (editingProduct) {
-      setProducts(products.map(p => p.id === editingProduct.id ? { ...p, ...productData } : p));
-    } else {
-      setProducts([productData, ...products]);
+    const productDataForState = {
+      id: productDataForDb.id,
+      name: productDataForDb.name,
+      nameEn: productDataForDb.name_en,
+      categoryId: productDataForDb.category_id,
+      price: productDataForDb.price,
+      originalPrice: productDataForDb.original_price,
+      image: productDataForDb.image,
+      description: productDataForDb.description,
+      material: productDataForDb.material,
+      dimensions: productDataForDb.dimensions,
+      color: productDataForDb.color,
+      inStock: productDataForDb.in_stock,
+      isFeatured: productDataForDb.is_featured,
+      isTopSelling: productDataForDb.is_top_selling,
+      rating: productDataForDb.rating,
+      reviewCount: productDataForDb.review_count,
+    };
+
+    try {
+      const { error } = await supabase
+        .from('products')
+        .upsert(productDataForDb);
+
+      if (error) throw error;
+
+      if (editingProduct) {
+        setProducts(products.map(p => p.id === editingProduct.id ? { ...p, ...productDataForState } : p));
+      } else {
+        setProducts([productDataForState, ...products]);
+      }
+      setShowModal(false);
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Error saving product:', error);
+      alert('পণ্য সেভ করতে সমস্যা হয়েছে!');
+    } finally {
+      setIsSaving(false);
     }
-    setShowModal(false);
-    setEditingProduct(null);
   };
 
-  const handleDeleteProduct = (id) => {
+  const handleDeleteProduct = async (id) => {
     if (confirm('আপনি কি নিশ্চিত যে এই পণ্যটি মুছে ফেলতে চান?')) {
-      setProducts(products.filter(p => p.id !== id));
+      try {
+        const { error } = await supabase.from('products').delete().eq('id', id);
+        if (error) throw error;
+        setProducts(products.filter(p => p.id !== id));
+      } catch (err) {
+        console.error('Error deleting product:', err);
+        alert('পণ্য মুছে ফেলতে সমস্যা হয়েছে!');
+      }
     }
   };
 
@@ -286,8 +332,10 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
                 </div>
               </div>
               <div className={styles.modalFooter}>
-                <button type="button" className={styles.cancelBtn} onClick={() => setShowModal(false)}>বাতিল</button>
-                <button type="submit" className={styles.saveBtn}>সংরক্ষণ করুন</button>
+                <button type="button" className={styles.cancelBtn} onClick={() => setShowModal(false)} disabled={isSaving}>বাতিল</button>
+                <button type="submit" className={styles.saveBtn} disabled={isSaving}>
+                  {isSaving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
+                </button>
               </div>
             </form>
           </div>

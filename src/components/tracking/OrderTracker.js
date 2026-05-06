@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAdmin } from '@/app/context/AdminContext';
+import { supabase } from '@/lib/supabase';
 import styles from './OrderTracker.module.css';
 import { FaMagnifyingGlass, FaPhone, FaTruckFast, FaCircleCheck } from 'react-icons/fa6';
 import TrackingTimeline from './TrackingTimeline';
@@ -15,7 +16,7 @@ export default function OrderTracker() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleTrack = (e) => {
+  const handleTrack = async (e) => {
     e.preventDefault();
     if (!phone) return;
     
@@ -23,17 +24,50 @@ export default function OrderTracker() {
     setError('');
     setTrackingResult(null);
 
-    // Simulate network delay
-    setTimeout(() => {
-      const order = orders.find(o => o.customerPhone === phone);
-      
-      if (order) {
-        setTrackingResult(order);
-      } else {
+    try {
+      // 1. Fetch order directly from Supabase
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .select(`
+          id, customerName:customer_name, customerPhone:customer_phone, 
+          productName:product_name, productImage:product_image, 
+          quantity, totalPrice:total_price, advancePaid:advance_paid, 
+          remainingAmount:remaining_amount, deliveryAddress:delivery_address, 
+          estimatedDelivery:estimated_delivery, status, currentStageId:current_stage_id,
+          currentStageIndex:current_stage_index
+        `)
+        .eq('customer_phone', phone)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (orderError || !order) {
         setError('দুঃখিত, এই মোবাইল নাম্বারে কোনো অর্ডার পাওয়া যায়নি।');
+        setIsLoading(false);
+        return;
       }
+
+      // 2. Fetch stage history for this order
+      const { data: history, error: historyError } = await supabase
+        .from('order_stage_history')
+        .select('stageId:stage_id, stageName:stage_name, timestamp, adminNote:admin_note, completedBy:completed_by')
+        .eq('order_id', order.id)
+        .order('timestamp', { ascending: true });
+
+      if (historyError) throw historyError;
+
+      // 3. Combine data
+      setTrackingResult({
+        ...order,
+        stageHistory: history || []
+      });
+
+    } catch (err) {
+      console.error('Tracking error:', err);
+      setError('অর্ডার ট্র্যাক করতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।');
+    } finally {
       setIsLoading(false);
-    }, 800);
+    }
   };
 
   return (

@@ -8,18 +8,8 @@ export default function PremiumLoading({ onComplete }) {
   const [dustParticles, setDustParticles] = useState([]);
   const brandName = "মা - ফার্নিচার";
   
-  // Use Intl.Segmenter to safely split Bengali characters (grapheme clusters)
-  // Fallback to simple split if not supported, but most modern browsers do.
-  const getSegments = (text) => {
-    try {
-      const segmenter = new Intl.Segmenter('bn', { granularity: 'grapheme' });
-      return Array.from(segmenter.segment(text)).map(s => s.segment);
-    } catch (e) {
-      return text.split(""); 
-    }
-  };
-
-  const letters = getSegments(brandName);
+  // Hardcoded segments for "মা - ফার্নিচার" to ensure server/client stability
+  const letters = ["মা", " ", "-", " ", "ফা", "র্নি", "চা", "র"];
 
   useEffect(() => {
     // Generate dust particles only on the client to avoid hydration mismatch
@@ -42,10 +32,10 @@ export default function PremiumLoading({ onComplete }) {
   }, [onComplete]);
 
   return (
-    <div className={`${styles.container} ${fadeOut ? styles.fadeOut : ''}`}>
-      <div className={styles.content}>
-        <div className={styles.logoWrapper}>
-          <div className={styles.textContainer}>
+    <div className={`${styles.container} ${fadeOut ? styles.fadeOut : ''}`} suppressHydrationWarning>
+      <div className={styles.content} suppressHydrationWarning>
+        <div className={styles.logoWrapper} suppressHydrationWarning>
+          <div className={styles.textContainer} suppressHydrationWarning>
             {letters.map((char, index) => (
               <span 
                 key={index} 
@@ -57,25 +47,26 @@ export default function PremiumLoading({ onComplete }) {
               </span>
             ))}
           </div>
-          <div className={styles.shine}></div>
+          <div className={styles.shine} suppressHydrationWarning></div>
         </div>
         
-        <div className={styles.tagline}>
+        <div className={styles.tagline} suppressHydrationWarning>
           আপনার আরামের জন্য তৈরি হচ্ছে...
         </div>
 
-        <div className={styles.dustContainer}>
+        <div className={styles.dustContainer} suppressHydrationWarning>
           {dustParticles.map((particleStyle, i) => (
             <div 
               key={i} 
               className={styles.dust} 
               style={particleStyle}
+              suppressHydrationWarning
             ></div>
           ))}
         </div>
       </div>
       
-      <div className={styles.progressLine}></div>
+      <div className={styles.progressLine} suppressHydrationWarning></div>
     </div>
   );
 }

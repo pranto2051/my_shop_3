@@ -2,26 +2,27 @@
 
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import productsRaw from '@/data/products';
-import categoriesRaw from '@/data/categories';
-import storeInfo from '@/data/shopInfo';
+import { useAdmin } from '@/app/context/AdminContext';
 import ProductModal from '@/components/ProductModal';
 
 export default function CategoryPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
   const categoryId = params.id;
   
-  const getArray = (val) => {
-    if (!val) return [];
-    if (Array.isArray(val)) return val;
-    if (val.default && Array.isArray(val.default)) return val.default;
-    if (val.allProducts && Array.isArray(val.allProducts)) return val.allProducts;
-    return [];
-  };
-
-  const productsData = getArray(productsRaw);
-  const categories = getArray(categoriesRaw);
+  const { state } = useAdmin();
+  const { products: productsData, categories, shopInfo: fetchedShopInfo } = state;
   const category = categories.find(c => c.id === categoryId);
+  
+  const storeInfo = fetchedShopInfo || {
+    name: "মা ফার্নিচার",
+    contactLabel: "যোগাযোগ করুন",
+    showroomAddress: { label: "শোরুমের ঠিকানা", address: "মিরপুর ১০, ঢাকা" },
+    callNumbers: { label: "সরাসরি কল করুন", numbers: ["01711-000000"] },
+    whatsapp: { label: "WhatsApp মেসেজ", number: "01711000000" },
+    email: { label: "ইমেইল", address: "মিরপুর ১০, ঢাকা" },
+    directMessageLabel: "সরাসরি মেসেজ দিন",
+    openingHours: { label: "খোলা থাকার সময়", schedule: ["09:00 AM - 09:00 PM"] }
+  };
   
   console.log('CategoryPage - id:', categoryId);
   console.log('CategoryPage - category found:', category?.name);
@@ -98,7 +99,7 @@ export default function CategoryPage({ params: paramsPromise }) {
 
   if (!category) {
     return (
-      <div className="container" style={{ padding: '100px 20px', textAlign: 'center' }}>
+      <div className="container" style={{ padding: '100px 20px', textAlign: 'center' }} suppressHydrationWarning>
         <h2>ক্যাটাগরি পাওয়া যায়নি</h2>
         <Link href="/" className="btn-go-home">হোমে ফিরুন</Link>
       </div>
@@ -111,7 +112,7 @@ export default function CategoryPage({ params: paramsPromise }) {
   };
 
   return (
-    <main className="inner-page">
+    <main className="inner-page" suppressHydrationWarning>
       <div className="breadcrumb-bar">
         <div className="container">
           <nav className="breadcrumb" aria-label="ব্রেডক্রাম্ব">
@@ -135,7 +136,7 @@ export default function CategoryPage({ params: paramsPromise }) {
         </div>
       </div>
 
-      <div className="container">
+      <div className="container" suppressHydrationWarning>
         <div className="category-layout">
           {/* Sidebar Overlay for mobile */}
           <div 

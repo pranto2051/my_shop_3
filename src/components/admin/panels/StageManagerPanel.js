@@ -1,18 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAdmin } from '@/app/context/AdminContext';
+import { supabase } from '@/lib/supabase';
 import styles from './StageManagerPanel.module.css';
 import { 
   FaPlus, FaGripVertical, FaPen, FaTrash, 
   FaFloppyDisk, FaXmark, FaCircleInfo 
 } from 'react-icons/fa6';
+import ConfirmModal from '../ConfirmModal';
 
 export default function StageManagerPanel() {
   const { state, dispatch } = useAdmin();
   const { orderStages } = state;
 
   const [isAdding, setIsAdding] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -22,28 +25,72 @@ export default function StageManagerPanel() {
     icon: 'FaCircleInfo'
   });
 
-  const handleSave = () => {
-    if (!formData.name) return;
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    id: null
+  });
+  const [mounted, setMounted] = useState(false);
 
-    if (editingId) {
-      const stage = orderStages.find(s => s.id === editingId);
-      dispatch({
-        type: 'UPDATE_ORDER_STAGE_DEF',
-        payload: { ...stage, ...formData }
-      });
-      setEditingId(null);
-    } else {
-      const newStage = {
-        id: `stage_${Date.now()}`,
-        ...formData,
-        order: orderStages.length + 1,
-        isDefault: false
-      };
-      dispatch({ type: 'ADD_ORDER_STAGE', payload: newStage });
-      setIsAdding(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleSave = async () => {
+    if (!formData.name) return;
+    setIsSaving(true);
+
+    const stageDataForDb = {
+      name: formData.name,
+      name_en: formData.nameEn,
+      color: formData.color,
+      description: formData.description,
+      icon: formData.icon
+    };
+
+    try {
+      if (editingId) {
+        const stage = orderStages.find(s => s.id === editingId);
+        const { error } = await supabase
+          .from('order_stages')
+          .update(stageDataForDb)
+          .eq('id', editingId);
+        
+        if (error) throw error;
+
+        dispatch({
+          type: 'UPDATE_ORDER_STAGE_DEF',
+          payload: { ...stage, ...formData }
+        });
+        setEditingId(null);
+      } else {
+        const newStage = {
+          id: `stage_${Date.now()}`,
+          ...formData,
+          order: orderStages.length + 1,
+          isDefault: false
+        };
+
+        const { error } = await supabase
+          .from('order_stages')
+          .insert({
+            id: newStage.id,
+            stage_order: newStage.order,
+            is_default: newStage.isDefault,
+            ...stageDataForDb
+          });
+        
+        if (error) throw error;
+
+        dispatch({ type: 'ADD_ORDER_STAGE', payload: newStage });
+        setIsAdding(false);
+      }
+      setFormData({ name: '', nameEn: '', color: '#9E7455', description: '', icon: 'FaCircleInfo' });
+    } catch (err) {
+      console.error('Error saving stage:', err);
+      alert('অর্ডার স্টেজ সংরক্ষণ করতে সমস্যা হয়েছে!');
+    } finally {
+      setIsSaving(false);
     }
-    
-    setFormData({ name: '', nameEn: '', color: '#9E7455', description: '', icon: 'FaCircleInfo' });
   };
 
   const handleEdit = (stage) => {
@@ -58,13 +105,39 @@ export default function StageManagerPanel() {
   };
 
   const handleDelete = (id) => {
-    if (confirm('আপনি কি নিশ্চিত যে এই স্টেজটি মুছে ফেলতে চান?')) {
+    setConfirmModal({
+      isOpen: true,
+      id: id
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const id = confirmModal.id;
+    try {
+      const { error } = await supabase
+        .from('order_stages')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
       dispatch({ type: 'DELETE_ORDER_STAGE', payload: id });
+    } catch (err) {
+      console.error('Error deleting stage:', err);
+      if (err.code === '23503') {
+        alert('এই স্টেজটি মুছে ফেলা যাবে না কারণ এটি বর্তমানে কোনো অর্ডারে ব্যবহার করা হচ্ছে।');
+      } else {
+        alert('অর্ডার স্টেজ মুছে ফেলতে সমস্যা হয়েছে!');
+      }
+    } finally {
+      setConfirmModal({ isOpen: false, id: null });
     }
   };
 
+  if (!mounted) return null;
+
   return (
-    <div className={styles.container}>
+    <div className={styles.container} suppressHydrationWarning>
       <header className={styles.header}>
         <div>
           <h1 className={styles.title}>অর্ডার স্টেজ ব্যবস্থাপনা</h1>
@@ -127,11 +200,11 @@ export default function StageManagerPanel() {
               setIsAdding(false);
               setEditingId(null);
               setFormData({ name: '', nameEn: '', color: '#9E7455', description: '', icon: 'FaCircleInfo' });
-            }}>
+            }} disabled={isSaving}>
               <FaXmark /> বাতিল
             </button>
-            <button className={styles.saveBtn} onClick={handleSave}>
-              <FaFloppyDisk /> সংরক্ষণ করুন
+            <button className={styles.saveBtn} onClick={handleSave} disabled={isSaving}>
+              <FaFloppyDisk /> {isSaving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
             </button>
           </div>
         </div>
@@ -154,15 +227,23 @@ export default function StageManagerPanel() {
               <button className={styles.iconBtn} onClick={() => handleEdit(stage)} title="সম্পাদনা">
                 <FaPen />
               </button>
-              {!stage.isDefault && (
-                <button className={`${styles.iconBtn} ${styles.deleteBtn}`} onClick={() => handleDelete(stage.id)} title="মুছে ফেলুন">
-                  <FaTrash />
-                </button>
-              )}
+              <button className={`${styles.iconBtn} ${styles.deleteBtn}`} onClick={() => handleDelete(stage.id)} title="মুছে ফেলুন">
+                <FaTrash />
+              </button>
             </div>
           </div>
         ))}
       </div>
+
+      <ConfirmModal 
+        isOpen={confirmModal.isOpen}
+        title="Delete Stage?"
+        message="Are you sure you want to delete this stage? This will permanently delete it from the database."
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmModal({ isOpen: false, id: null })}
+      />
     </div>
   );
 }

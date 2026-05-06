@@ -1,34 +1,21 @@
 'use client';
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { orders as initialOrders } from '@/data/orders';
-import { defaultOrderStages } from '@/data/orderStages';
-
-import productsRaw from '@/data/products';
-import categoriesRaw from '@/data/categories';
-import designsRaw from '@/data/designs';
-import galleryRaw from '@/data/gallery';
+import { fetchAllData } from '@/lib/dataFetcher';
 
 const AdminContext = createContext();
 
-const getArray = (val) => {
-  if (!val) return [];
-  if (Array.isArray(val)) return val;
-  if (val.default && Array.isArray(val.default)) return val.default;
-  if (val.allProducts && Array.isArray(val.allProducts)) return val.allProducts;
-  return [];
-};
-
 const initialState = {
-  orders: [...initialOrders],
-  orderStages: [...defaultOrderStages],
+  orders: [],
+  orderStages: [],
   editingOrder: null,
-  orderFilter: 'all',        // all | active | completed | cancelled 
+  orderFilter: 'all',
   orderSearch: '',
-  products: getArray(productsRaw),
-  categories: getArray(categoriesRaw),
-  designs: getArray(designsRaw),
-  gallery: getArray(galleryRaw),
+  products: [],
+  categories: [],
+  designs: [],
+  gallery: [],
+  shopInfo: null,
   settings: {
     showAdminHeader: false,
     showAdminFooter: false,
@@ -37,6 +24,18 @@ const initialState = {
 
 function adminReducer(state, action) {
   switch (action.type) {
+    case 'SET_ALL_DATA':
+      return {
+        ...state,
+        orders: action.payload.orders || [],
+        orderStages: action.payload.orderStages || [],
+        products: action.payload.products || [],
+        categories: action.payload.categories || [],
+        designs: action.payload.designs || [],
+        gallery: action.payload.gallery || [],
+        shopInfo: action.payload.shopInfo || null,
+      };
+
     case 'UPDATE_SETTINGS':
       const newSettings = { ...state.settings, ...action.payload };
       if (typeof window !== 'undefined') {
@@ -260,6 +259,11 @@ export function AdminProvider({ children }) {
         dispatch({ type: 'UPDATE_SETTINGS', payload: JSON.parse(savedSettings) });
       }
     }
+    
+    // Fetch data from Supabase
+    fetchAllData().then(data => {
+      dispatch({ type: 'SET_ALL_DATA', payload: data });
+    });
   }, []);
 
   return (
