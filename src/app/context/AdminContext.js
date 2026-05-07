@@ -27,6 +27,7 @@ const initialState = {
   tasks: [],
   announcements: [],
   promotionalPopups: [],
+  pageConfigs: [],
   orderDateFilter: {
     day: '',
     month: '',
@@ -60,6 +61,7 @@ function adminReducer(state, action) {
         tasks: action.payload.tasks || [],
         announcements: action.payload.announcements || [],
         promotionalPopups: action.payload.promotionalPopups || [],
+        pageConfigs: action.payload.pageConfigs || [],
       };
 
     case 'UPDATE_SETTINGS':

@@ -1,0 +1,90 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: 45% 55%;
+  gap: 40px;
+  align-items: center;
+}
+
+.left {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.decorativeNumber {
+  font-family: 'Rozha One', serif;
+  font-size: 140px;
+  color: #7C4B2A;
+  opacity: 0.06;
+  line-height: 1;
+}
+
+.label {
+  position: absolute;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  color: #D4882A;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  bottom: 20px;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-family: 'Rozha One', serif;
+  font-size: 36px;
+  color: #5A3118;
+  margin: 0 0 10px 0;
+}
+
+.underline {
+  width: 40px;
+  height: 3px;
+  background-color: #D4882A;
+  margin-bottom: 25px;
+}
+
+.textWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.paragraph {
+  font-size: 15px;
+  color: #6B3D22;
+  line-height: 1.9;
+  text-align: justify;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .left {
+    height: 120px;
+  }
+  
+  .decorativeNumber {
+    font-size: 100px;
+  }
+  
+  .right {
+    align-items: center;
+  }
+  
+  .underline {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

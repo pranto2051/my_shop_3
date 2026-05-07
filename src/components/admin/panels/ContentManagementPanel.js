@@ -25,7 +25,7 @@ import ConfirmModal from '../ConfirmModal';
 
 export default function ContentManagementPanel() {
   const { state, dispatch } = useAdmin();
-  const { announcements } = state;
+  const { announcements, pageConfigs } = state;
   const [activeSection, setActiveSection] = useState('announcement');
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -302,27 +302,36 @@ export default function ContentManagementPanel() {
               <h3>পেজ কন্টেন্ট এডিটর</h3>
             </div>
             <div className="pages-grid">
-              {['About Us', 'Privacy Policy', 'Terms & Conditions', 'Return Policy'].map(page => (
-                <div key={page} className="page-card">
-                  <div className="page-icon"><FaFileLines /></div>
-                  <div className="page-info">
-                    <h4>{page}</h4>
-                    <span className="last-edit">Last Edit: ২ দিন আগে</span>
+              {pageConfigs && pageConfigs.length > 0 ? (
+                pageConfigs.map(config => (
+                  <div key={config.slug} className="page-card">
+                    <div className="page-icon">
+                      <span style={{ fontSize: '32px' }}>{config.hero_icon || '📄'}</span>
+                    </div>
+                    <div className="page-info">
+                      <h4>{config.title_bn}</h4>
+                      <span className="last-edit">
+                        আপডেট: {new Date(config.updated_at).toLocaleDateString('bn-BD')}
+                      </span>
+                    </div>
+                    <button 
+                      className="edit-page-btn"
+                      onClick={() => window.open(`/${config.slug}`, '_blank')}
+                    >
+                      পেজ দেখুন
+                    </button>
+                    <button 
+                      className="edit-page-btn secondary"
+                      style={{ marginTop: '8px', backgroundColor: '#7C4B2A', color: 'white' }}
+                      onClick={() => alert('এডিটর মোড শীঘ্রই আসছে। আপনি সরাসরি পেজে গিয়ে এডিট করতে পারবেন (যদি লগইন থাকেন)।')}
+                    >
+                      এডিট করুন
+                    </button>
                   </div>
-                  <button className="edit-page-btn">এডিট করুন</button>
-                </div>
-              ))}
-            </div>
-            <div className="rich-editor-mock">
-              <div className="editor-toolbar">
-                <strong>B</strong> <em>I</em> <u>U</u> | 📋 🔗 📷
-              </div>
-              <div className="editor-content" contentEditable suppressContentEditableWarning={true}>
-                আমাদের সম্পর্কে... এখানে আপনার দোকানের বর্ণনা লিখুন।
-              </div>
-              <div className="editor-footer">
-                <button className="save-btn">সংরক্ষণ করুন</button>
-              </div>
+                ))
+              ) : (
+                <div className="empty-row">কোনো পেজ কনফিগ পাওয়া যায়নি।</div>
+              )}
             </div>
           </div>
         )}

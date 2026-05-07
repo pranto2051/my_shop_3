@@ -1,0 +1,20 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.paragraph {
+  font-size: 16px;
+  margin: 0;
+  text-align: justify;
+}
+
+.highlightBox {
+  background-color: rgba(212, 136, 42, 0.1); /* --honey with opacity */
+  border-left: 4px solid #D4882A;
+  padding: 20px;
+  border-radius: 0 12px 12px 0;
+  font-weight: 500;
+  color: #5A3118;
+}

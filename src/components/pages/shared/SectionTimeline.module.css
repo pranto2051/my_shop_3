@@ -1,0 +1,91 @@
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 20px 0;
+}
+
+.item {
+  display: flex;
+  gap: 30px;
+}
+
+.numberWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40px;
+}
+
+.number {
+  width: 40px;
+  height: 40px;
+  background: #D4882A;
+  color: #FDF6E8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Rozha One', serif;
+  font-size: 20px;
+  z-index: 1;
+  box-shadow: 0 4px 10px rgba(212, 136, 42, 0.3);
+}
+
+.line {
+  width: 2px;
+  flex-grow: 1;
+  background: dashed #D4882A;
+  border-left: 2px dashed #D4882A;
+  margin: 10px 0;
+}
+
+.content {
+  padding-bottom: 40px;
+  flex: 1;
+}
+
+.item:last-child .content {
+  padding-bottom: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.icon {
+  font-size: 24px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #5A3118;
+  margin: 0;
+}
+
+.description {
+  font-size: 15px;
+  color: #6B3D22;
+  margin: 0;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .item {
+    gap: 20px;
+  }
+  
+  .numberWrapper {
+    width: 32px;
+  }
+  
+  .number {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+}

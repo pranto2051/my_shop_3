@@ -1,0 +1,123 @@
+.section {
+  padding: 80px 0;
+  background-color: #FDF6E8; /* --parchment */
+}
+
+.section:nth-child(even) {
+  background-color: #F7EBCF; /* --parchment-2 */
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+}
+
+.adminControls {
+  position: absolute;
+  top: -40px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  background: #3B1F0C;
+  padding: 5px 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.section:hover .adminControls {
+  opacity: 1;
+}
+
+.adminBtn {
+  background: none;
+  border: none;
+  color: #FDF6E8;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.adminBtn:hover {
+  color: #D4882A;
+}
+
+.typeBadge {
+  font-family: 'Fira Code', monospace;
+  font-size: 10px;
+  color: #D4882A;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 5px;
+  text-transform: uppercase;
+}
+
+.hidden {
+  opacity: 0.5;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(0, 0, 0, 0.05) 10px,
+    rgba(0, 0, 0, 0.05) 20px
+  );
+}
+
+.header {
+  margin-bottom: 40px;
+  text-align: left;
+}
+
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.icon {
+  font-size: 28px;
+}
+
+.title {
+  font-family: 'Rozha One', serif;
+  font-size: 36px;
+  color: #5A3118; /* --walnut-deep */
+  margin: 0;
+}
+
+.divider {
+  width: 60px;
+  height: 4px;
+  background-color: #D4882A; /* --honey */
+  border-radius: 2px;
+}
+
+.content {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  color: #6B3D22; /* --bark-mid */
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 50px 0;
+  }
+  
+  .title {
+    font-size: 28px;
+  }
+  
+  .header {
+    margin-bottom: 30px;
+  }
+}

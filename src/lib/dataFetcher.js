@@ -20,7 +20,8 @@ export async function fetchAllData() {
       { data: deliveryLocations },
       { data: tasks },
       { data: announcements },
-      { data: promotional_popups }
+      { data: promotional_popups },
+      { data: pageConfigs }
     ] = await Promise.all([
       supabase.from('orders').select('id, customerPhone:customer_phone, customerName:customer_name, productId:product_id, productName:product_name, productImage:product_image, quantity, totalPrice:total_price, advancePaid:advance_paid, remainingAmount:remaining_amount, deliveryAddress:delivery_address, estimatedDelivery:estimated_delivery, orderNote:order_note, currentStageId:current_stage_id, currentStageIndex:current_stage_index, status, createdAt:created_at, updatedAt:updated_at').order('created_at', { ascending: false }),
       supabase.from('order_stages').select('id, name, nameEn:name_en, icon, color, order:stage_order, isDefault:is_default, description').order('stage_order'),
@@ -39,7 +40,8 @@ export async function fetchAllData() {
       supabase.from('delivery_locations').select('*'),
       supabase.from('tasks').select('id, title, date:task_date, time:task_time, type:task_type, completed:is_completed').order('task_date', { ascending: true }),
       supabase.from('announcements').select('*').order('created_at', { ascending: false }),
-      supabase.from('promotional_popups').select('*').order('created_at', { ascending: false })
+      supabase.from('promotional_popups').select('*').order('created_at', { ascending: false }),
+      supabase.from('page_configs').select('*').order('updated_at', { ascending: false })
     ]);
 
     let mappedOrders = orders || [];
@@ -98,7 +100,8 @@ export async function fetchAllData() {
       deliveryLocations: deliveryLocations || [],
       tasks: tasks || [],
       announcements: announcements || [],
-      promotionalPopups: promotional_popups || []
+      promotionalPopups: promotional_popups || [],
+      pageConfigs: pageConfigs || []
     };
   } catch (error) {
     console.error('Error fetching data from Supabase:', error);
@@ -106,7 +109,7 @@ export async function fetchAllData() {
       orders: [], orderStages: [], products: [], categories: [], designs: [], gallery: [], shopInfo: null,
       customers: [], transactions: [], notifications: [], deliveryPersonnel: [],
       reviews: [], deliveryZones: [], deliveryLocations: [], tasks: [], announcements: [],
-      promotionalPopups: []
+      promotionalPopups: [], pageConfigs: []
     };
   }
 }
