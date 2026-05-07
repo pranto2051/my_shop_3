@@ -246,7 +246,7 @@ export default function AdminPage() {
                    activeTab === 'payments' ? 'পেমেন্ট ম্যানেজমেন্ট' :
                    activeTab === 'coupons' ? 'কুপন ও ডিসকাউন্ট' :
                    activeTab === 'reviews' ? 'রিভিউ ও রেটিং' :
-                   activeTab === 'pnl' ? 'লাভ ও ক্ষতি' :
+                   activeTab === 'pnl' ? 'আর্থিক ব্যবস্থাপনা' :
                    activeTab === 'promotional-popups' ? 'প্রোমোশনাল পপআপ' :
                    activeTab === 'cms' ? 'Content Management' :
                    activeTab === 'settings' ? 'সেটিংস' : 'অর্ডার ব্যবস্থাপনা'}

@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import styles from './OrderTracker.module.css';
 import { FaMagnifyingGlass, FaPhone, FaTruckFast, FaCircleCheck } from 'react-icons/fa6';
 import TrackingTimeline from './TrackingTimeline';
+import ReviewForm from './ReviewForm';
 
 export default function OrderTracker() {
   const { state } = useAdmin();
@@ -15,6 +16,7 @@ export default function OrderTracker() {
   const [trackingResult, setTrackingResult] = useState(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
 
   const handleTrack = async (e) => {
     e.preventDefault();
@@ -23,6 +25,7 @@ export default function OrderTracker() {
     setIsLoading(true);
     setError('');
     setTrackingResult(null);
+    setHasReviewed(false);
 
     try {
       // 1. Fetch order directly from Supabase
@@ -56,7 +59,31 @@ export default function OrderTracker() {
 
       if (historyError) throw historyError;
 
-      // 3. Combine data
+      // 3. Check if review already exists
+      let existingReview = null;
+      try {
+        const { data } = await supabase
+          .from('customer_reviews')
+          .select('id')
+          .eq('order_id', order.id)
+          .maybeSingle();
+        existingReview = data;
+      } catch (e) {
+        // Fallback if order_id column doesn't exist
+        const { data } = await supabase
+          .from('customer_reviews')
+          .select('id')
+          .eq('customer_phone', phone)
+          .eq('product_name', order.productName)
+          .maybeSingle();
+        existingReview = data;
+      }
+
+      if (existingReview) {
+        setHasReviewed(true);
+      }
+
+      // 4. Combine data
       setTrackingResult({
         ...order,
         stageHistory: history || []
@@ -95,44 +122,59 @@ export default function OrderTracker() {
       </div>
 
       {trackingResult && (
-        <div className={styles.resultCard}>
-          <div className={styles.orderHeader}>
-            <div className={styles.orderId}>
-              <span>অর্ডার আইডি:</span>
-              <strong>#{trackingResult.id}</strong>
+        <>
+          <div className={styles.resultCard}>
+            <div className={styles.orderHeader}>
+              <div className={styles.orderId}>
+                <span>অর্ডার আইডি:</span>
+                <strong>#{trackingResult.id}</strong>
+              </div>
+              <div className={`${styles.statusBadge} ${styles[trackingResult.status]}`}>
+                {trackingResult.status === 'active' ? 'চলমান' : 
+                 trackingResult.status === 'completed' ? 'সম্পন্ন' : 'বাতিল'}
+              </div>
             </div>
-            <div className={`${styles.statusBadge} ${styles[trackingResult.status]}`}>
-              {trackingResult.status === 'active' ? 'চলমান' : 
-               trackingResult.status === 'completed' ? 'সম্পন্ন' : 'বাতিল'}
+
+            <div className={styles.orderInfo}>
+              <div className={styles.infoItem}>
+                <span className={styles.label}>গ্রাহকের নাম:</span>
+                <span className={styles.value}>{trackingResult.customerName}</span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.label}>পণ্য:</span>
+                <span className={styles.value}>{trackingResult.productName}</span>
+              </div>
+            </div>
+
+            <div className={styles.timelineSection}>
+              <h3 className={styles.timelineTitle}>ডেলিভারি টাইমলাইন</h3>
+              <TrackingTimeline order={trackingResult} />
+            </div>
+
+            <div className={styles.deliveryEstimate}>
+              <FaTruckFast className={styles.truckIcon} />
+              <div>
+                <p>সম্ভাব্য ডেলিভারি তারিখ:</p>
+                <strong>{new Date(trackingResult.estimatedDelivery).toLocaleDateString('bn-BD', {
+                  year: 'numeric', month: 'long', day: 'numeric'
+                })}</strong>
+              </div>
             </div>
           </div>
 
-          <div className={styles.orderInfo}>
-            <div className={styles.infoItem}>
-              <span className={styles.label}>গ্রাহকের নাম:</span>
-              <span className={styles.value}>{trackingResult.customerName}</span>
-            </div>
-            <div className={styles.infoItem}>
-              <span className={styles.label}>পণ্য:</span>
-              <span className={styles.value}>{trackingResult.productName}</span>
-            </div>
-          </div>
+          {trackingResult.status === 'completed' && !hasReviewed && (
+            <ReviewForm 
+              order={trackingResult} 
+              onSubmitted={() => setHasReviewed(true)} 
+            />
+          )}
 
-          <div className={styles.timelineSection}>
-            <h3 className={styles.timelineTitle}>ডেলিভারি টাইমলাইন</h3>
-            <TrackingTimeline order={trackingResult} />
-          </div>
-
-          <div className={styles.deliveryEstimate}>
-            <FaTruckFast className={styles.truckIcon} />
-            <div>
-              <p>সম্ভাব্য ডেলিভারি তারিখ:</p>
-              <strong>{new Date(trackingResult.estimatedDelivery).toLocaleDateString('bn-BD', {
-                year: 'numeric', month: 'long', day: 'numeric'
-              })}</strong>
+          {trackingResult.status === 'completed' && hasReviewed && (
+            <div className={styles.alreadyReviewed}>
+              <FaCircleCheck /> আপনি ইতিমধ্যেই এই পণ্যের জন্য একটি রিভিউ দিয়েছেন। ধন্যবাদ!
             </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </div>
   );

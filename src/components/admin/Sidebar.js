@@ -91,7 +91,7 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
     {
       title: 'আর্থিক',
       items: [
-        { id: 'pnl', label: 'লাভ ও ক্ষতি', icon: <FaScaleBalanced /> }
+        { id: 'pnl', label: 'আর্থিক ব্যবস্থাপনা', icon: <FaScaleBalanced /> }
       ]
     },
     {
