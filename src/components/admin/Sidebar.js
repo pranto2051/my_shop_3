@@ -16,7 +16,25 @@ import {
   FaGear,
   FaXmark,
   FaPalette,
-  FaHammer
+  FaBoxesStacked,
+  FaUsers,
+  FaCreditCard,
+  FaTicket,
+  FaStar,
+  FaMoneyBillTrendUp,
+  FaScaleBalanced,
+  FaBell,
+  FaEnvelope,
+  FaPenToSquare,
+  FaMagnifyingGlassChart,
+  FaUserGroup,
+  FaClockRotateLeft,
+  FaCalendarDays,
+  FaDatabase,
+  FaGaugeHigh,
+  FaCircleQuestion,
+  FaStore,
+  FaImages
 } from 'react-icons/fa6';
 
 export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeInfo, isOpen, onClose }) {
@@ -38,6 +56,77 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
     };
   }, [isOpen]);
 
+  const navGroups = [
+    {
+      title: 'প্রধান',
+      items: [
+        { id: 'dashboard', label: 'ড্যাশবোর্ড', icon: <FaTableCellsLarge /> }
+      ]
+    },
+    {
+      title: 'পণ্য ব্যবস্থাপনা',
+      items: [
+        { id: 'products', label: 'পণ্য তালিকা', icon: <FaCouch /> },
+        { id: 'categories', label: 'ক্যাটাগরি', icon: <FaLayerGroup /> },
+        { id: 'inventory', label: 'Inventory Management', icon: <FaBoxesStacked /> }
+      ]
+    },
+    {
+      title: 'অর্ডার ব্যবস্থাপনা',
+      items: [
+        { id: 'orders', label: 'অর্ডার তালিকা', icon: <FaClipboardList />, badge: activeOrdersCount, badgeType: 'honey' },
+        { id: 'create-order', label: 'নতুন অর্ডার', icon: <FaCirclePlus /> },
+        { id: 'delivery', label: 'Delivery Management', icon: <FaTruckFast /> },
+        { id: 'order-stages', label: 'Order Stage Config', icon: <FaListCheck />, badge: stagesCount }
+      ]
+    },
+    {
+      title: 'গ্রাহক ব্যবস্থাপনা',
+      items: [
+        { id: 'customers', label: 'Customer Management', icon: <FaUsers /> },
+        { id: 'reviews', label: 'Reviews & Ratings', icon: <FaStar /> }
+      ]
+    },
+    {
+      title: 'আর্থিক',
+      items: [
+        { id: 'finance', label: 'Financial Management', icon: <FaMoneyBillTrendUp /> },
+        { id: 'pnl', label: 'Profit & Loss', icon: <FaScaleBalanced /> }
+      ]
+    },
+    {
+      title: 'যোগাযোগ',
+      items: [
+        { id: 'notifications', label: 'Notifications', icon: <FaBell /> }
+      ]
+    },
+    {
+      title: 'কন্টেন্ট',
+      items: [
+        { id: 'gallery', label: 'ফটো গ্যালারি', icon: <FaImages /> },
+        { id: 'designs', label: 'ডিজাইন গ্যালারি', icon: <FaPalette /> },
+        { id: 'cms', label: 'Content Management', icon: <FaPenToSquare /> },
+        { id: 'seo', label: 'SEO & Marketing', icon: <FaMagnifyingGlassChart /> }
+      ]
+    },
+    {
+      title: 'সিস্টেম',
+      items: [
+        { id: 'calendar', label: 'Calendar & Tasks', icon: <FaCalendarDays /> },
+        { id: 'backup', label: 'Data & Backup', icon: <FaDatabase /> },
+        { id: 'settings', label: 'সেটিংস', icon: <FaGear /> },
+        { id: 'help', label: 'Help Center', icon: <FaCircleQuestion /> }
+      ]
+    },
+    {
+      title: 'প্রোফাইল',
+      items: [
+        { id: 'profile', label: 'Store Profile', icon: <FaStore /> },
+        { id: 'logout', label: 'লগআউট', icon: <FaRightFromBracket />, onClick: handleLogout }
+      ]
+    }
+  ];
+
   return (
     <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
       <div className={styles.brand}>
@@ -52,88 +141,26 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
       </div>
       
       <nav className={styles.nav}>
-        <button 
-          className={`${styles.navItem} ${activeTab === 'dashboard' ? styles.active : ''}`} 
-          onClick={() => setActiveTab('dashboard')}
-        >
-          <FaTableCellsLarge /> <span>ড্যাশবোর্ড</span>
-        </button>
-        
-        <div className={styles.sectionLabel}>পণ্য ব্যবস্থাপনা</div>
-        <button 
-          className={`${styles.navItem} ${activeTab === 'products' ? styles.active : ''}`} 
-          onClick={() => setActiveTab('products')}
-        >
-          <FaCouch /> <span>পণ্যসমূহ</span>
-        </button>
-
-        <button 
-          className={`${styles.navItem} ${activeTab === 'categories' ? styles.active : ''}`} 
-          onClick={() => setActiveTab('categories')}
-        >
-          <FaLayerGroup /> <span>ক্যাটাগরি সমূহ</span>
-        </button>
-
-        <button 
-          className={`${styles.navItem} ${activeTab === 'designs' ? styles.active : ''}`} 
-          onClick={() => setActiveTab('designs')}
-        >
-          <FaPalette /> <span>ডিজাইন সমূহ</span>
-        </button>
-
-        <button 
-          className={`${styles.navItem} ${activeTab === 'gallery' ? styles.active : ''}`} 
-          onClick={() => setActiveTab('gallery')}
-        >
-          <FaHammer /> <span>আমাদের কাজ</span>
-        </button>
-
-        <div className={`${styles.sectionLabel} ${styles.orderMgmtLabel}`}>অর্ডার ব্যবস্থাপনা</div>
-        <button 
-          className={`${styles.navItem} ${activeTab === 'orders' ? styles.active : ''}`} 
-          onClick={() => setActiveTab('orders')}
-        >
-          <FaClipboardList /> 
-          <span>অর্ডার তালিকা</span>
-          {activeOrdersCount > 0 && (
-            <span className={`${styles.badge} ${styles.honeyBadge} ${styles.pulse}`}>{activeOrdersCount}</span>
-          )}
-        </button>
-        
-        <button 
-          className={`${styles.navItem} ${activeTab === 'create-order' ? styles.active : ''}`} 
-          onClick={() => setActiveTab('create-order')}
-        >
-          <FaCirclePlus /> <span>নতুন অর্ডার</span>
-        </button>
-        
-        <button 
-          className={`${styles.navItem} ${activeTab === 'order-stages' ? styles.active : ''}`} 
-          onClick={() => setActiveTab('order-stages')}
-        >
-          <FaListCheck /> 
-          <span>অর্ডার স্টেজ</span>
-          <span className={styles.badge}>{stagesCount}</span>
-        </button>
-
-        <button 
-          className={`${styles.navItem} ${activeTab === 'order-tracking' ? styles.active : ''}`} 
-          onClick={() => setActiveTab('order-tracking')}
-        >
-          <FaTruckFast /> <span>অর্ডার ট্র্যাকিং</span>
-        </button>
-
-        <button 
-          className={`${styles.navItem} ${activeTab === 'settings' ? styles.active : ''}`} 
-          onClick={() => setActiveTab('settings')}
-        >
-          <FaGear /> <span>সেটিংস</span>
-        </button>
-
-        <div className={styles.sectionLabel}>অন্যান্য</div>
-        <button className={styles.navItem} onClick={handleLogout}>
-          <FaRightFromBracket /> <span>লগআউট</span>
-        </button>
+        {navGroups.map((group, gIdx) => (
+          <div key={gIdx} className={styles.navGroup}>
+            <div className={styles.sectionLabel}>{group.title}</div>
+            {group.items.map(item => (
+              <button 
+                key={item.id}
+                className={`${styles.navItem} ${activeTab === item.id ? styles.active : ''}`} 
+                onClick={item.onClick || (() => setActiveTab(item.id))}
+              >
+                {item.icon} 
+                <span>{item.label}</span>
+                {item.badge !== undefined && item.badge > 0 && (
+                  <span className={`${styles.badge} ${item.badgeType === 'honey' ? styles.honeyBadge : ''} ${item.badgeType === 'honey' ? styles.pulse : ''}`}>
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        ))}
       </nav>
     </aside>
   );

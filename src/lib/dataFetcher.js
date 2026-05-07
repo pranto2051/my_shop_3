@@ -10,7 +10,15 @@ export async function fetchAllData() {
       { data: designs },
       { data: gallery },
       { data: shopInfoArray },
-      { data: history }
+      { data: history },
+      { data: customers },
+      { data: transactions },
+      { data: notifications },
+      { data: deliveryPersonnel },
+      { data: reviews },
+      { data: deliveryZones },
+      { data: deliveryLocations },
+      { data: tasks }
     ] = await Promise.all([
       supabase.from('orders').select('id, customerPhone:customer_phone, customerName:customer_name, productId:product_id, productName:product_name, productImage:product_image, quantity, totalPrice:total_price, advancePaid:advance_paid, remainingAmount:remaining_amount, deliveryAddress:delivery_address, estimatedDelivery:estimated_delivery, orderNote:order_note, currentStageId:current_stage_id, currentStageIndex:current_stage_index, status, createdAt:created_at, updatedAt:updated_at').order('created_at', { ascending: false }),
       supabase.from('order_stages').select('id, name, nameEn:name_en, icon, color, order:stage_order, isDefault:is_default, description').order('stage_order'),
@@ -19,7 +27,15 @@ export async function fetchAllData() {
       supabase.from('designs').select('id, name, image, category, woodType:wood_type, cost, duration'),
       supabase.from('gallery').select('id, title, image'),
       supabase.from('shop_info').select('*').limit(1),
-      supabase.from('order_stage_history').select('orderId:order_id, stageId:stage_id, stageName:stage_name, timestamp, adminNote:admin_note, completedBy:completed_by')
+      supabase.from('order_stage_history').select('orderId:order_id, stageId:stage_id, stageName:stage_name, timestamp, adminNote:admin_note, completedBy:completed_by'),
+      supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+      supabase.from('transactions').select('*').order('date', { ascending: false }),
+      supabase.from('notifications').select('*').order('created_at', { ascending: false }),
+      supabase.from('delivery_personnel').select('*'),
+      supabase.from('customer_reviews').select('*').order('created_at', { ascending: false }),
+      supabase.from('delivery_zones').select('*').order('created_at', { ascending: false }),
+      supabase.from('delivery_locations').select('*'),
+      supabase.from('tasks').select('id, title, date:task_date, time:task_time, type:task_type, completed:is_completed').order('task_date', { ascending: true })
     ]);
 
     let mappedOrders = orders || [];
@@ -74,12 +90,22 @@ export async function fetchAllData() {
       categories: categories || [],
       designs: designs || [],
       gallery: gallery || [],
-      shopInfo
+      shopInfo,
+      customers: customers || [],
+      transactions: transactions || [],
+      notifications: notifications || [],
+      deliveryPersonnel: deliveryPersonnel || [],
+      reviews: reviews || [],
+      deliveryZones: deliveryZones || [],
+      deliveryLocations: deliveryLocations || [],
+      tasks: tasks || []
     };
   } catch (error) {
     console.error('Error fetching data from Supabase:', error);
     return {
-      orders: [], orderStages: [], products: [], categories: [], designs: [], gallery: [], shopInfo: null
+      orders: [], orderStages: [], products: [], categories: [], designs: [], gallery: [], shopInfo: null,
+      customers: [], transactions: [], notifications: [], deliveryPersonnel: [],
+      reviews: [], deliveryZones: [], deliveryLocations: [], tasks: []
     };
   }
 }

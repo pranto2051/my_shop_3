@@ -15,8 +15,22 @@ import ProductsPanel from '@/components/admin/panels/ProductsPanel';
 import SettingsPanel from '@/components/admin/panels/SettingsPanel';
 import DesignsPanel from '@/components/admin/panels/DesignsPanel';
 import GalleryPanel from '@/components/admin/panels/GalleryPanel';
+
+// New Panels
+import CustomerManagementPanel from '@/components/admin/panels/CustomerManagementPanel';
+import DeliveryManagementPanel from '@/components/admin/panels/DeliveryManagementPanel';
+import ReviewsPanel from '@/components/admin/panels/ReviewsPanel';
+import ContentManagementPanel from '@/components/admin/panels/ContentManagementPanel';
+import FinancialManagementPanel from '@/components/admin/panels/FinancialManagementPanel';
+import InventoryPanel from '@/components/admin/panels/InventoryPanel';
+import NotificationsPanel from '@/components/admin/panels/NotificationsPanel';
+import HelpPanel from '@/components/admin/panels/HelpPanel';
+import CalendarPanel from '@/components/admin/panels/CalendarPanel';
+import BackupPanel from '@/components/admin/panels/BackupPanel';
+import StoreProfilePanel from '@/components/admin/panels/StoreProfilePanel';
+
 import { useAdmin } from '@/app/context/AdminContext';
-import { FaBars, FaXmark } from 'react-icons/fa6';
+import { FaBars, FaXmark, FaMagnifyingGlass, FaBell, FaUser, FaGear, FaArrowRight, FaArrowTrendUp, FaArrowTrendDown, FaScaleBalanced, FaTruckFast, FaStar, FaMoneyBillTrendUp, FaClipboardList, FaUsers, FaCirclePlus } from 'react-icons/fa6';
 import { supabase } from '@/lib/supabase';
 
 export default function AdminPage() {
@@ -147,80 +161,251 @@ export default function AdminPage() {
                 <i className="fas fa-chevron-right separator"></i>
                 <span className="current-path">
                   {activeTab === 'dashboard' ? 'ড্যাশবোর্ড' :
-                   activeTab === 'products' ? 'পণ্য ব্যবস্থাপনা' :
-                   activeTab === 'categories' ? 'ক্যাটাগরি সমূহ' :
-                   activeTab === 'designs' ? 'ডিজাইন সমূহ' :
-                   activeTab === 'gallery' ? 'আমাদের কাজ' :
+                   activeTab === 'analytics' ? 'Analytics & Reports' :
+                   activeTab === 'products' ? 'পণ্য তালিকা' :
+                   activeTab === 'create-product' ? 'নতুন পণ্য যোগ' :
+                   activeTab === 'categories' ? 'ক্যাটাগরি' :
+                   activeTab === 'inventory' ? 'Inventory Management' :
                    activeTab === 'orders' ? 'অর্ডার তালিকা' :
                    activeTab === 'create-order' ? 'নতুন অর্ডার' :
-                   activeTab === 'order-stages' ? 'অর্ডার স্টেজ' :
-                   activeTab === 'order-tracking' ? 'অর্ডার ট্র্যাকিং' :
+                   activeTab === 'delivery' ? 'Delivery Management' :
+                   activeTab === 'order-stages' ? 'Order Stage Config' :
+                   activeTab === 'customers' ? 'Customer Management' :
+                   activeTab === 'payments' ? 'Payment Management' :
+                   activeTab === 'coupons' ? 'Coupons & Discounts' :
+                   activeTab === 'reviews' ? 'Reviews & Ratings' :
+                   activeTab === 'finance' ? 'Financial Management' :
+                   activeTab === 'pnl' ? 'Profit & Loss' :
+                   activeTab === 'cms' ? 'Content Management' :
                    activeTab === 'settings' ? 'সেটিংস' : 'অর্ডার ব্যবস্থাপনা'}
                 </span>
+              </div>
+            </div>
+            
+            <div className="top-bar-right">
+              <div className="global-search-bar" onClick={() => {/* Open Search Modal */}}>
+                <FaMagnifyingGlass />
+                <span>সার্চ করুন... (Ctrl+K)</span>
+              </div>
+              <div className="top-bar-actions">
+                <button className="top-action-btn pulse"><FaBell /><span className="btn-badge">৫</span></button>
+                <div className="user-profile-mini">
+                  <div className="user-info-txt">
+                    <span className="u-name">অ্যাডমিন</span>
+                    <span className="u-status">সক্রিয়</span>
+                  </div>
+                  <div className="u-avatar"><FaUser /></div>
+                </div>
               </div>
             </div>
           </header>
 
           <div className="dashboard-content-scroll">
             {activeTab === 'dashboard' && (
-              <div className="tab-pane active">
-                <div className="stats-grid">
-                  <div className="stat-card primary">
-                    <div className="stat-icon"><i className="fas fa-couch"></i></div>
-                    <div className="stat-info"><h3>মোট পণ্য</h3><p>{products.length}</p></div>
-                  </div>
-                  <div className="stat-card accent">
-                    <div className="stat-icon"><i className="fas fa-th-large"></i></div>
-                    <div className="stat-info"><h3>ক্যাটাগরি</h3><p>{categoriesData.length}</p></div>
-                  </div>
-                  <div className="stat-card success">
-                    <div className="stat-icon"><i className="fas fa-palette"></i></div>
-                    <div className="stat-info"><h3>ডিজাইন</h3><p>{designs.length}</p></div>
-                  </div>
-                  <div className="stat-card error">
-                    <div className="stat-icon"><i className="fas fa-hammer"></i></div>
-                    <div className="stat-info"><h3>আমাদের কাজ</h3><p>{gallery.length}</p></div>
+              <div className="tab-pane active dashboard-home">
+                {/* Quick Stats Ticker */}
+                <div className="stats-ticker-wrap">
+                  <div className="stats-ticker">
+                    <span>আজ {state.orders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length}টি নতুন অর্ডার</span>
+                    <span className="ticker-sep">|</span>
+                    <span>৳{state.transactions.filter(t => new Date(t.date).toDateString() === new Date().toDateString()).reduce((sum, t) => sum + (t.type === 'Income' ? t.amount : 0), 0).toLocaleString()} মোট আয়</span>
+                    <span className="ticker-sep">|</span>
+                    <span>{state.orders.filter(o => o.currentStageId === 'stage_008').length}টি ডেলিভারি আজ</span>
+                    <span className="ticker-sep">|</span>
+                    <span>{state.orders.filter(o => o.status === 'active').length}টি অর্ডার পেন্ডিং</span>
+                    <span className="ticker-sep">|</span>
+                    <span>{state.reviews.length}টি মোট রিভিউ</span>
                   </div>
                 </div>
 
-                <div className="recent-products-card" style={{ marginTop: '30px' }}>
-                  <div className="card-header">
-                    <h3 className="visual-title">সাম্প্রতিক পণ্যসমূহ</h3>
-                    <button className="view-all-btn" onClick={() => setActiveTab('products')}>সব দেখুন <i className="fas fa-arrow-right"></i></button>
+                {/* ROW 1: HERO STATS */}
+                <div className="hero-stats-grid">
+                  <div className="hero-stat-card">
+                    <div className="h-icon income"><FaArrowTrendUp /></div>
+                    <div className="h-info">
+                      <span className="h-label">আজকের আয়</span>
+                      <span className="h-value">৳{state.transactions.filter(t => new Date(t.date).toDateString() === new Date().toDateString()).reduce((sum, t) => sum + (t.type === 'Income' ? t.amount : 0), 0).toLocaleString()}</span>
+                    </div>
                   </div>
-                  <div className="table-responsive">
-                    <table className="premium-table">
-                      <thead>
-                        <tr>
-                          <th>পণ্য</th>
-                          <th>ক্যাটাগরি</th>
-                          <th>মূল্য</th>
-                          <th>স্টক</th>
-                          <th>অ্যাকশন</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {products.slice(0, 5).map(product => (
-                          <tr key={product.id}>
-                            <td>
-                              <div className="product-cell">
-                                <img src={product.image} alt="" className="mini-img" />
-                                <div className="product-names">
-                                  <span className="name-bn">{product.name}</span>
-                                  <span className="name-en">{product.nameEn}</span>
-                                </div>
-                              </div>
-                            </td>
-                            <td><span className="badge category-badge">{(categoriesData.find(c => c.id === product.categoryId) || {}).name}</span></td>
-                            <td>৳{product.price.toLocaleString('bn-BD')}</td>
-                            <td><span className={`badge ${product.inStock ? 'stock-in' : 'stock-out'}`}>{product.inStock ? 'স্টকে আছে' : 'স্টক শেষ'}</span></td>
-                            <td>
-                              <button className="view-all-btn" style={{ padding: '5px 10px', fontSize: '12px' }} onClick={() => setActiveTab('products')}>ব্যবস্থাপনা</button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="hero-stat-card">
+                    <div className="h-icon monthly"><FaMoneyBillTrendUp /></div>
+                    <div className="h-info">
+                      <span className="h-label">এই মাসের আয়</span>
+                      <span className="h-value">৳{state.transactions.filter(t => new Date(t.date).getMonth() === new Date().getMonth()).reduce((sum, t) => sum + (t.type === 'Income' ? t.amount : 0), 0).toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <div className="hero-stat-card">
+                    <div className="h-icon active-ord"><FaClipboardList /></div>
+                    <div className="h-info">
+                      <span className="h-label">সক্রিয় অর্ডার</span>
+                      <span className="h-value">{state.orders.filter(o => o.status === 'active').length}</span>
+                    </div>
+                  </div>
+                  <div className="hero-stat-card">
+                    <div className="h-icon customers"><FaUsers /></div>
+                    <div className="h-info">
+                      <span className="h-label">মোট গ্রাহক</span>
+                      <span className="h-value">{state.customers.length}</span>
+                    </div>
+                  </div>
+                  <div className="hero-stat-card">
+                    <div className="h-icon dues"><FaScaleBalanced /></div>
+                    <div className="h-info">
+                      <span className="h-label">বাকি পেমেন্ট</span>
+                      <span className="h-value">৳১২,৪০০</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ROW 2: CHARTS */}
+                <div className="dashboard-charts-row">
+                  <div className="chart-container main-chart">
+                    <div className="chart-header">
+                      <h3>আয় রিপোর্ট (গত ১৪ দিন)</h3>
+                      <select><option>গত ১৪ দিন</option><option>গত ৩০ দিন</option></select>
+                    </div>
+                    <div className="mock-bar-chart-large">
+                      {[40, 60, 35, 80, 55, 90, 45, 70, 85, 30, 50, 65, 75, 95].map((h, i) => (
+                        <div key={i} className="bar-wrapper">
+                          <div className="bar" style={{height: `${h}%`}}></div>
+                          <span className="bar-day">{i+1}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="chart-container side-chart">
+                    <div className="chart-header">
+                      <h3>অর্ডার স্ট্যাটাস</h3>
+                    </div>
+                    <div className="mock-donut-chart">
+                      <div className="donut-hole">
+                        <span className="d-total">৮৫</span>
+                        <span className="d-label">মোট</span>
+                      </div>
+                    </div>
+                    <div className="donut-legend">
+                      <div className="leg-item"><span className="dot active"></span> সক্রিয়</div>
+                      <div className="leg-item"><span className="dot done"></span> সম্পন্ন</div>
+                      <div className="leg-item"><span className="dot cancel"></span> বাতিল</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ROW 3: ACTION REQUIRED */}
+                <div className="action-required-section">
+                  <h3 className="section-title">অ্যাকশন প্রয়োজন</h3>
+                  <div className="action-cards-scroll">
+                    <div className="action-mini-card">
+                      <div className="a-badge">৩</div>
+                      <div className="a-txt">পেমেন্ট ভেরিফিকেশন বাকি</div>
+                      <button className="a-btn">দেখুন</button>
+                    </div>
+                    <div className="action-mini-card">
+                      <div className="a-badge">৫</div>
+                      <div className="a-txt">অর্ডার স্টেজ আপডেট করা হয়নি</div>
+                      <button className="a-btn">দেখুন</button>
+                    </div>
+                    <div className="action-mini-card">
+                      <div className="a-badge">২</div>
+                      <div className="a-txt">রিভিউ পেন্ডিং আছে</div>
+                      <button className="a-btn">দেখুন</button>
+                    </div>
+                    <div className="action-mini-card">
+                      <div className="a-badge alert">৪</div>
+                      <div className="a-txt">পণ্যের স্টক শেষ পর্যায়ে</div>
+                      <button className="a-btn">স্টক আপডেট</button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ROW 4: RECENT ORDERS & LIVE FEED */}
+                <div className="dashboard-double-row">
+                  <div className="content-box recent-orders">
+                    <div className="box-header">
+                      <h3>সাম্প্রতিক অর্ডার সমূহ</h3>
+                      <button className="view-all" onClick={() => setActiveTab('orders')}>সব দেখুন</button>
+                    </div>
+                    <div className="mini-order-list">
+                      {state.orders.slice(0, 6).map(order => (
+                        <div key={order.id} className="mini-order-card">
+                          <div className="mo-left">
+                            <span className="mo-id">{order.id}</span>
+                            <span className="mo-name">{order.customerName}</span>
+                          </div>
+                          <div className="mo-right">
+                            <span className="mo-amount">৳{order.totalPrice.toLocaleString('bn-BD')}</span>
+                            <span className={`mo-status ${order.status}`}>{order.status}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="content-box activity-feed">
+                    <div className="box-header">
+                      <h3>লাইভ অ্যাক্টিভিটি ফিড</h3>
+                      <span className="live-dot pulse"></span>
+                    </div>
+                    <div className="feed-list">
+                      <div className="feed-item">
+                        <div className="f-icon plus"><FaCirclePlus /></div>
+                        <div className="f-txt"><strong>অ্যাডমিন</strong> একটি নতুন অর্ডার তৈরি করেছেন (ORD-1025)</div>
+                        <span className="f-time">২ মিনিট আগে</span>
+                      </div>
+                      <div className="feed-item">
+                        <div className="f-icon update"><FaGear /></div>
+                        <div className="f-txt">অর্ডার <strong>ORD-1020</strong> এর স্টেজ পরিবর্তন করা হয়েছে</div>
+                        <span className="f-time">১৫ মিনিট আগে</span>
+                      </div>
+                      <div className="feed-item">
+                        <div className="f-icon review"><FaStar /></div>
+                        <div className="f-txt">একজন গ্রাহক <strong>রয়্যাল চেয়ার</strong> এ ৫-স্টার রিভিউ দিয়েছেন</div>
+                        <span className="f-time">১ ঘণ্টা আগে</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ROW 5: TOP SELLING, NEW CUSTOMERS, DELIVERIES */}
+                <div className="dashboard-triple-row">
+                  <div className="content-box">
+                    <h3>টপ সেলিং পণ্য</h3>
+                    <div className="mini-list">
+                      {products.slice(0, 3).map(p => (
+                        <div key={p.id} className="mini-item">
+                          <img src={p.image} alt="" />
+                          <div className="mi-info">
+                            <span className="mi-name">{p.name}</span>
+                            <span className="mi-sub">২৪টি বিক্রি হয়েছে</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="content-box">
+                    <h3>নতুন গ্রাহক</h3>
+                    <div className="mini-list">
+                      {[1,2,3].map(i => (
+                        <div key={i} className="mini-item">
+                          <div className="mi-avatar"><FaUser /></div>
+                          <div className="mi-info">
+                            <span className="mi-name">গ্রাহক নাম #{i}</span>
+                            <span className="mi-sub">আজ জয়েন করেছেন</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="content-box">
+                    <h3>আসন্ন ডেলিভারি</h3>
+                    <div className="mini-list">
+                      <div className="mini-item">
+                        <div className="mi-icon"><FaTruckFast /></div>
+                        <div className="mi-info">
+                          <span className="mi-name">ORD-1022</span>
+                          <span className="mi-sub">আগামীকাল, বনানী</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -266,6 +451,68 @@ export default function AdminPage() {
 
             {activeTab === 'gallery' && (
               <GalleryPanel />
+            )}
+
+            {activeTab === 'inventory' && (
+              <InventoryPanel />
+            )}
+
+            {activeTab === 'customers' && (
+              <CustomerManagementPanel 
+                customers={state.customers} 
+              />
+            )}
+
+            {activeTab === 'delivery' && (
+              <DeliveryManagementPanel 
+                deliveryZones={state.deliveryZones}
+                deliveryLocations={state.deliveryLocations}
+              />
+            )}
+
+            {activeTab === 'reviews' && (
+              <ReviewsPanel reviews={state.reviews} />
+            )}
+
+            {activeTab === 'finance' && (
+              <FinancialManagementPanel 
+                transactions={state.transactions} 
+              />
+            )}
+
+            {activeTab === 'pnl' && (
+              <FinancialManagementPanel 
+                transactions={state.transactions} 
+                initialTab="pnl"
+              />
+            )}
+
+            {activeTab === 'notifications' && (
+              <NotificationsPanel />
+            )}
+
+            {activeTab === 'performance' && (
+              <PerformancePanel />
+            )}
+
+            {activeTab === 'calendar' && (
+              <CalendarPanel tasks={state.tasks} />
+            )}
+
+            {activeTab === 'backup' && (
+              <BackupPanel />
+            )}
+
+            {activeTab === 'help' && (
+              <HelpPanel />
+            )}
+
+            {activeTab === 'cms' && (
+              <ContentManagementPanel />
+            )}
+
+            {activeTab === 'profile' && (
+              <StoreProfilePanel />
             )}
 
             {activeTab === 'settings' && (
@@ -387,6 +634,161 @@ export default function AdminPage() {
         .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px; }
         .btn-primary { background: #7C4B2A; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
         .btn-secondary { background: #eee; color: #333; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
+
+        /* Dashboard Top Bar Enhancements */
+        .top-bar-right { display: flex; align-items: center; gap: 25px; }
+        .global-search-bar { 
+          background: #f1f3f5; 
+          border: 1px solid #e9ecef; 
+          border-radius: 10px; 
+          padding: 8px 15px; 
+          display: flex; 
+          align-items: center; 
+          gap: 12px; 
+          color: #adb5bd; 
+          width: 300px; 
+          cursor: pointer;
+          transition: 0.2s;
+        }
+        .global-search-bar:hover { background: #e9ecef; border-color: #dee2e6; color: #495057; }
+        .top-bar-actions { display: flex; align-items: center; gap: 15px; }
+        .top-action-btn { 
+          background: white; 
+          border: 1px solid #eee; 
+          width: 40px; 
+          height: 40px; 
+          border-radius: 10px; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          color: #2c3e50; 
+          position: relative;
+          cursor: pointer;
+        }
+        .btn-badge { 
+          position: absolute; 
+          top: -5px; 
+          right: -5px; 
+          background: #e74c3c; 
+          color: white; 
+          font-size: 10px; 
+          font-weight: 700; 
+          width: 18px; 
+          height: 18px; 
+          border-radius: 50%; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          border: 2px solid white;
+        }
+        .user-profile-mini { display: flex; align-items: center; gap: 12px; padding-left: 15px; border-left: 1px solid #eee; }
+        .user-info-txt { display: flex; flex-direction: column; text-align: right; }
+        .u-name { font-weight: 700; font-size: 14px; color: #2c3e50; }
+        .u-status { font-size: 11px; color: #27ae60; font-weight: 600; }
+        .u-avatar { width: 40px; height: 40px; background: #E6D5B8; color: #7C4B2A; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+        /* Stats Ticker */
+        .stats-ticker-wrap { background: #7C4B2A; margin: -10px -10px 25px -10px; padding: 10px; border-radius: 10px; overflow: hidden; }
+        .stats-ticker { display: flex; align-items: center; gap: 20px; color: white; font-weight: 600; font-size: 13px; animation: scroll-ticker 30s linear infinite; white-space: nowrap; }
+        @keyframes scroll-ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .ticker-sep { opacity: 0.3; }
+
+        /* Hero Stats Grid */
+        .hero-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .hero-stat-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid #eee; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .h-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .h-icon.income { background: #e8f5e9; color: #2e7d32; }
+        .h-icon.monthly { background: #e3f2fd; color: #1565c0; }
+        .h-icon.active-ord { background: #fff3e0; color: #e65100; }
+        .h-icon.customers { background: #f3e5f5; color: #7b1fa2; }
+        .h-icon.dues { background: #ffebee; color: #c62828; }
+        .h-info { display: flex; flex-direction: column; }
+        .h-label { font-size: 11px; color: #7f8c8d; font-weight: 600; text-transform: uppercase; }
+        .h-value { font-size: 18px; font-weight: 800; color: #2c3e50; }
+
+        /* Charts Row */
+        .dashboard-charts-row { display: grid; grid-template-columns: 1fr 320px; gap: 20px; margin-bottom: 30px; }
+        .chart-container { background: white; border-radius: 20px; border: 1px solid #eee; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .chart-header h3 { font-size: 16px; color: #2c3e50; }
+        .mock-bar-chart-large { height: 220px; display: flex; align-items: flex-end; gap: 12px; padding-bottom: 25px; border-bottom: 1px solid #f8f9fa; }
+        .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; }
+        .bar { width: 100%; background: linear-gradient(to top, #7C4B2A, #A67B5B); border-radius: 4px 4px 0 0; transition: 0.3s; }
+        .bar:hover { background: #2c3e50; transform: scaleX(1.1); }
+        .bar-day { font-size: 10px; color: #adb5bd; font-weight: 600; }
+
+        .mock-donut-chart { width: 150px; height: 150px; border-radius: 50%; border: 20px solid #f1f3f5; border-top-color: #7C4B2A; border-right-color: #27ae60; border-left-color: #e74c3c; margin: 0 auto 20px; position: relative; }
+        .donut-hole { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .d-total { font-size: 24px; font-weight: 800; color: #2c3e50; }
+        .d-label { font-size: 11px; color: #7f8c8d; font-weight: 600; }
+        .donut-legend { display: flex; flex-direction: column; gap: 10px; }
+        .leg-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #2c3e50; font-weight: 600; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot.active { background: #7C4B2A; }
+        .dot.done { background: #27ae60; }
+        .dot.cancel { background: #e74c3c; }
+
+        /* Action Required */
+        .action-required-section { margin-bottom: 30px; }
+        .section-title { font-size: 18px; color: #2c3e50; margin-bottom: 15px; }
+        .action-cards-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
+        .action-mini-card { flex-shrink: 0; background: white; border: 1px solid #eee; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 12px; min-width: 250px; }
+        .a-badge { background: #f1f3f5; color: #2c3e50; width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
+        .a-badge.alert { background: #fee2e2; color: #ef4444; }
+        .a-txt { font-size: 13px; color: #495057; font-weight: 600; flex: 1; }
+        .a-btn { background: #f8f9fa; border: 1px solid #eee; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; }
+
+        /* Double Row Boxes */
+        .dashboard-double-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .content-box { background: white; border-radius: 20px; border: 1px solid #eee; padding: 20px; }
+        .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .box-header h3 { font-size: 16px; color: #2c3e50; }
+        .view-all { background: none; border: none; color: #7C4B2A; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+        .mini-order-list { display: flex; flex-direction: column; gap: 12px; }
+        .mini-order-card { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #f8f9fa; border-radius: 12px; }
+        .mo-left { display: flex; flex-direction: column; }
+        .mo-id { font-size: 11px; font-weight: 800; color: #7C4B2A; }
+        .mo-name { font-size: 13px; font-weight: 600; color: #2c3e50; }
+        .mo-right { display: flex; flex-direction: column; align-items: flex-end; }
+        .mo-amount { font-weight: 700; font-size: 13px; color: #2c3e50; }
+        .mo-status { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 5px; }
+        .mo-status.active { background: #e3f2fd; color: #1565c0; }
+
+        .feed-list { display: flex; flex-direction: column; gap: 15px; }
+        .feed-item { display: flex; gap: 15px; position: relative; }
+        .f-icon { width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .f-icon.plus { background: #e8f5e9; color: #2e7d32; }
+        .f-icon.update { background: #f3e5f5; color: #7b1fa2; }
+        .f-icon.review { background: #fffde7; color: #fbc02d; }
+        .f-txt { font-size: 13px; color: #495057; line-height: 1.4; flex: 1; }
+        .f-txt strong { color: #2c3e50; }
+        .f-time { font-size: 10px; color: #adb5bd; font-weight: 600; }
+        .live-dot { width: 8px; height: 8px; background: #27ae60; border-radius: 50%; }
+
+        /* Triple Row */
+        .dashboard-triple-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .mini-list { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .mini-item { display: flex; align-items: center; gap: 12px; padding: 10px; background: #f8f9fa; border-radius: 10px; }
+        .mini-item img { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; }
+        .mi-info { display: flex; flex-direction: column; }
+        .mi-name { font-size: 13px; font-weight: 700; color: #2c3e50; }
+        .mi-sub { font-size: 11px; color: #7f8c8d; }
+        .mi-avatar { width: 35px; height: 35px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #777; }
+        .mi-icon { width: 35px; height: 35px; background: #e3f2fd; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1565c0; }
+
+        .pulse { animation: pulse-animation 2s infinite; }
+        @keyframes pulse-animation { 0% { box-shadow: 0 0 0 0px rgba(39, 174, 96, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(39, 174, 96, 0); } 100% { box-shadow: 0 0 0 0px rgba(39, 174, 96, 0); } }
+
+        @media (max-width: 1200px) {
+          .dashboard-charts-row { grid-template-columns: 1fr; }
+          .dashboard-triple-row { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 900px) {
+          .dashboard-double-row { grid-template-columns: 1fr; }
+          .dashboard-triple-row { grid-template-columns: 1fr; }
+          .global-search-bar { width: 200px; }
+        }
       `}</style>
     </main>
   );

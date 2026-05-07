@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { fetchAllData } from '@/lib/dataFetcher';
+import { supabase } from '@/lib/supabase';
 
 const AdminContext = createContext();
 
@@ -16,6 +17,14 @@ const initialState = {
   designs: [],
   gallery: [],
   shopInfo: null,
+  customers: [],
+  transactions: [],
+  notifications: [],
+  deliveryPersonnel: [],
+  reviews: [],
+  deliveryZones: [],
+  deliveryLocations: [],
+  tasks: [],
   settings: {
     showAdminHeader: false,
     showAdminFooter: false,
@@ -34,6 +43,14 @@ function adminReducer(state, action) {
         designs: action.payload.designs || [],
         gallery: action.payload.gallery || [],
         shopInfo: action.payload.shopInfo || null,
+        customers: action.payload.customers || [],
+        transactions: action.payload.transactions || [],
+        notifications: action.payload.notifications || [],
+        deliveryPersonnel: action.payload.deliveryPersonnel || [],
+        reviews: action.payload.reviews || [],
+        deliveryZones: action.payload.deliveryZones || [],
+        deliveryLocations: action.payload.deliveryLocations || [],
+        tasks: action.payload.tasks || [],
       };
 
     case 'UPDATE_SETTINGS':
@@ -220,10 +237,54 @@ function adminReducer(state, action) {
         gallery: state.gallery.filter(g => g.id !== action.payload),
       };
 
+    case 'ADD_DELIVERY_ZONE':
+      return {
+        ...state,
+        deliveryZones: [action.payload, ...state.deliveryZones],
+      };
+    case 'DELETE_DELIVERY_ZONE':
+      return {
+        ...state,
+        deliveryZones: state.deliveryZones.filter(z => z.id !== action.payload),
+      };
+
     default:
       return state;
   }
 }
+
+// ... (other helper functions)
+
+export const addDeliveryZone = async (dispatch, zoneData) => {
+  const { data, error } = await supabase
+    .from('delivery_zones')
+    .insert([{
+      name: zoneData.name,
+      charge: parseFloat(zoneData.charge),
+      estimated_time: zoneData.estimated_time,
+      status: 'সক্রিয়'
+    }])
+    .select();
+
+  if (!error && data) {
+    dispatch({ type: 'ADD_DELIVERY_ZONE', payload: data[0] });
+    return { success: true, data: data[0] };
+  }
+  return { success: false, error };
+};
+
+export const deleteDeliveryZone = async (dispatch, zoneId) => {
+  const { error } = await supabase
+    .from('delivery_zones')
+    .delete()
+    .eq('id', zoneId);
+
+  if (!error) {
+    dispatch({ type: 'DELETE_DELIVERY_ZONE', payload: zoneId });
+    return { success: true };
+  }
+  return { success: false, error };
+};
 
 // Helper functions (pure, outside reducer)
 export const getOrderProgress = (order, stages) => {
