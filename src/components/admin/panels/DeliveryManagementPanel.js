@@ -71,11 +71,11 @@ export default function DeliveryManagementPanel({
   const recentDeliveries = [];
 
   return (
-    <div className="delivery-panel">
+    <div className="delivery-panel" suppressHydrationWarning>
       {showAddModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
+        <div className="modal-overlay" suppressHydrationWarning>
+          <div className="modal-content" suppressHydrationWarning>
+            <div className="modal-header" suppressHydrationWarning>
               <h3>নতুন ডেলিভারি জোন যোগ করুন</h3>
               <button className="close-modal" onClick={() => setShowAddModal(false)}><FaXmark /></button>
             </div>
@@ -339,6 +339,7 @@ export default function DeliveryManagementPanel({
 
       <style jsx>{`
         .modal-overlay {
+          position: fixed;
           top: 0;
           left: 0;
           right: 0;
@@ -348,7 +349,7 @@ export default function DeliveryManagementPanel({
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 9999;
+          z-index: 10001;
           padding: 20px;
           animation: fadeIn 0.2s ease;
         }
@@ -370,10 +371,6 @@ export default function DeliveryManagementPanel({
         @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         .modal-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
           padding: 20px 30px;
           border-bottom: 1px solid #f1f5f9;
           display: flex;
