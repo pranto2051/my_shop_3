@@ -34,7 +34,13 @@ import { FaBars, FaXmark, FaMagnifyingGlass, FaBell, FaUser, FaGear, FaArrowRigh
 import { supabase } from '@/lib/supabase';
 
 export default function AdminPage() {
+  const [isClient, setIsClient] = useState(false);
   const { state, dispatch } = useAdmin();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const { 
     products, 
     categories: categoriesData, 
@@ -119,6 +125,7 @@ export default function AdminPage() {
     localStorage.removeItem('adminLoggedIn');
   };
 
+  if (!isClient) return null;
 
   if (!isLoggedIn) {
     return (
@@ -135,8 +142,8 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="admin-wrapper">
-      <section className={`admin-dashboard-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+    <main className="admin-wrapper" suppressHydrationWarning>
+      <section className={`admin-dashboard-layout ${isSidebarOpen ? 'sidebar-open' : ''}`} suppressHydrationWarning>
         <Sidebar 
           activeTab={activeTab} 
           setActiveTab={handleTabChange} 

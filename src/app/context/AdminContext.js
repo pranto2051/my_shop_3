@@ -260,7 +260,7 @@ export const addDeliveryZone = async (dispatch, zoneData) => {
     .from('delivery_zones')
     .insert([{
       name: zoneData.name,
-      charge: parseFloat(zoneData.charge),
+      charge: zoneData.charge,
       estimated_time: zoneData.estimated_time,
       status: 'সক্রিয়'
     }])

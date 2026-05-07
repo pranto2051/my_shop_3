@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAdmin, addDeliveryZone, deleteDeliveryZone } from '@/app/context/AdminContext';
+import ConfirmModal from '@/components/admin/ConfirmModal';
 import { 
   FaTruckFast, 
   FaMapLocationDot, 
@@ -33,6 +34,8 @@ export default function DeliveryManagementPanel({
     estimated_time: ''
   });
   const [loading, setLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   const zones = dbZones.map(z => ({
     id: z.id,
@@ -59,12 +62,21 @@ export default function DeliveryManagementPanel({
     }
   };
 
-  const handleDeleteZone = async (id) => {
-    if (window.confirm('আপনি কি নিশ্চিত যে এই জোনটি মুছে ফেলতে চান?')) {
-      const result = await deleteDeliveryZone(dispatch, id);
-      if (!result.success) {
-        alert('মুছে ফেলা যায়নি: ' + result.error.message);
-      }
+  const handleDeleteZone = (id) => {
+    setDeleteTargetId(id);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    setLoading(true);
+    const result = await deleteDeliveryZone(dispatch, deleteTargetId);
+    setLoading(false);
+    if (result.success) {
+      setShowDeleteConfirm(false);
+      setDeleteTargetId(null);
+    } else {
+      alert('মুছে ফেলা যায়নি: ' + result.error.message);
     }
   };
 
@@ -94,10 +106,14 @@ export default function DeliveryManagementPanel({
                 <div className="form-group">
                   <label>ডেলিভারি চার্জ (৳)</label>
                   <input 
-                    type="number" 
+                    type="text" 
+                    inputMode="numeric"
                     placeholder="80" 
                     value={newZone.charge}
-                    onChange={(e) => setNewZone({...newZone, charge: e.target.value})}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setNewZone({...newZone, charge: value});
+                    }}
                     required
                   />
                 </div>
@@ -121,6 +137,20 @@ export default function DeliveryManagementPanel({
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal 
+        isOpen={showDeleteConfirm}
+        title="জোন মুছে ফেলুন"
+        message="আপনি কি নিশ্চিত যে এই ডেলিভারি জোনটি মুছে ফেলতে চান? এটি আর ফিরে পাওয়া যাবে না।"
+        onConfirm={confirmDelete}
+        onCancel={() => {
+          setShowDeleteConfirm(false);
+          setDeleteTargetId(null);
+        }}
+        confirmText="হ্যাঁ, মুছে ফেলুন"
+        cancelText="বাতিল করুন"
+      />
 
       <div className="panel-header">
         <div className="header-title">
@@ -417,6 +447,11 @@ export default function DeliveryManagementPanel({
           transition: all 0.2s ease;
           background: #f8fafc;
           width: 100%;
+          font-family: 'Noto Sans Bengali', sans-serif;
+        }
+        .form-group input::placeholder {
+          font-family: 'Noto Sans Bengali', sans-serif;
+          color: #94a3b8;
         }
         .form-group input:focus { 
           border-color: #7C4B2A; 
