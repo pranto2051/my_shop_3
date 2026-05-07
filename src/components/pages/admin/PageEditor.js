@@ -1,15 +1,22 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import styles from './PageEditor.module.css';
-import { FaXmark, FaFloppyDisk, FaChevronRight, FaEye, FaEyeSlash, FaTrash, FaPlus, FaPencil } from 'react-icons/fa6';
-import { updatePageConfig, updatePageSection } from '@/lib/pages/updatePageData';
+import { FaXmark, FaFloppyDisk, FaChevronRight, FaEye, FaEyeSlash, FaTrash, FaPlus, FaPencil, FaArrowUp, FaArrowDown } from 'react-icons/fa6';
+import { updatePageConfig, updatePageSection, reorderSections, createPageSection, deletePageSection, updatePageHighlight } from '@/lib/pages/updatePageData';
 import SectionEditor from './SectionEditor';
 
-const PageEditor = ({ isOpen, onClose, slug, config, sections: initialSections, highlights }) => {
+const PageEditor = ({ isOpen, onClose, slug, config, sections: initialSections, highlights: initialHighlights }) => {
   const [activeTab, setActiveTab] = useState('info');
   const [sections, setSections] = useState(initialSections || []);
+  const [highlights, setHighlights] = useState(initialHighlights || []);
   const [isSaving, setIsSaving] = useState(false);
   const [editingSection, setEditingSection] = useState(null);
+  const [showAddSectionForm, setShowAddSectionForm] = useState(false);
+  const [newSectionData, setNewSectionData] = useState({
+    title: '',
+    icon: '📄',
+    content_type: 'text'
+  });
   
   const [formData, setFormData] = useState({
     title_bn: '',
@@ -36,7 +43,10 @@ const PageEditor = ({ isOpen, onClose, slug, config, sections: initialSections, 
     if (initialSections) {
       setSections(initialSections);
     }
-  }, [config, initialSections]);
+    if (initialHighlights) {
+      setHighlights(initialHighlights);
+    }
+  }, [config, initialSections, initialHighlights]);
 
   if (!isOpen) return null;
 
@@ -44,6 +54,19 @@ const PageEditor = ({ isOpen, onClose, slug, config, sections: initialSections, 
     try {
       setIsSaving(true);
       await updatePageConfig(slug, formData);
+      
+      // Update highlights if about-us
+      if (slug === 'about-us') {
+        for (const h of highlights) {
+          await updatePageHighlight(h.id, {
+            icon: h.icon,
+            number_value: h.number_value,
+            label_text: h.label_text,
+            bg_color: h.bg_color
+          });
+        }
+      }
+
       alert('পেজ তথ্য সফলভাবে সংরক্ষিত হয়েছে!');
       window.location.reload(); // Refresh to show changes
     } catch (error) {
@@ -65,6 +88,61 @@ const PageEditor = ({ isOpen, onClose, slug, config, sections: initialSections, 
     } catch (error) {
       console.error('Error toggling visibility:', error);
       alert('অবস্থা পরিবর্তন করতে সমস্যা হয়েছে।');
+    }
+  };
+
+  const moveSection = async (index, direction) => {
+    const newSections = [...sections];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    if (targetIndex < 0 || targetIndex >= sections.length) return;
+    
+    [newSections[index], newSections[targetIndex]] = [newSections[targetIndex], newSections[index]];
+    
+    setSections(newSections);
+    
+    try {
+      await reorderSections(newSections.map(s => s.id));
+    } catch (error) {
+      console.error('Error reordering sections:', error);
+      alert('অর্ডার পরিবর্তন করতে সমস্যা হয়েছে।');
+    }
+  };
+
+  const handleAddSection = async () => {
+    if (!newSectionData.title) {
+      alert('বিভাগ শিরোনাম লিখুন');
+      return;
+    }
+
+    try {
+      const slug_key = newSectionData.title.toLowerCase().replace(/\s+/g, '_');
+      const section = await createPageSection({
+        ...newSectionData,
+        page_slug: slug,
+        section_key: `${slug_key}_${Date.now()}`,
+        display_order: sections.length,
+        is_visible: true
+      });
+
+      setSections([...sections, { ...section, blocks: [] }]);
+      setShowAddSectionForm(false);
+      setNewSectionData({ title: '', icon: '📄', content_type: 'text' });
+    } catch (error) {
+      console.error('Error creating section:', error);
+      alert('বিভাগ তৈরি করতে সমস্যা হয়েছে।');
+    }
+  };
+
+  const handleDeleteSection = async (id) => {
+    if (confirm('আপনি কি নিশ্চিত যে আপনি এই বিভাগটি ডিলিট করতে চান? এর ভিতরের সকল কন্টেন্ট মুছে যাবে।')) {
+      try {
+        await deletePageSection(id);
+        setSections(sections.filter(s => s.id !== id));
+      } catch (error) {
+        console.error('Error deleting section:', error);
+        alert('বিভাগ ডিলিট করতে সমস্যা হয়েছে।');
+      }
     }
   };
 
@@ -173,9 +251,25 @@ const PageEditor = ({ isOpen, onClose, slug, config, sections: initialSections, 
 
           {activeTab === 'sections' && (
             <div className={styles.sectionsList}>
-              {sections?.map((section) => (
+              {sections?.map((section, index) => (
                 <div key={section.id} className={`${styles.sectionItem} ${!section.is_visible ? styles.inactive : ''}`}>
                   <div className={styles.sectionInfo}>
+                    <div className={styles.reorderBtns}>
+                      <button 
+                        onClick={() => moveSection(index, 'up')}
+                        disabled={index === 0}
+                        title="উপরে নিন"
+                      >
+                        <FaArrowUp />
+                      </button>
+                      <button 
+                        onClick={() => moveSection(index, 'down')}
+                        disabled={index === sections.length - 1}
+                        title="নিচে নিন"
+                      >
+                        <FaArrowDown />
+                      </button>
+                    </div>
                     <span className={styles.sectionIcon}>{section.icon}</span>
                     <div className={styles.sectionTextContent}>
                       <span className={styles.sectionTitle}>{section.title}</span>
@@ -197,23 +291,111 @@ const PageEditor = ({ isOpen, onClose, slug, config, sections: initialSections, 
                     >
                       {section.is_visible ? <FaEye /> : <FaEyeSlash />}
                     </button>
+                    <button 
+                      className={`${styles.visibilityBtn} ${styles.deleteSectionBtn}`}
+                      onClick={() => handleDeleteSection(section.id)}
+                      title="বিভাগ মুছুন"
+                    >
+                      <FaTrash />
+                    </button>
                   </div>
                 </div>
               ))}
-              <button className={styles.addSectionBtn}>
-                <FaPlus /> নতুন বিভাগ যোগ করুন
-              </button>
+
+              {showAddSectionForm ? (
+                <div className={styles.addSectionForm}>
+                  <div className={styles.formRow}>
+                    <input 
+                      type="text" 
+                      placeholder="বিভাগ শিরোনাম"
+                      value={newSectionData.title}
+                      onChange={(e) => setNewSectionData({...newSectionData, title: e.target.value})}
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="Icon"
+                      value={newSectionData.icon}
+                      onChange={(e) => setNewSectionData({...newSectionData, icon: e.target.value})}
+                      style={{ width: '60px' }}
+                    />
+                  </div>
+                  <select 
+                    value={newSectionData.content_type}
+                    onChange={(e) => setNewSectionData({...newSectionData, content_type: e.target.value})}
+                  >
+                    <option value="text">Text (Paragraphs)</option>
+                    <option value="list">List (Icon + Title + Desc)</option>
+                    <option value="table">Table</option>
+                    <option value="timeline">Timeline</option>
+                    <option value="highlight">Highlights</option>
+                    <option value="faq">FAQ</option>
+                  </select>
+                  <div className={styles.addSectionActions}>
+                    <button onClick={() => setShowAddSectionForm(false)}>বাতিল</button>
+                    <button className={styles.confirmAddBtn} onClick={handleAddSection}>তৈরি করুন</button>
+                  </div>
+                </div>
+              ) : (
+                <button className={styles.addSectionBtn} onClick={() => setShowAddSectionForm(true)}>
+                  <FaPlus /> নতুন বিভাগ যোগ করুন
+                </button>
+              )}
             </div>
           )}
 
           {activeTab === 'highlights' && (
             <div className={styles.highlightsList}>
-              {highlights?.map((highlight) => (
-                <div key={highlight.id} className={styles.highlightItem}>
-                  <span className={styles.highlightIcon}>{highlight.icon}</span>
-                  <div className={styles.highlightInfo}>
-                    <span className={styles.highlightValue}>{highlight.number_value}</span>
-                    <span className={styles.highlightLabel}>{highlight.label_text}</span>
+              {highlights?.map((highlight, index) => (
+                <div key={highlight.id} className={styles.highlightEditCard}>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label>আইকন</label>
+                      <input 
+                        type="text" 
+                        value={highlight.icon} 
+                        onChange={(e) => {
+                          const newHighlights = [...highlights];
+                          newHighlights[index].icon = e.target.value;
+                          setHighlights(newHighlights);
+                        }}
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label>ভ্যালু (উদা: ২০+)</label>
+                      <input 
+                        type="text" 
+                        value={highlight.number_value} 
+                        onChange={(e) => {
+                          const newHighlights = [...highlights];
+                          newHighlights[index].number_value = e.target.value;
+                          setHighlights(newHighlights);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>লেবেল (উদা: বছরের অভিজ্ঞতা)</label>
+                    <input 
+                      type="text" 
+                      value={highlight.label_text} 
+                      onChange={(e) => {
+                        const newHighlights = [...highlights];
+                        newHighlights[index].label_text = e.target.value;
+                        setHighlights(newHighlights);
+                      }}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>ব্যাকগ্রাউন্ড কালার</label>
+                    <input 
+                      type="color" 
+                      value={highlight.bg_color} 
+                      onChange={(e) => {
+                        const newHighlights = [...highlights];
+                        newHighlights[index].bg_color = e.target.value;
+                        setHighlights(newHighlights);
+                      }}
+                    />
                   </div>
                 </div>
               ))}

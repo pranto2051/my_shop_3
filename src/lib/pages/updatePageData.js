@@ -20,6 +20,27 @@ export async function updatePageSection(id, sectionData) {
   return data;
 }
 
+export async function createPageSection(sectionData) {
+  const { data, error } = await supabase
+    .from('page_sections')
+    .insert([sectionData])
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return data;
+}
+
+export async function deletePageSection(id) {
+  const { data, error } = await supabase
+    .from('page_sections')
+    .delete()
+    .eq('id', id);
+  
+  if (error) throw error;
+  return data;
+}
+
 export async function updatePageBlock(id, blockData) {
   const { data, error } = await supabase
     .from('page_blocks')
@@ -33,7 +54,9 @@ export async function updatePageBlock(id, blockData) {
 export async function createPageBlock(blockData) {
   const { data, error } = await supabase
     .from('page_blocks')
-    .insert([blockData]);
+    .insert([blockData])
+    .select()
+    .single();
   
   if (error) throw error;
   return data;

@@ -192,6 +192,35 @@
   font-family: 'Fira Code', monospace;
 }
 
+.reorderBtns {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reorderBtns button {
+  background: none;
+  border: 1px solid #D9C5A0;
+  color: #6B3D22;
+  font-size: 10px;
+  padding: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reorderBtns button:hover:not(:disabled) {
+  background: #F7EBCF;
+  color: #7C4B2A;
+}
+
+.reorderBtns button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .sectionActions {
   display: flex;
   gap: 8px;
@@ -219,6 +248,53 @@
 
 .visibilityBtn:hover {
   background: #F7EBCF;
+}
+
+.deleteSectionBtn:hover {
+  background: #fff5f6 !important;
+  color: #e74c3c !important;
+  border-color: #ffdce0 !important;
+}
+
+.addSectionForm {
+  background: #fff;
+  border: 2px solid #D9C5A0;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.addSectionForm select {
+  padding: 10px;
+  border: 1px solid #D9C5A0;
+  border-radius: 8px;
+  background: white;
+  color: #6B3D22;
+  font-weight: 600;
+}
+
+.addSectionActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.addSectionActions button {
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.confirmAddBtn {
+  background: #7C4B2A !important;
+  color: white !important;
+  border: none !important;
 }
 
 .inactive {
@@ -258,6 +334,25 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
+}
+
+.highlightEditCard {
+  background: #fff;
+  border: 1px solid #D9C5A0;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.highlightEditCard .formGroup {
+  margin: 0;
+}
+
+.highlightEditCard input[type="color"] {
+  height: 40px;
+  padding: 5px;
 }
 
 .highlightItem {

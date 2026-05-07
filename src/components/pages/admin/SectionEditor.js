@@ -1,8 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import styles from './SectionEditor.module.css';
-import { FaXmark, FaFloppyDisk, FaPlus, FaTrash, FaGripLines, FaEye, FaEyeSlash } from 'react-icons/fa6';
-import { updatePageSection, updatePageBlock, createPageBlock, deletePageBlock } from '@/lib/pages/updatePageData';
+import { FaXmark, FaFloppyDisk, FaPlus, FaTrash, FaGripLines, FaEye, FaEyeSlash, FaArrowUp, FaArrowDown } from 'react-icons/fa6';
+import { updatePageSection, updatePageBlock, createPageBlock, deletePageBlock, reorderBlocks } from '@/lib/pages/updatePageData';
 
 const SectionEditor = ({ isOpen, onClose, section, onUpdate }) => {
   const [isSaving, setIsSaving] = useState(false);
@@ -63,6 +63,16 @@ const SectionEditor = ({ isOpen, onClose, section, onUpdate }) => {
     setBlocks(blocks.map(b => b.id === id ? { ...b, [field]: value } : b));
   };
 
+  const moveBlock = (index, direction) => {
+    const newBlocks = [...blocks];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    if (targetIndex < 0 || targetIndex >= blocks.length) return;
+    
+    [newBlocks[index], newBlocks[targetIndex]] = [newBlocks[targetIndex], newBlocks[index]];
+    setBlocks(newBlocks);
+  };
+
   const addNewBlock = () => {
     const newBlock = {
       id: `new-${Date.now()}`,
@@ -93,11 +103,27 @@ const SectionEditor = ({ isOpen, onClose, section, onUpdate }) => {
     }
   };
 
-  const renderBlockEditor = (block) => {
+  const renderBlockEditor = (block, index) => {
     return (
       <div key={block.id} className={`${styles.blockItem} ${!block.is_visible ? styles.inactiveBlock : ''}`}>
         <div className={styles.blockHeader}>
-          <span className={styles.blockHandle}><FaGripLines /></span>
+          <div className={styles.blockHandleArea}>
+            <span className={styles.blockHandle}><FaGripLines /></span>
+            <div className={styles.blockReorderBtns}>
+              <button 
+                onClick={() => moveBlock(index, 'up')}
+                disabled={index === 0}
+              >
+                <FaArrowUp />
+              </button>
+              <button 
+                onClick={() => moveBlock(index, 'down')}
+                disabled={index === blocks.length - 1}
+              >
+                <FaArrowDown />
+              </button>
+            </div>
+          </div>
           <div className={styles.blockActions}>
             <button 
               className={styles.blockActionBtn}
@@ -179,7 +205,7 @@ const SectionEditor = ({ isOpen, onClose, section, onUpdate }) => {
               </button>
             </div>
             <div className={styles.blocksList}>
-              {blocks.map(block => renderBlockEditor(block))}
+              {blocks.map((block, index) => renderBlockEditor(block, index))}
             </div>
           </div>
         </div>

@@ -146,6 +146,42 @@
   cursor: grab;
 }
 
+.blockHandleArea {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.blockReorderBtns {
+  display: flex;
+  gap: 5px;
+}
+
+.blockReorderBtns button {
+  background: white;
+  border: 1px solid #eee;
+  color: #7f8c8d;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.blockReorderBtns button:hover:not(:disabled) {
+  background: #f8f9fa;
+  color: #7C4B2A;
+  border-color: #D9C5A0;
+}
+
+.blockReorderBtns button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
 .blockActions {
   display: flex;
   gap: 8px;
