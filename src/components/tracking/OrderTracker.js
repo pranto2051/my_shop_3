@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useAdmin } from '@/app/context/AdminContext';
 import { supabase } from '@/lib/supabase';
 import styles from './OrderTracker.module.css';
-import { FaMagnifyingGlass, FaPhone, FaTruckFast, FaCircleCheck } from 'react-icons/fa6';
+import { FaMagnifyingGlass, FaPhone, FaTruckFast, FaCircleCheck, FaChevronLeft } from 'react-icons/fa6';
 import TrackingTimeline from './TrackingTimeline';
 import ReviewForm from './ReviewForm';
 
@@ -13,23 +13,26 @@ export default function OrderTracker() {
   const { orders } = state;
   
   const [phone, setPhone] = useState('');
-  const [trackingResult, setTrackingResult] = useState(null);
+  const [ordersList, setOrdersList] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
 
   const handleTrack = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!phone) return;
     
     setIsLoading(true);
     setError('');
-    setTrackingResult(null);
+    setOrdersList([]);
+    setSelectedOrder(null);
     setHasReviewed(false);
 
     try {
-      // 1. Fetch order directly from Supabase
-      const { data: order, error: orderError } = await supabase
+      // 1. Fetch all orders for this phone number
+      const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
         .select(`
           id, customerName:customer_name, customerPhone:customer_phone, 
@@ -40,17 +43,32 @@ export default function OrderTracker() {
           currentStageIndex:current_stage_index
         `)
         .eq('customer_phone', phone)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+        .order('created_at', { ascending: false });
 
-      if (orderError || !order) {
+      if (ordersError) throw ordersError;
+
+      if (!ordersData || ordersData.length === 0) {
         setError('দুঃখিত, এই মোবাইল নাম্বারে কোনো অর্ডার পাওয়া যায়নি।');
         setIsLoading(false);
         return;
       }
 
-      // 2. Fetch stage history for this order
+      setOrdersList(ordersData);
+
+    } catch (err) {
+      console.error('Tracking error:', err);
+      setError('অর্ডার ট্র্যাক করতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const selectOrder = async (order) => {
+    setIsDetailLoading(true);
+    setHasReviewed(false);
+    
+    try {
+      // 1. Fetch stage history for this specific order
       const { data: history, error: historyError } = await supabase
         .from('order_stage_history')
         .select('stageId:stage_id, stageName:stage_name, timestamp, adminNote:admin_note, completedBy:completed_by')
@@ -59,7 +77,7 @@ export default function OrderTracker() {
 
       if (historyError) throw historyError;
 
-      // 3. Check if review already exists
+      // 2. Check if review already exists
       let existingReview = null;
       try {
         const { data } = await supabase
@@ -73,7 +91,7 @@ export default function OrderTracker() {
         const { data } = await supabase
           .from('customer_reviews')
           .select('id')
-          .eq('customer_phone', phone)
+          .eq('customer_phone', order.customerPhone)
           .eq('product_name', order.productName)
           .maybeSingle();
         existingReview = data;
@@ -83,17 +101,17 @@ export default function OrderTracker() {
         setHasReviewed(true);
       }
 
-      // 4. Combine data
-      setTrackingResult({
+      // 3. Combine data
+      setSelectedOrder({
         ...order,
         stageHistory: history || []
       });
 
     } catch (err) {
-      console.error('Tracking error:', err);
-      setError('অর্ডার ট্র্যাক করতে সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন।');
+      console.error('Detail fetch error:', err);
+      alert('অর্ডারের বিস্তারিত তথ্য আনতে সমস্যা হয়েছে।');
     } finally {
-      setIsLoading(false);
+      setIsDetailLoading(false);
     }
   };
 
@@ -121,34 +139,68 @@ export default function OrderTracker() {
         {error && <p className={styles.errorMsg}>{error}</p>}
       </div>
 
-      {trackingResult && (
+      {/* Orders List View */}
+      {ordersList.length > 0 && !selectedOrder && (
+        <div className={styles.ordersGrid}>
+          {ordersList.map((order) => (
+            <div 
+              key={order.id} 
+              className={styles.orderSummaryCard}
+              onClick={() => selectOrder(order)}
+            >
+              <div className={styles.summaryImage}>
+                <img src={order.productImage} alt={order.productName} />
+              </div>
+              <div className={styles.summaryContent}>
+                <span className={styles.summaryOrderId}>আইডি: #{order.id}</span>
+                <h3 className={styles.summaryProductName}>{order.productName}</h3>
+                <p className={styles.summaryPhone}>{order.customerPhone}</p>
+                <div className={`${styles.statusBadge} ${styles[order.status]}`}>
+                  {order.status === 'active' ? 'চলমান' : 
+                   order.status === 'completed' ? 'সম্পন্ন' : 'বাতিল'}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Order Detail View */}
+      {selectedOrder && (
         <div className={styles.trackingWrapper}>
+          <button 
+            className={styles.backButton}
+            onClick={() => setSelectedOrder(null)}
+          >
+            <FaChevronLeft /> আগের পৃষ্ঠায় ফিরে যান
+          </button>
+
           {/* First Row: Two Columns */}
           <div className={styles.mainGrid}>
             {/* Left Side: Product Details */}
             <div className={styles.leftCol}>
               <div className={styles.productCard}>
                 <div className={styles.imageBox}>
-                  <img src={trackingResult.productImage} alt={trackingResult.productName} />
+                  <img src={selectedOrder.productImage} alt={selectedOrder.productName} />
                 </div>
                 <div className={styles.productDetails}>
-                  <h3>{trackingResult.productName}</h3>
+                  <h3>{selectedOrder.productName}</h3>
                   <div className={styles.detailList}>
                     <div className={styles.detailItem}>
                       <span>পরিমাণ:</span>
-                      <strong>{trackingResult.quantity}টি</strong>
+                      <strong>{selectedOrder.quantity}টি</strong>
                     </div>
                     <div className={styles.detailItem}>
                       <span>মোট মূল্য:</span>
-                      <strong>৳{trackingResult.totalPrice}</strong>
+                      <strong>৳{selectedOrder.totalPrice}</strong>
                     </div>
                     <div className={styles.detailItem}>
                       <span>অগ্রিম:</span>
-                      <strong>৳{trackingResult.advancePaid}</strong>
+                      <strong>৳{selectedOrder.advancePaid}</strong>
                     </div>
                     <div className={styles.detailItem}>
                       <span>বাকি:</span>
-                      <strong>৳{trackingResult.remainingAmount}</strong>
+                      <strong>৳{selectedOrder.remainingAmount}</strong>
                     </div>
                   </div>
                 </div>
@@ -158,7 +210,7 @@ export default function OrderTracker() {
                 <FaTruckFast className={styles.truckIcon} />
                 <div>
                   <p>সম্ভাব্য ডেলিভারি তারিখ:</p>
-                  <strong>{new Date(trackingResult.estimatedDelivery).toLocaleDateString('bn-BD', {
+                  <strong>{new Date(selectedOrder.estimatedDelivery).toLocaleDateString('bn-BD', {
                     year: 'numeric', month: 'long', day: 'numeric'
                   })}</strong>
                 </div>
@@ -171,48 +223,56 @@ export default function OrderTracker() {
                 <div className={styles.orderHeader}>
                   <div className={styles.orderId}>
                     <span>অর্ডার আইডি:</span>
-                    <strong>#{trackingResult.id}</strong>
+                    <strong>#{selectedOrder.id}</strong>
                   </div>
-                  <div className={`${styles.statusBadge} ${styles[trackingResult.status]}`}>
-                    {trackingResult.status === 'active' ? 'চলমান' : 
-                     trackingResult.status === 'completed' ? 'সম্পন্ন' : 'বাতিল'}
+                  <div className={`${styles.statusBadge} ${styles[selectedOrder.status]}`}>
+                    {selectedOrder.status === 'active' ? 'চলমান' : 
+                     selectedOrder.status === 'completed' ? 'সম্পন্ন' : 'বাতিল'}
                   </div>
                 </div>
 
                 <div className={styles.orderInfo}>
                   <div className={styles.infoItem}>
                     <span className={styles.label}>গ্রাহকের নাম:</span>
-                    <span className={styles.value}>{trackingResult.customerName}</span>
+                    <span className={styles.value}>{selectedOrder.customerName}</span>
                   </div>
                   <div className={styles.infoItem}>
                     <span className={styles.label}>পণ্য:</span>
-                    <span className={styles.value}>{trackingResult.productName}</span>
+                    <span className={styles.value}>{selectedOrder.productName}</span>
                   </div>
                 </div>
               </div>
 
               <div className={styles.timelineSection}>
                 <h3 className={styles.timelineTitle}>ডেলিভারি টাইমলাইন</h3>
-                <TrackingTimeline order={trackingResult} />
+                <TrackingTimeline order={selectedOrder} />
               </div>
             </div>
           </div>
 
           {/* Second Row: Review Section */}
           <div className={styles.reviewRow}>
-            {trackingResult.status === 'completed' && !hasReviewed && (
+            {selectedOrder.status === 'completed' && !hasReviewed && (
               <ReviewForm 
-                order={trackingResult} 
+                order={selectedOrder} 
                 onSubmitted={() => setHasReviewed(true)} 
               />
             )}
 
-            {trackingResult.status === 'completed' && hasReviewed && (
+            {selectedOrder.status === 'completed' && hasReviewed && (
               <div className={styles.alreadyReviewed}>
                 <FaCircleCheck /> আপনি ইতিমধ্যেই এই পণ্যের জন্য একটি রিভিউ দিয়েছেন। ধন্যবাদ!
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Loading Overlay for details */}
+      {isDetailLoading && (
+        <div className={styles.detailLoadingOverlay}>
+          <div className={styles.spinner}></div>
+          <p>তথ্য লোড হচ্ছে...</p>
         </div>
       )}
     </div>

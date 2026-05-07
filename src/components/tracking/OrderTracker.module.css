@@ -309,3 +309,175 @@
   .title { font-size: 26px; }
   .orderHeader { flex-direction: column; align-items: flex-start; gap: 10px; }
 }
+
+/* New List View Styles */
+.ordersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+  animation: fadeIn 0.5s ease;
+}
+
+.orderSummaryCard {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.orderSummaryCard:hover {
+  transform: translateY(-5px);
+  border-color: var(--honey);
+  box-shadow: var(--shadow-lg);
+}
+
+.orderSummaryCard::after {
+  content: 'বিস্তারিত দেখুন →';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--honey);
+  color: var(--walnut-deep);
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  border-top-left-radius: 12px;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.3s;
+}
+
+.orderSummaryCard:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.summaryImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+.summaryImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.summaryContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.summaryOrderId {
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  color: var(--bark-soft);
+}
+
+.summaryProductName {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--walnut-deep);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.summaryPhone {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 13px;
+  color: var(--bark-soft);
+  margin: 0;
+}
+
+.backButton {
+  background: white;
+  border: 1px solid var(--border);
+  color: var(--walnut-deep);
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+  width: fit-content;
+}
+
+.backButton:hover {
+  background: var(--parchment-2);
+  border-color: var(--honey);
+  transform: translateX(-5px);
+}
+
+/* Loading Overlay */
+.detailLoadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(124, 75, 42, 0.1);
+  border-top: 4px solid var(--walnut);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 480px) {
+  .ordersGrid {
+    grid-template-columns: 1fr;
+  }
+  .orderSummaryCard {
+    padding: 12px;
+    gap: 12px;
+  }
+  .summaryImage {
+    width: 60px;
+    height: 60px;
+  }
+  .summaryProductName {
+    font-size: 14px;
+    max-width: 150px;
+  }
+}
