@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 
 import Sidebar from '@/components/admin/Sidebar';
@@ -67,6 +67,70 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Dashboard Metrics Calculation
+  const dashboardMetrics = useMemo(() => {
+    if (!state) return {};
+    
+    // Action Required
+    const paymentVerificationCount = state.orders.filter(o => o.status === 'active' && (o.advancePaid || 0) === 0).length;
+    
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+    const stageUpdateCount = state.orders.filter(o => o.status === 'active' && new Date(o.updatedAt || o.createdAt) < oneDayAgo).length;
+    
+    const pendingReviewsCount = state.reviews.filter(r => !r.is_approved).length;
+    
+    const lowStockCount = state.products.filter(p => (p.inStock || 0) < 5).length;
+
+    // Hero Stats
+    const todayTotalIncome = state.transactions
+      .filter(t => new Date(t.date).toDateString() === new Date().toDateString() && t.type === 'Income')
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+      
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    const monthTotalIncome = state.transactions
+      .filter(t => {
+        const d = new Date(t.date);
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear && t.type === 'Income';
+      })
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+      
+    const activeOrdersCount = state.orders.filter(o => o.status === 'active').length;
+    const totalCustomersCount = state.customers.length;
+    
+    const totalRemainingPayment = state.orders
+      .filter(o => o.status === 'active')
+      .reduce((sum, o) => sum + (o.remainingAmount || 0), 0);
+
+    // Top Selling
+    const topSellingProducts = state.products
+      .filter(p => p.isTopSelling)
+      .slice(0, 3);
+
+    // Upcoming Deliveries
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const upcomingDeliveries = state.orders
+      .filter(o => o.status === 'active' && o.estimatedDelivery)
+      .sort((a, b) => new Date(a.estimatedDelivery) - new Date(b.estimatedDelivery))
+      .slice(0, 3);
+
+    return {
+      paymentVerificationCount,
+      stageUpdateCount,
+      pendingReviewsCount,
+      lowStockCount,
+      todayTotalIncome,
+      monthTotalIncome,
+      activeOrdersCount,
+      totalCustomersCount,
+      totalRemainingPayment,
+      topSellingProducts,
+      upcomingDeliveries
+    };
+  }, [state.orders, state.transactions, state.reviews, state.products, state.customers]);
 
   // Order Management State
   const [showCreateOrder, setShowCreateOrder] = useState(false);
@@ -215,15 +279,15 @@ export default function AdminPage() {
                 {/* Quick Stats Ticker */}
                 <div className="stats-ticker-wrap">
                   <div className="stats-ticker">
-                    <span>আজ {state.orders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length}টি নতুন অর্ডার</span>
+                    <span>আজ {state.orders?.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length || 0}টি নতুন অর্ডার</span>
                     <span className="ticker-sep">|</span>
-                    <span>৳{state.transactions.filter(t => new Date(t.date).toDateString() === new Date().toDateString()).reduce((sum, t) => sum + (t.type === 'Income' ? t.amount : 0), 0).toLocaleString()} মোট আয়</span>
+                    <span>৳{(dashboardMetrics.todayTotalIncome || 0).toLocaleString('bn-BD')} মোট আয়</span>
                     <span className="ticker-sep">|</span>
-                    <span>{state.orders.filter(o => o.currentStageId === 'stage_008').length}টি ডেলিভারি আজ</span>
+                    <span>{state.orders?.filter(o => o.currentStageId === 'stage_008').length || 0}টি ডেলিভারি আজ</span>
                     <span className="ticker-sep">|</span>
-                    <span>{state.orders.filter(o => o.status === 'active').length}টি অর্ডার পেন্ডিং</span>
+                    <span>{dashboardMetrics.activeOrdersCount || 0}টি অর্ডার পেন্ডিং</span>
                     <span className="ticker-sep">|</span>
-                    <span>{state.reviews.length}টি মোট রিভিউ</span>
+                    <span>{state.reviews?.length || 0}টি মোট রিভিউ</span>
                   </div>
                 </div>
 
@@ -233,35 +297,35 @@ export default function AdminPage() {
                     <div className="h-icon income"><FaArrowTrendUp /></div>
                     <div className="h-info">
                       <span className="h-label">আজকের আয়</span>
-                      <span className="h-value">৳{state.transactions.filter(t => new Date(t.date).toDateString() === new Date().toDateString()).reduce((sum, t) => sum + (t.type === 'Income' ? t.amount : 0), 0).toLocaleString()}</span>
+                      <span className="h-value">৳{(dashboardMetrics.todayTotalIncome || 0).toLocaleString('bn-BD')}</span>
                     </div>
                   </div>
                   <div className="hero-stat-card">
                     <div className="h-icon monthly"><FaMoneyBillTrendUp /></div>
                     <div className="h-info">
                       <span className="h-label">এই মাসের আয়</span>
-                      <span className="h-value">৳{state.transactions.filter(t => new Date(t.date).getMonth() === new Date().getMonth()).reduce((sum, t) => sum + (t.type === 'Income' ? t.amount : 0), 0).toLocaleString()}</span>
+                      <span className="h-value">৳{(dashboardMetrics.monthTotalIncome || 0).toLocaleString('bn-BD')}</span>
                     </div>
                   </div>
                   <div className="hero-stat-card">
                     <div className="h-icon active-ord"><FaClipboardList /></div>
                     <div className="h-info">
                       <span className="h-label">সক্রিয় অর্ডার</span>
-                      <span className="h-value">{state.orders.filter(o => o.status === 'active').length}</span>
+                      <span className="h-value">{dashboardMetrics.activeOrdersCount || 0}</span>
                     </div>
                   </div>
                   <div className="hero-stat-card">
                     <div className="h-icon customers"><FaUsers /></div>
                     <div className="h-info">
                       <span className="h-label">মোট গ্রাহক</span>
-                      <span className="h-value">{state.customers.length}</span>
+                      <span className="h-value">{dashboardMetrics.totalCustomersCount || 0}</span>
                     </div>
                   </div>
                   <div className="hero-stat-card">
                     <div className="h-icon dues"><FaScaleBalanced /></div>
                     <div className="h-info">
                       <span className="h-label">বাকি পেমেন্ট</span>
-                      <span className="h-value">৳১২,৪০০</span>
+                      <span className="h-value">৳{(dashboardMetrics.totalRemainingPayment || 0).toLocaleString('bn-BD')}</span>
                     </div>
                   </div>
                 </div>
@@ -274,12 +338,29 @@ export default function AdminPage() {
                       <select><option>গত ১৪ দিন</option><option>গত ৩০ দিন</option></select>
                     </div>
                     <div className="mock-bar-chart-large">
-                      {[40, 60, 35, 80, 55, 90, 45, 70, 85, 30, 50, 65, 75, 95].map((h, i) => (
-                        <div key={i} className="bar-wrapper">
-                          <div className="bar" style={{height: `${h}%`}}></div>
-                          <span className="bar-day">{i+1}</span>
-                        </div>
-                      ))}
+                      {Array.from({ length: 14 }).map((_, i) => {
+                        const date = new Date();
+                        date.setDate(date.getDate() - (13 - i));
+                        const dailyIncome = state.transactions
+                          ?.filter(t => new Date(t.date).toDateString() === date.toDateString() && t.type === 'Income')
+                          .reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+                        
+                        // Scale height based on max income in the range
+                        const maxIncome = Math.max(...Array.from({ length: 14 }).map((_, j) => {
+                          const d = new Date();
+                          d.setDate(d.getDate() - j);
+                          return state.transactions?.filter(t => new Date(t.date).toDateString() === d.toDateString() && t.type === 'Income').reduce((sum, t) => sum + (t.amount || 0), 0) || 0;
+                        }), 1000); // minimum 1000 for scale
+                        
+                        const h = Math.min(Math.max((dailyIncome / maxIncome) * 100, 5), 100);
+                        
+                        return (
+                          <div key={i} className="bar-wrapper" title={`৳${dailyIncome.toLocaleString('bn-BD')}`}>
+                            <div className="bar" style={{height: `${h}%`}}></div>
+                            <span className="bar-day">{date.getDate()}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                   <div className="chart-container side-chart">
@@ -288,14 +369,39 @@ export default function AdminPage() {
                     </div>
                     <div className="mock-donut-chart">
                       <div className="donut-hole">
-                        <span className="d-total">৮৫</span>
+                        <span className="d-total">{state.orders?.length || 0}</span>
                         <span className="d-label">মোট</span>
                       </div>
+                      <svg viewBox="0 0 36 36" className="donut-svg">
+                        <circle className="donut-ring" cx="18" cy="18" r="15.915" fill="transparent" stroke="#eee" strokeWidth="3"></circle>
+                        {(() => {
+                          const total = state.orders?.length || 1;
+                          const active = state.orders?.filter(o => o.status === 'active').length || 0;
+                          const completed = state.orders?.filter(o => o.status === 'completed').length || 0;
+                          const cancelled = state.orders?.filter(o => o.status === 'cancelled').length || 0;
+                          
+                          const activePct = (active / total) * 100;
+                          const completedPct = (completed / total) * 100;
+                          
+                          return (
+                            <>
+                              <circle 
+                                className="donut-segment" cx="18" cy="18" r="15.915" fill="transparent" stroke="#7C4B2A" strokeWidth="3" 
+                                strokeDasharray={`${activePct} ${100 - activePct}`} strokeDashoffset="25"
+                              ></circle>
+                              <circle 
+                                className="donut-segment" cx="18" cy="18" r="15.915" fill="transparent" stroke="#27ae60" strokeWidth="3" 
+                                strokeDasharray={`${completedPct} ${100 - completedPct}`} strokeDashoffset={100 - activePct + 25}
+                              ></circle>
+                            </>
+                          );
+                        })()}
+                      </svg>
                     </div>
                     <div className="donut-legend">
-                      <div className="leg-item"><span className="dot active"></span> সক্রিয়</div>
-                      <div className="leg-item"><span className="dot done"></span> সম্পন্ন</div>
-                      <div className="leg-item"><span className="dot cancel"></span> বাতিল</div>
+                      <div className="leg-item"><span className="dot active"></span> সক্রিয় ({state.orders?.filter(o => o.status === 'active').length || 0})</div>
+                      <div className="leg-item"><span className="dot done"></span> সম্পন্ন ({state.orders?.filter(o => o.status === 'completed').length || 0})</div>
+                      <div className="leg-item"><span className="dot cancel"></span> বাতিল ({state.orders?.filter(o => o.status === 'cancelled').length || 0})</div>
                     </div>
                   </div>
                 </div>
@@ -305,24 +411,24 @@ export default function AdminPage() {
                   <h3 className="section-title">অ্যাকশন প্রয়োজন</h3>
                   <div className="action-cards-scroll">
                     <div className="action-mini-card">
-                      <div className="a-badge">৩</div>
+                      <div className="a-badge">{dashboardMetrics.paymentVerificationCount || 0}</div>
                       <div className="a-txt">পেমেন্ট ভেরিফিকেশন বাকি</div>
-                      <button className="a-btn">দেখুন</button>
+                      <button className="a-btn" onClick={() => setActiveTab('orders')}>দেখুন</button>
                     </div>
                     <div className="action-mini-card">
-                      <div className="a-badge">৫</div>
+                      <div className="a-badge">{dashboardMetrics.stageUpdateCount || 0}</div>
                       <div className="a-txt">অর্ডার স্টেজ আপডেট করা হয়নি</div>
-                      <button className="a-btn">দেখুন</button>
+                      <button className="a-btn" onClick={() => setActiveTab('orders')}>দেখুন</button>
                     </div>
                     <div className="action-mini-card">
-                      <div className="a-badge">২</div>
+                      <div className="a-badge">{dashboardMetrics.pendingReviewsCount || 0}</div>
                       <div className="a-txt">রিভিউ পেন্ডিং আছে</div>
-                      <button className="a-btn">দেখুন</button>
+                      <button className="a-btn" onClick={() => setActiveTab('reviews')}>দেখুন</button>
                     </div>
                     <div className="action-mini-card">
-                      <div className="a-badge alert">৪</div>
+                      <div className="a-badge alert">{dashboardMetrics.lowStockCount || 0}</div>
                       <div className="a-txt">পণ্যের স্টক শেষ পর্যায়ে</div>
-                      <button className="a-btn">স্টক আপডেট</button>
+                      <button className="a-btn" onClick={() => setActiveTab('inventory')}>স্টক আপডেট</button>
                     </div>
                   </div>
                 </div>
@@ -335,18 +441,26 @@ export default function AdminPage() {
                       <button className="view-all" onClick={() => setActiveTab('orders')}>সব দেখুন</button>
                     </div>
                     <div className="mini-order-list">
-                      {state.orders.slice(0, 6).map(order => (
-                        <div key={order.id} className="mini-order-card">
-                          <div className="mo-left">
-                            <span className="mo-id">{order.id}</span>
-                            <span className="mo-name">{order.customerName}</span>
+                      {state.orders && state.orders.length > 0 ? (
+                        state.orders.slice(0, 6).map(order => (
+                          <div key={order.id} className="mini-order-card" onClick={() => setSelectedOrder(order)}>
+                            <div className="mo-left">
+                              <span className="mo-id">#{order.id}</span>
+                              <span className="mo-name">{order.customerName}</span>
+                            </div>
+                            <div className="mo-right">
+                              <span className="mo-amount">৳{order.totalPrice?.toLocaleString('bn-BD')}</span>
+                              <span className={`mo-status ${order.status}`}>
+                                {order.status === 'active' ? 'সক্রিয়' : 
+                                 order.status === 'completed' ? 'সম্পন্ন' : 
+                                 order.status === 'cancelled' ? 'বাতিল' : order.status}
+                              </span>
+                            </div>
                           </div>
-                          <div className="mo-right">
-                            <span className="mo-amount">৳{order.totalPrice.toLocaleString('bn-BD')}</span>
-                            <span className={`mo-status ${order.status}`}>{order.status}</span>
-                          </div>
-                        </div>
-                      ))}
+                        ))
+                      ) : (
+                        <p className="empty-txt">কোন অর্ডার পাওয়া যায়নি</p>
+                      )}
                     </div>
                   </div>
                   <div className="content-box activity-feed">
@@ -355,21 +469,36 @@ export default function AdminPage() {
                       <span className="live-dot pulse"></span>
                     </div>
                     <div className="feed-list">
-                      <div className="feed-item">
-                        <div className="f-icon plus"><FaCirclePlus /></div>
-                        <div className="f-txt"><strong>অ্যাডমিন</strong> একটি নতুন অর্ডার তৈরি করেছেন (ORD-1025)</div>
-                        <span className="f-time">২ মিনিট আগে</span>
-                      </div>
-                      <div className="feed-item">
-                        <div className="f-icon update"><FaGear /></div>
-                        <div className="f-txt">অর্ডার <strong>ORD-1020</strong> এর স্টেজ পরিবর্তন করা হয়েছে</div>
-                        <span className="f-time">১৫ মিনিট আগে</span>
-                      </div>
-                      <div className="feed-item">
-                        <div className="f-icon review"><FaStar /></div>
-                        <div className="f-txt">একজন গ্রাহক <strong>রয়্যাল চেয়ার</strong> এ ৫-স্টার রিভিউ দিয়েছেন</div>
-                        <span className="f-time">১ ঘণ্টা আগে</span>
-                      </div>
+                      {state.notifications.length > 0 ? (
+                        state.notifications.slice(0, 5).map(notif => (
+                          <div key={notif.id} className="feed-item">
+                            <div className={`f-icon ${notif.type.toLowerCase()}`}>
+                              {notif.type === 'Success' ? <FaCirclePlus /> : 
+                               notif.type === 'Warning' ? <FaGear /> : <FaBell />}
+                            </div>
+                            <div className="f-txt"><strong>{notif.title}</strong>: {notif.message}</div>
+                            <span className="f-time">{new Date(notif.created_at).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' })}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <>
+                          <div className="feed-item">
+                            <div className="f-icon plus"><FaCirclePlus /></div>
+                            <div className="f-txt"><strong>অ্যাডমিন</strong> একটি নতুন অর্ডার তৈরি করেছেন (ORD-1025)</div>
+                            <span className="f-time">২ মিনিট আগে</span>
+                          </div>
+                          <div className="feed-item">
+                            <div className="f-icon update"><FaGear /></div>
+                            <div className="f-txt">অর্ডার <strong>ORD-1020</strong> এর স্টেজ পরিবর্তন করা হয়েছে</div>
+                            <span className="f-time">১৫ মিনিট আগে</span>
+                          </div>
+                          <div className="feed-item">
+                            <div className="f-icon review"><FaStar /></div>
+                            <div className="f-txt">একজন গ্রাহক <strong>রয়্যাল চেয়ার</strong> এ ৫-স্টার রিভিউ দিয়েছেন</div>
+                            <span className="f-time">১ ঘণ্টা আগে</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -379,41 +508,55 @@ export default function AdminPage() {
                   <div className="content-box">
                     <h3>টপ সেলিং পণ্য</h3>
                     <div className="mini-list">
-                      {products.slice(0, 3).map(p => (
-                        <div key={p.id} className="mini-item">
-                          <img src={p.image} alt="" />
-                          <div className="mi-info">
-                            <span className="mi-name">{p.name}</span>
-                            <span className="mi-sub">২৪টি বিক্রি হয়েছে</span>
+                      {dashboardMetrics.topSellingProducts && dashboardMetrics.topSellingProducts.length > 0 ? (
+                        dashboardMetrics.topSellingProducts.map(p => (
+                          <div key={p.id} className="mini-item">
+                            <img src={p.image} alt="" />
+                            <div className="mi-info">
+                              <span className="mi-name">{p.name}</span>
+                              <span className="mi-sub">{p.reviewCount || 0}টি রিভিউ</span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      ) : (
+                        <p className="empty-txt">কোন পণ্য নেই</p>
+                      )}
                     </div>
                   </div>
                   <div className="content-box">
                     <h3>নতুন গ্রাহক</h3>
                     <div className="mini-list">
-                      {[1,2,3].map(i => (
-                        <div key={i} className="mini-item">
-                          <div className="mi-avatar"><FaUser /></div>
-                          <div className="mi-info">
-                            <span className="mi-name">গ্রাহক নাম #{i}</span>
-                            <span className="mi-sub">আজ জয়েন করেছেন</span>
+                      {state.customers.length > 0 ? (
+                        state.customers.slice(0, 3).map(c => (
+                          <div key={c.id} className="mini-item">
+                            <div className="mi-avatar"><FaUser /></div>
+                            <div className="mi-info">
+                              <span className="mi-name">{c.full_name || 'বেনামী গ্রাহক'}</span>
+                              <span className="mi-sub">জয়েন: {new Date(c.created_at).toLocaleDateString('bn-BD')}</span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      ) : (
+                        <p className="empty-txt">কোন গ্রাহক নেই</p>
+                      )}
                     </div>
                   </div>
                   <div className="content-box">
                     <h3>আসন্ন ডেলিভারি</h3>
                     <div className="mini-list">
-                      <div className="mini-item">
-                        <div className="mi-icon"><FaTruckFast /></div>
-                        <div className="mi-info">
-                          <span className="mi-name">ORD-1022</span>
-                          <span className="mi-sub">আগামীকাল, বনানী</span>
-                        </div>
-                      </div>
+                      {dashboardMetrics.upcomingDeliveries && dashboardMetrics.upcomingDeliveries.length > 0 ? (
+                        dashboardMetrics.upcomingDeliveries.map(o => (
+                          <div key={o.id} className="mini-item">
+                            <div className="mi-icon"><FaTruckFast /></div>
+                            <div className="mi-info">
+                              <span className="mi-name">{o.id}</span>
+                              <span className="mi-sub">{new Date(o.estimatedDelivery).toLocaleDateString('bn-BD')}, {o.deliveryAddress}</span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="empty-txt">কোন আসন্ন ডেলিভারি নেই</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -730,7 +873,9 @@ export default function AdminPage() {
         .bar:hover { background: #2c3e50; transform: scaleX(1.1); }
         .bar-day { font-size: 10px; color: #adb5bd; font-weight: 600; }
 
-        .mock-donut-chart { width: 150px; height: 150px; border-radius: 50%; border: 20px solid #f1f3f5; border-top-color: #7C4B2A; border-right-color: #27ae60; border-left-color: #e74c3c; margin: 0 auto 20px; position: relative; }
+        .mock-donut-chart { width: 150px; height: 150px; margin: 0 auto 20px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .donut-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .donut-segment { transition: stroke-dasharray 0.3s ease; }
         .donut-hole { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .d-total { font-size: 24px; font-weight: 800; color: #2c3e50; }
         .d-label { font-size: 11px; color: #7f8c8d; font-weight: 600; }
