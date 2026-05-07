@@ -26,7 +26,7 @@ import ConfirmModal from '../ConfirmModal';
 export default function ContentManagementPanel() {
   const { state, dispatch } = useAdmin();
   const { announcements } = state;
-  const [activeSection, setActiveSection] = useState('banners');
+  const [activeSection, setActiveSection] = useState('announcement');
   const [loading, setLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
@@ -61,9 +61,6 @@ export default function ContentManagementPanel() {
       </div>
 
       <div className="cms-tabs">
-        <button className={activeSection === 'banners' ? 'active' : ''} onClick={() => setActiveSection('banners')}>
-          <FaImages /> ব্যানার
-        </button>
         <button className={activeSection === 'announcement' ? 'active' : ''} onClick={() => setActiveSection('announcement')}>
           <FaBullhorn /> ঘোষণা
         </button>
@@ -79,35 +76,6 @@ export default function ContentManagementPanel() {
       </div>
 
       <div className="cms-content">
-        {activeSection === 'banners' && (
-          <div className="banners-view">
-            <div className="section-header">
-              <h3>হোমপেজ ব্যানার ম্যানেজার</h3>
-              <button className="add-btn"><FaPlus /> নতুন ব্যানার</button>
-            </div>
-            <div className="banner-list">
-              {banners.map(banner => (
-                <div key={banner.id} className="banner-card">
-                  <div className="drag-handle"><FaGripLines /></div>
-                  <img src={banner.image} alt="" className="banner-thumb" />
-                  <div className="banner-info">
-                    <h4>{banner.title}</h4>
-                    <p>{banner.subtitle}</p>
-                    <div className="banner-meta">
-                      <span className="order-tag">ক্রম: {banner.order}</span>
-                      <span className="status-tag active">সক্রিয়</span>
-                    </div>
-                  </div>
-                  <div className="card-actions">
-                    <button className="icon-btn"><FaPencil /></button>
-                    <button className="icon-btn"><FaEye /></button>
-                    <button className="icon-btn delete"><FaTrash /></button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {activeSection === 'announcement' && (
           <div className="announcement-view">
