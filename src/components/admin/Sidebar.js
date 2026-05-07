@@ -34,7 +34,8 @@ import {
   FaGaugeHigh,
   FaCircleQuestion,
   FaStore,
-  FaImages
+  FaImages,
+  FaGift
 } from 'react-icons/fa6';
 
 export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeInfo, isOpen, onClose }) {
@@ -105,6 +106,7 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
       items: [
         { id: 'gallery', label: 'ফটো গ্যালারি', icon: <FaImages /> },
         { id: 'designs', label: 'ডিজাইন গ্যালারি', icon: <FaPalette /> },
+        { id: 'promotional-popups', label: 'প্রোমোশনাল পপআপ', icon: <FaGift /> },
         { id: 'cms', label: 'কন্টেন্ট ম্যানেজমেন্ট', icon: <FaPenToSquare /> },
         { id: 'seo', label: 'SEO ও মার্কেটিং', icon: <FaMagnifyingGlassChart /> }
       ]

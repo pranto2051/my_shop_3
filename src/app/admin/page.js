@@ -28,6 +28,7 @@ import HelpPanel from '@/components/admin/panels/HelpPanel';
 import CalendarPanel from '@/components/admin/panels/CalendarPanel';
 import BackupPanel from '@/components/admin/panels/BackupPanel';
 import StoreProfilePanel from '@/components/admin/panels/StoreProfilePanel';
+import PromotionalPopupPanel from '@/components/admin/panels/PromotionalPopupPanel';
 
 import { useAdmin } from '@/app/context/AdminContext';
 import { FaBars, FaXmark, FaMagnifyingGlass, FaBell, FaUser, FaGear, FaArrowRight, FaArrowTrendUp, FaArrowTrendDown, FaScaleBalanced, FaTruckFast, FaStar, FaMoneyBillTrendUp, FaClipboardList, FaUsers, FaCirclePlus } from 'react-icons/fa6';
@@ -183,6 +184,7 @@ export default function AdminPage() {
                    activeTab === 'reviews' ? 'রিভিউ ও রেটিং' :
                    activeTab === 'finance' ? 'আর্থিক ব্যবস্থাপনা' :
                    activeTab === 'pnl' ? 'লাভ ও ক্ষতি' :
+                   activeTab === 'promotional-popups' ? 'প্রোমোশনাল পপআপ' :
                    activeTab === 'cms' ? 'Content Management' :
                    activeTab === 'settings' ? 'সেটিংস' : 'অর্ডার ব্যবস্থাপনা'}
                 </span>
@@ -458,6 +460,10 @@ export default function AdminPage() {
 
             {activeTab === 'gallery' && (
               <GalleryPanel />
+            )}
+
+            {activeTab === 'promotional-popups' && (
+              <PromotionalPopupPanel />
             )}
 
             {activeTab === 'inventory' && (

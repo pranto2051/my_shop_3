@@ -76,9 +76,6 @@ export default function ContentManagementPanel() {
         <button className={activeSection === 'pages' ? 'active' : ''} onClick={() => setActiveSection('pages')}>
           <FaFileLines /> পেজ সমূহ
         </button>
-        <button className={activeSection === 'popups' ? 'active' : ''} onClick={() => setActiveSection('popups')}>
-          <FaWindowMaximize /> পপআপ
-        </button>
       </div>
 
       <div className="cms-content">
@@ -352,7 +349,7 @@ export default function ContentManagementPanel() {
               <div className="editor-toolbar">
                 <strong>B</strong> <em>I</em> <u>U</u> | 📋 🔗 📷
               </div>
-              <div className="editor-content" contentEditable>
+              <div className="editor-content" contentEditable suppressContentEditableWarning={true}>
                 আমাদের সম্পর্কে... এখানে আপনার দোকানের বর্ণনা লিখুন।
               </div>
               <div className="editor-footer">
@@ -362,42 +359,6 @@ export default function ContentManagementPanel() {
           </div>
         )}
 
-        {activeSection === 'popups' && (
-          <div className="popups-view">
-            <div className="section-header">
-              <h3>প্রোমোশনাল পপআপ / মোডাল</h3>
-              <button className="add-btn"><FaPlus /> নতুন পপআপ</button>
-            </div>
-            <div className="popup-card active">
-              <div className="popup-preview-box">
-                <img src="https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?auto=format&fit=crop&w=400&q=80" alt="" />
-                <div className="preview-overlay">
-                  <h5>ঈদ স্পেশাল অফার!</h5>
-                  <p>সকল ফার্নিচারে ১০% ছাড়</p>
-                  <button>কেনাকাটা শুরু করুন</button>
-                </div>
-              </div>
-              <div className="popup-settings">
-                <div className="p-setting-item">
-                  <label>ট্রিগার:</label>
-                  <span>অন পেজ লোড (৫ সেকেন্ড পর)</span>
-                </div>
-                <div className="p-setting-item">
-                  <label>সময়সীমা:</label>
-                  <span>১০ মে - ২০ মে ২০২৪</span>
-                </div>
-                <div className="p-setting-item">
-                  <label>অবস্থা:</label>
-                  <span className="active-txt">সক্রিয়</span>
-                </div>
-                <div className="p-actions">
-                  <button className="p-btn"><FaPencil /> এডিট</button>
-                  <button className="p-btn del"><FaTrash /> ডিলিট</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       <style jsx>{`

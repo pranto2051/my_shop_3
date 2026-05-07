@@ -26,6 +26,7 @@ const initialState = {
   deliveryLocations: [],
   tasks: [],
   announcements: [],
+  promotionalPopups: [],
   settings: {
     showAdminHeader: false,
     showAdminFooter: false,
@@ -53,6 +54,7 @@ function adminReducer(state, action) {
         deliveryLocations: action.payload.deliveryLocations || [],
         tasks: action.payload.tasks || [],
         announcements: action.payload.announcements || [],
+        promotionalPopups: action.payload.promotionalPopups || [],
       };
 
     case 'UPDATE_SETTINGS':
@@ -290,6 +292,22 @@ function adminReducer(state, action) {
         announcements: state.announcements.filter(a => a.id !== action.payload),
       };
 
+    case 'ADD_PROMOTIONAL_POPUP':
+      return {
+        ...state,
+        promotionalPopups: [action.payload, ...state.promotionalPopups],
+      };
+    case 'UPDATE_PROMOTIONAL_POPUP':
+      return {
+        ...state,
+        promotionalPopups: state.promotionalPopups.map(p => p.id === action.payload.id ? action.payload : p),
+      };
+    case 'DELETE_PROMOTIONAL_POPUP':
+      return {
+        ...state,
+        promotionalPopups: state.promotionalPopups.filter(p => p.id !== action.payload),
+      };
+
     default:
       return state;
   }
@@ -433,6 +451,67 @@ export const deleteAnnouncement = async (dispatch, announcementId) => {
 
   if (!error) {
     dispatch({ type: 'DELETE_ANNOUNCEMENT', payload: announcementId });
+    return { success: true };
+  }
+  return { success: false, error };
+};
+
+export const addPromotionalPopup = async (dispatch, popupData) => {
+  const { data, error } = await supabase
+    .from('promotional_popups')
+    .insert([{
+      title: popupData.title,
+      description: popupData.description,
+      button_text: popupData.button_text,
+      button_link: popupData.button_link,
+      image_url: popupData.image_url,
+      trigger_type: popupData.trigger_type || 'page_load',
+      trigger_delay: popupData.trigger_delay || 5,
+      start_date: popupData.start_date,
+      end_date: popupData.end_date,
+      is_active: popupData.is_active ?? true
+    }])
+    .select();
+
+  if (!error && data) {
+    dispatch({ type: 'ADD_PROMOTIONAL_POPUP', payload: data[0] });
+    return { success: true, data: data[0] };
+  }
+  return { success: false, error };
+};
+
+export const updatePromotionalPopup = async (dispatch, popup) => {
+  const { error } = await supabase
+    .from('promotional_popups')
+    .update({
+      title: popup.title,
+      description: popup.description,
+      button_text: popup.button_text,
+      button_link: popup.button_link,
+      image_url: popup.image_url,
+      trigger_type: popup.trigger_type,
+      trigger_delay: popup.trigger_delay,
+      start_date: popup.start_date,
+      end_date: popup.end_date,
+      is_active: popup.is_active
+    })
+    .eq('id', popup.id);
+
+  if (!error) {
+    dispatch({ type: 'UPDATE_PROMOTIONAL_POPUP', payload: popup });
+    return { success: true };
+  }
+  return { success: false, error };
+};
+
+export const deletePromotionalPopup = async (dispatch, popupId) => {
+  const { error } = await supabase
+    .from('promotional_popups')
+    .delete()
+    .eq('id', popupId);
+
+  if (!error) {
+    dispatch({ type: 'DELETE_PROMOTIONAL_POPUP', payload: popupId });
     return { success: true };
   }
   return { success: false, error };
