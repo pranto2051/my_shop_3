@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+  /* Order status colors */
+  --stage-pending:    #9E7455;   /* bark-soft — waiting */
+  --stage-approved:   #4A7C59;   /* moss — approved */
+  --stage-cutting:    #C8780A;   /* amber — in progress */
+  --stage-assembling: #7C4B2A;   /* walnut — assembling */
+  --stage-finishing:  #D4882A;   /* honey — finishing */
+  --stage-qc:         #B5541E;   /* sienna — quality check */
+  --stage-ready:      #2D8A4E;   /* deep moss — ready */
+  --stage-delivery:   #4A7C59;   /* moss — out for delivery */
+  --stage-delivered:  #1A6B3A;   /* deep green — completed */
+  --stage-cancelled:  #B5541E;   /* sienna — cancelled */
+}
+
+.main-content {
+  transition: opacity 0.5s ease;
+}
+
+.main-content.is-loading {
+  opacity: 0;
+  pointer-events: none;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-content.is-loaded {
+  opacity: 1;
+}

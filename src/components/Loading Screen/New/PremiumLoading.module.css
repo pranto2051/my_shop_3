@@ -1,0 +1,185 @@
+.container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, #ffffff 0%, #fdfbf7 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  overflow: hidden;
+  transition: opacity 0.8s ease-out;
+}
+
+.container.fadeOut {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.logoWrapper {
+  position: relative;
+  padding: 1rem 2rem;
+}
+
+.textContainer {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.letter {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: clamp(3rem, 10vw, 5.5rem);
+  font-weight: 700;
+  color: transparent;
+  position: relative;
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: letterFadeIn 0.8s forwards cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-text-stroke: 1px rgba(139, 115, 85, 0.1);
+}
+
+@keyframes letterFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.letter::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  color: #8b7355;
+  background-image: url('https://www.transparenttextures.com/patterns/wood-pattern-with-fine-lines.png');
+  background-clip: text;
+  -webkit-background-clip: text;
+  overflow: hidden;
+  animation: woodFill 3s ease-in-out forwards;
+  animation-delay: 1s;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes woodFill {
+  0% {
+    width: 0%;
+    color: #d4a574;
+  }
+  50% {
+    color: #a67c52;
+  }
+  100% {
+    width: 100%;
+    color: #5d4037;
+  }
+}
+
+.shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  transform: skewX(-25deg);
+  animation: shineSweep 4s infinite;
+  animation-delay: 2.5s;
+}
+
+@keyframes shineSweep {
+  0% { left: -100%; }
+  30% { left: 200%; }
+  100% { left: 200%; }
+}
+
+.tagline {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 1.2rem;
+  color: #8b7355;
+  letter-spacing: 1px;
+  opacity: 0;
+  animation: taglineFadeIn 1.5s forwards;
+  animation-delay: 2s;
+}
+
+@keyframes taglineFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 0.8; transform: translateY(0); }
+}
+
+.dustContainer {
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  pointer-events: none;
+}
+
+.dust {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #d4a574;
+  border-radius: 50%;
+  opacity: 0;
+  filter: blur(1px);
+  animation: dustFloat infinite linear;
+}
+
+@keyframes dustFloat {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.4;
+  }
+  80% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(40px, -60px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.progressLine {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #d4a574, #5d4037);
+  animation: progress 4.5s linear forwards;
+}
+
+@keyframes progress {
+  to { width: 100%; }
+}
+
+@media (max-width: 768px) {
+  .letter {
+    font-size: 3.5rem;
+  }
+  .tagline {
+    font-size: 1rem;
+  }
+}

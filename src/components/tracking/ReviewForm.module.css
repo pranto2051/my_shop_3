@@ -1,0 +1,209 @@
+.reviewFormCard {
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-top: 30px;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.header h3 {
+  font-size: 22px;
+  color: #1e293b;
+  margin-bottom: 8px;
+  font-weight: 800;
+}
+
+.header p {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.productBrief {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 16px;
+  margin-bottom: 25px;
+}
+
+.prodImg {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.prodInfo h4 {
+  font-size: 16px;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.prodInfo span {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.ratingSection {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.ratingLabel {
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 15px;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.starBtn {
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.starBtn:hover {
+  transform: scale(1.2);
+}
+
+.starBtn.active {
+  color: #f59e0b;
+}
+
+.ratingText {
+  font-size: 14px;
+  font-weight: 700;
+  color: #7C4B2A;
+  height: 20px;
+  display: block;
+}
+
+.inputGroup {
+  margin-bottom: 25px;
+}
+
+.inputGroup label {
+  display: block;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.inputGroup textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 15px;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: #fdfdfd;
+  font-family: inherit;
+  font-size: 15px;
+  resize: vertical;
+  transition: all 0.3s;
+}
+
+.inputGroup textarea:focus {
+  outline: none;
+  border-color: #7C4B2A;
+  box-shadow: 0 0 0 4px rgba(124, 75, 42, 0.08);
+  background: white;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  background: #7C4B2A;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(124, 75, 42, 0.2);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #623a20;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(124, 75, 42, 0.3);
+}
+
+.submitBtn:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Success Card */
+.successCard {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #dcfce7;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  margin-top: 30px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.successIcon {
+  font-size: 48px;
+  color: #10b981;
+  margin-bottom: 20px;
+}
+
+.successCard h3 {
+  font-size: 24px;
+  color: #064e3b;
+  margin-bottom: 10px;
+}
+
+.successCard p {
+  color: #065f46;
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  .reviewFormCard {
+    padding: 20px;
+  }
+  .starBtn {
+    font-size: 28px;
+  }
+}

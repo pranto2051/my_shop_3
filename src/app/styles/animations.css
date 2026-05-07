@@ -1,0 +1,509 @@
+/* ===================== KEYFRAMES ===================== */
+
+@keyframes floatUpDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulseRing {
+  0% { transform: scale(1); opacity: 0.7; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes pinBounce {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-12px); }
+  60% { transform: translateY(-6px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(8px); }
+  45% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+  90% { transform: translateX(3px); }
+}
+
+@keyframes slideInTop {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes borderPulse {
+  0%, 100% { border-color: var(--accent); }
+  50% { border-color: var(--accent-light); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===================== UTILITY ANIMATION CLASSES ===================== */
+
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-in-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-in-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-in-right {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-in-right.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ===================== SKELETON LOADING ===================== */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-img {
+  width: 100%;
+  aspect-ratio: 6/5;
+}
+
+.skeleton-text {
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+.skeleton-title {
+  height: 20px;
+  width: 80%;
+  margin-bottom: 10px;
+}
+
+.skeleton-price {
+  height: 24px;
+  width: 40%;
+}
+
+.skeleton-btn {
+  height: 38px;
+  border-radius: var(--radius-sm);
+}
+
+/* ===================== PAGE LOAD ANIMATIONS ===================== */
+
+.hero-slider-section { animation: fadeInUp 0.6s ease forwards; }
+
+.search-section {
+  animation: fadeInUp 0.6s 0.1s ease both;
+}
+
+/* ===================== SECTION TITLE ANIMATIONS ===================== */
+
+.cat-section-title,
+.section-header h2 {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.cat-section-title.visible,
+.section-header h2.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ===================== PRODUCT CARD ANIMATIONS ===================== */
+
+.product-card {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.product-card.card-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.product-card.card-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.product-card:hover {
+  transform: translateY(-6px) !important;
+}
+
+/* ===================== HERO IMAGE FLOAT ===================== */
+
+.slide-img {
+  animation: floatUpDown 4s ease-in-out infinite;
+}
+
+/* ===================== HERO SLIDE TRANSITIONS ===================== */
+
+.slide-text-side > * {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.slide.active .slide-text-side > *:nth-child(1) { opacity: 1; transform: translateY(0); transition-delay: 0.1s; }
+.slide.active .slide-text-side > *:nth-child(2) { opacity: 1; transform: translateY(0); transition-delay: 0.2s; }
+.slide.active .slide-text-side > *:nth-child(3) { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+.slide.active .slide-text-side > *:nth-child(4) { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
+.slide.active .slide-text-side > *:nth-child(5) { opacity: 1; transform: translateY(0); transition-delay: 0.5s; }
+
+.slide.active .slide-img-wrap {
+  animation: slideInTop 0.6s ease both;
+}
+
+/* ===================== MODAL ANIMATION ===================== */
+
+.modal-box { animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* ===================== STEP ITEMS ANIMATION ===================== */
+
+.step-item {
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 0.5s ease, transform 0.5s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===================== LOGO ICON HOVER ===================== */
+
+.logo:hover .logo-icon svg {
+  animation: floatUpDown 0.8s ease;
+}
+
+/* ===================== BUTTON HOVER EFFECTS ===================== */
+
+.btn-whatsapp-cta,
+.whatsapp-big-btn,
+.modal-wa-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-whatsapp-cta::before,
+.whatsapp-big-btn::before,
+.modal-wa-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.4s ease;
+}
+
+.btn-whatsapp-cta:hover::before,
+.whatsapp-big-btn:hover::before,
+.modal-wa-btn:hover::before {
+  left: 100%;
+}
+
+/* ===================== WHATSAPP FAB ANIMATIONS ===================== */
+
+.whatsapp-fab a {
+  animation: none;
+}
+
+.fab-ring {
+  animation: pulseRing 2.2s ease-out infinite;
+}
+
+/* ===================== SEARCH SECTION ANIMATION ===================== */
+
+.search-bar-form {
+  animation: fadeInUp 0.5s 0.2s ease both;
+}
+
+/* ===================== DROPDOWN ANIMATION ===================== */
+
+.dropdown-menu {
+  animation: slideInTop 0.25s ease;
+}
+
+/* ===================== MOBILE OVERLAY SLIDE ===================== */
+
+.mobile-menu-content {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===================== CATEGORY SECTION TITLES ===================== */
+
+.cat-section-icon {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-section:hover .cat-section-icon {
+  transform: rotate(-5deg) scale(1.05);
+}
+
+/* ===================== PROGRESS/LOADING ===================== */
+
+.page-loading {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s ease;
+}
+
+.page-loading.done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===================== BADGE ENTRANCE ===================== */
+
+.badge {
+  animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===================== CARD IMAGE ZOOM ON HOVER ===================== */
+
+.card-image-wrap {
+  overflow: hidden;
+}
+
+.card-img {
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===================== NAVIGATION UNDERLINE ANIMATION ===================== */
+
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 1px;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+  width: 80%;
+  left: 10%;
+}
+
+/* ===================== FOOTER SOCIAL HOVER ===================== */
+
+.footer-social a {
+  transition: background 0.3s ease, transform 0.3s ease, color 0.3s ease;
+}
+
+/* ===================== TOAST SLIDE ===================== */
+
+.toast {
+  transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===================== SCROLL INDICATOR ===================== */
+
+.slider-dots .dot {
+  transition: background 0.3s ease, width 0.3s ease;
+}
+
+/* ===================== RECENTLY VIEWED ===================== */
+
+.rv-item {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  animation: fadeInUp 0.4s ease both;
+}
+
+/* ===================== CARD ID BADGE INTERACTION ===================== */
+
+.product-id-badge {
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.product-id-badge:active {
+  transform: scale(0.95);
+}
+
+/* ===================== SCROLL-TRIGGERED ANIMATION VIA JS ===================== */
+
+[data-animate] {
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+[data-animate].animated {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===================== CAT NAV PILL HOVER ===================== */
+
+.cat-nav-pill {
+  transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+
+.cat-nav-pill:hover {
+  transform: translateY(-1px);
+}
+
+/* ===================== MAP PIN BOUNCE ===================== */
+
+.map-pin-icon {
+  animation: pinBounce 2.5s ease-in-out infinite;
+}
+
+/* ===================== PRICE HOVER EFFECT ===================== */
+
+.price-row .price {
+  transition: color 0.3s ease;
+}
+
+.product-card:hover .price {
+  color: var(--primary-dark);
+}
+
+/* ===================== HEADER SCROLL TRANSITION ===================== */
+
+.site-header {
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ===================== FILTER SIDEBAR SLIDE ===================== */
+
+.filter-sidebar {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}

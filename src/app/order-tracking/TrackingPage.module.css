@@ -1,0 +1,74 @@
+.pageWrapper {
+  min-height: 100vh;
+  background: var(--parchment-2);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: white;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bark-soft);
+  text-decoration: none;
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.backBtn:hover {
+  color: var(--walnut);
+}
+
+.brand {
+  text-align: right;
+}
+
+.brandName {
+  font-family: 'Rozha One', serif;
+  font-size: 24px;
+  color: var(--walnut-deep);
+  margin: 0;
+}
+
+.tagline {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 12px;
+  color: var(--bark-soft);
+  margin: 0;
+}
+
+.main {
+  flex: 1;
+}
+
+.footer {
+  padding: 40px 20px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  background: white;
+}
+
+.footer p {
+  font-family: 'Noto Sans Bengali', sans-serif;
+  font-size: 14px;
+  color: var(--bark-soft);
+  margin: 0;
+}
