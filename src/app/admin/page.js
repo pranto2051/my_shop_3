@@ -246,7 +246,6 @@ export default function AdminPage() {
                    activeTab === 'payments' ? 'পেমেন্ট ম্যানেজমেন্ট' :
                    activeTab === 'coupons' ? 'কুপন ও ডিসকাউন্ট' :
                    activeTab === 'reviews' ? 'রিভিউ ও রেটিং' :
-                   activeTab === 'finance' ? 'আর্থিক ব্যবস্থাপনা' :
                    activeTab === 'pnl' ? 'লাভ ও ক্ষতি' :
                    activeTab === 'promotional-popups' ? 'প্রোমোশনাল পপআপ' :
                    activeTab === 'cms' ? 'Content Management' :
@@ -632,11 +631,6 @@ export default function AdminPage() {
               <ReviewsPanel reviews={state.reviews} />
             )}
 
-            {activeTab === 'finance' && (
-              <FinancialManagementPanel 
-                transactions={state.transactions} 
-              />
-            )}
 
             {activeTab === 'pnl' && (
               <FinancialManagementPanel 
