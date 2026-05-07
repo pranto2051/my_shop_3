@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAdmin } from '@/app/context/AdminContext';
+import AnnouncementTicker from './AnnouncementTicker';
 
 export default function Header({ storeInfo, categories }) {
+  const [isMounted, setIsMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileCatOpen, setIsMobileCatOpen] = useState(false);
@@ -15,6 +17,7 @@ export default function Header({ storeInfo, categories }) {
   const showAdminHeader = state?.settings?.showAdminHeader;
 
   useEffect(() => {
+    setIsMounted(true);
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
         setIsMobileMenuOpen(false);
@@ -57,8 +60,12 @@ export default function Header({ storeInfo, categories }) {
     return null;
   }
 
+  // Hydration protection
+  if (!isMounted) return null;
+
   return (
     <>
+      <AnnouncementTicker />
       <div className="top-bar" suppressHydrationWarning>
         <div className="container" suppressHydrationWarning>
           <div className="top-bar-left" suppressHydrationWarning>

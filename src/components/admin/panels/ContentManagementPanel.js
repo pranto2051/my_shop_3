@@ -16,11 +16,30 @@ import {
   FaGripLines,
   FaEye,
   FaCalendarDays,
-  FaPalette
+  FaPalette,
+  FaFloppyDisk,
+  FaArrowsRotate
 } from 'react-icons/fa6';
+import { useAdmin, addAnnouncement, updateAnnouncement, deleteAnnouncement } from '@/app/context/AdminContext';
+import ConfirmModal from '../ConfirmModal';
 
 export default function ContentManagementPanel() {
+  const { state, dispatch } = useAdmin();
+  const { announcements } = state;
   const [activeSection, setActiveSection] = useState('banners');
+  const [loading, setLoading] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingAnnouncement, setEditingAnnouncement] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+
+  const [formData, setFormData] = useState({
+    text: '',
+    bg_color: '#000000',
+    text_color: '#ffffff',
+    link: '',
+    is_active: true
+  });
 
   const banners = [
     { id: 1, image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80', title: 'বিলাসবহুল ড্রয়িং রুম সেট', subtitle: 'আপনার ঘরকে দিন রাজকীয় আভিজাত্য', active: true, order: 1 },
@@ -96,40 +115,183 @@ export default function ContentManagementPanel() {
         {activeSection === 'announcement' && (
           <div className="announcement-view">
             <div className="section-header">
-              <h3>অ্যানাউন্সমেন্ট বার (Ticker)</h3>
-              <div className="toggle-switch active"></div>
+              <div className="header-info">
+                <h3>অ্যানাউন্সমেন্ট বার (Ticker)</h3>
+                <p>সবগুলো ঘোষণা এখানে থাকবে। আপনি যেকোনোটি সক্রিয় বা নিষ্ক্রিয় করতে পারেন।</p>
+              </div>
+              <button 
+                className="add-btn"
+                onClick={() => {
+                  setEditingAnnouncement(null);
+                  setFormData({ text: '', bg_color: '#000000', text_color: '#ffffff', link: '', is_active: true });
+                  setShowAddModal(true);
+                }}
+              >
+                <FaPlus /> নতুন ঘোষণা
+              </button>
             </div>
-            <div className="ticker-config">
-              <div className="form-group">
-                <label>মেসেজ সমূহ</label>
-                <div className="ticker-messages">
-                  <div className="t-msg">
-                    <input type="text" defaultValue="নতুন ডিজাইনের সোফা সেটে ২০% ডিসকাউন্ট! অফারটি সীমিত সময়ের জন্য।" />
-                    <button className="del-msg"><FaXmark /></button>
+
+            <div className="announcement-table-wrapper">
+              <table className="cms-table">
+                <thead>
+                  <tr>
+                    <th>আইডি (সংক্ষিপ্ত)</th>
+                    <th>ঘোষণা (Text)</th>
+                    <th>কালার স্কিম</th>
+                    <th>অবস্থা</th>
+                    <th>অ্যাকশন</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {announcements && announcements.length > 0 ? (
+                    announcements.map(ann => (
+                      <tr key={ann.id}>
+                        <td><code className="id-tag">{ann.id.substring(0, 8)}...</code></td>
+                        <td>
+                          <div className="ann-content">
+                            <span className="ann-text">{ann.text}</span>
+                            {ann.link && <span className="ann-link-tag">Link: {ann.link}</span>}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="scheme-preview">
+                            <div className="color-dots">
+                              <span className="dot" style={{ backgroundColor: ann.bg_color }} title="Background"></span>
+                              <span className="dot" style={{ backgroundColor: ann.text_color, border: '1px solid #ddd' }} title="Text"></span>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <button 
+                            className={`status-toggle ${ann.is_active ? 'active' : ''}`}
+                            onClick={async () => {
+                              setLoading(true);
+                              await updateAnnouncement(dispatch, { ...ann, is_active: !ann.is_active });
+                              setLoading(false);
+                            }}
+                            disabled={loading}
+                          >
+                            {ann.is_active ? <><FaCheck /> সক্রিয়</> : <><FaXmark /> নিষ্ক্রিয়</>}
+                          </button>
+                        </td>
+                        <td>
+                          <div className="action-btns">
+                            <button 
+                              className="icon-btn"
+                              onClick={() => {
+                                setEditingAnnouncement(ann);
+                                setFormData({
+                                  text: ann.text,
+                                  bg_color: ann.bg_color,
+                                  text_color: ann.text_color,
+                                  link: ann.link || '',
+                                  is_active: ann.is_active
+                                });
+                                setShowAddModal(true);
+                              }}
+                            >
+                              <FaPencil />
+                            </button>
+                            <button 
+                              className="icon-btn delete"
+                              onClick={() => {
+                                setItemToDelete(ann.id);
+                                setShowDeleteConfirm(true);
+                              }}
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="empty-row">কোনো অ্যানাউন্সমেন্ট পাওয়া যায়নি।</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Add/Edit Modal */}
+            {showAddModal && (
+              <div className="modal-overlay">
+                <div className="cms-modal">
+                  <div className="modal-header">
+                    <h4>{editingAnnouncement ? 'ঘোষণা এডিট করুন' : 'নতুন ঘোষণা যোগ করুন'}</h4>
+                    <button className="close-btn" onClick={() => setShowAddModal(false)}><FaXmark /></button>
                   </div>
-                  <button className="add-msg-btn"><FaPlus /> মেসেজ যোগ করুন</button>
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    setLoading(true);
+                    if (editingAnnouncement) {
+                      await updateAnnouncement(dispatch, { ...editingAnnouncement, ...formData });
+                    } else {
+                      await addAnnouncement(dispatch, formData);
+                    }
+                    setLoading(false);
+                    setShowAddModal(false);
+                  }}>
+                    <div className="modal-body">
+                      <div className="form-group">
+                        <label>অ্যানাউন্সমেন্ট টেক্সট *</label>
+                        <textarea 
+                          required
+                          value={formData.text}
+                          onChange={(e) => setFormData({...formData, text: e.target.value})}
+                          placeholder="আপনার ঘোষণা এখানে লিখুন..."
+                        />
+                      </div>
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>ব্যাকগ্রাউন্ড কালার</label>
+                          <div className="color-input">
+                            <input type="color" value={formData.bg_color} onChange={(e) => setFormData({...formData, bg_color: e.target.value})} />
+                            <span>{formData.bg_color}</span>
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label>টেক্সট কালার</label>
+                          <div className="color-input">
+                            <input type="color" value={formData.text_color} onChange={(e) => setFormData({...formData, text_color: e.target.value})} />
+                            <span>{formData.text_color}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="form-group">
+                        <label>লিংক (ঐচ্ছিক)</label>
+                        <input 
+                          type="url" 
+                          value={formData.link}
+                          onChange={(e) => setFormData({...formData, link: e.target.value})}
+                          placeholder="https://example.com/promo"
+                        />
+                      </div>
+                    </div>
+                    <div className="modal-footer">
+                      <button type="button" className="cancel-btn" onClick={() => setShowAddModal(false)}>বাতিল</button>
+                      <button type="submit" className="save-btn" disabled={loading}>
+                        {loading ? <FaArrowsRotate className="spin" /> : <FaFloppyDisk />} {editingAnnouncement ? 'আপডেট করুন' : 'সেভ করুন'}
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
-              <div className="config-grid">
-                <div className="form-group">
-                  <label>ব্যাকগ্রাউন্ড কালার</label>
-                  <div className="color-picker-mock">
-                    <div className="color-circle" style={{background: '#7C4B2A'}}></div>
-                    <span>#7C4B2A</span>
-                    <FaPalette />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label>স্ক্রলিং স্পিড</label>
-                  <select>
-                    <option>ধীরে (Slow)</option>
-                    <option selected>মাঝারি (Medium)</option>
-                    <option>দ্রুত (Fast)</option>
-                  </select>
-                </div>
-              </div>
-              <button className="save-btn">আপডেট করুন</button>
-            </div>
+            )}
+
+            <ConfirmModal 
+              isOpen={showDeleteConfirm}
+              onClose={() => setShowDeleteConfirm(false)}
+              onConfirm={async () => {
+                setLoading(true);
+                await deleteAnnouncement(dispatch, itemToDelete);
+                setLoading(false);
+                setShowDeleteConfirm(false);
+              }}
+              title="অ্যানাউন্সমেন্ট ডিলিট করুন"
+              message="আপনি কি নিশ্চিত যে আপনি এই ঘোষণাটি ডিলিট করতে চান? এটি স্থায়ীভাবে মুছে যাবে।"
+            />
           </div>
         )}
 
@@ -337,6 +499,69 @@ export default function ContentManagementPanel() {
         .p-actions { margin-top: auto; display: flex; gap: 10px; }
         .p-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border-radius: 8px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: 600; font-size: 13px; }
         .p-btn.del { color: #e74c3c; border-color: #ffdce0; }
+
+        /* Announcement Styles */
+        .id-tag { font-size: 11px; color: #7f8c8d; background: #f1f1f1; padding: 2px 6px; border-radius: 4px; }
+        .ann-content { display: flex; flex-direction: column; gap: 4px; }
+        .ann-text { font-weight: 500; color: #2c3e50; }
+        .ann-link-tag { font-size: 11px; color: #3498db; }
+        .scheme-preview { display: flex; align-items: center; }
+        .color-dots { display: flex; gap: 4px; }
+        .dot { width: 16px; height: 16px; border-radius: 50%; display: inline-block; }
+        
+        .status-toggle {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border-radius: 20px;
+          border: 1px solid #eee;
+          background: #f8f9fa;
+          color: #7f8c8d;
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: 0.2s;
+        }
+        .status-toggle.active {
+          background: #e8f5e9;
+          color: #2e7d32;
+          border-color: #c8e6c9;
+        }
+        .empty-row { text-align: center; color: #95a5a6; padding: 40px !important; }
+
+        /* Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          backdrop-filter: blur(4px);
+        }
+        .cms-modal {
+          background: white;
+          width: 90%;
+          max-width: 500px;
+          border-radius: 16px;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+          overflow: hidden;
+        }
+        .modal-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h4 { margin: 0; font-size: 18px; color: #2c3e50; }
+        .close-btn { background: none; border: none; font-size: 20px; color: #95a5a6; cursor: pointer; }
+        .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .modal-body textarea { width: 100%; min-height: 100px; padding: 12px; border-radius: 8px; border: 1px solid #ddd; outline: none; font-family: inherit; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .color-input { display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 8px; }
+        .color-input input[type="color"] { border: none; width: 30px; height: 30px; background: none; cursor: pointer; }
+        .modal-footer { padding: 15px 20px; background: #f8f9fa; display: flex; justify-content: flex-end; gap: 10px; }
+        .cancel-btn { padding: 10px 20px; background: white; border: 1px solid #ddd; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );

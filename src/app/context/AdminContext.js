@@ -25,6 +25,7 @@ const initialState = {
   deliveryZones: [],
   deliveryLocations: [],
   tasks: [],
+  announcements: [],
   settings: {
     showAdminHeader: false,
     showAdminFooter: false,
@@ -51,6 +52,7 @@ function adminReducer(state, action) {
         deliveryZones: action.payload.deliveryZones || [],
         deliveryLocations: action.payload.deliveryLocations || [],
         tasks: action.payload.tasks || [],
+        announcements: action.payload.announcements || [],
       };
 
     case 'UPDATE_SETTINGS':
@@ -271,6 +273,23 @@ function adminReducer(state, action) {
         tasks: state.tasks.filter(t => t.id !== action.payload),
       };
 
+    // Announcement actions
+    case 'ADD_ANNOUNCEMENT':
+      return {
+        ...state,
+        announcements: [action.payload, ...state.announcements],
+      };
+    case 'UPDATE_ANNOUNCEMENT':
+      return {
+        ...state,
+        announcements: state.announcements.map(a => a.id === action.payload.id ? action.payload : a),
+      };
+    case 'DELETE_ANNOUNCEMENT':
+      return {
+        ...state,
+        announcements: state.announcements.filter(a => a.id !== action.payload),
+      };
+
     default:
       return state;
   }
@@ -363,6 +382,57 @@ export const deleteTask = async (dispatch, taskId) => {
 
   if (!error) {
     dispatch({ type: 'DELETE_TASK', payload: taskId });
+    return { success: true };
+  }
+  return { success: false, error };
+};
+
+export const addAnnouncement = async (dispatch, announcementData) => {
+  const { data, error } = await supabase
+    .from('announcements')
+    .insert([{
+      text: announcementData.text,
+      bg_color: announcementData.bg_color,
+      text_color: announcementData.text_color,
+      link: announcementData.link,
+      is_active: announcementData.is_active ?? true
+    }])
+    .select();
+
+  if (!error && data) {
+    dispatch({ type: 'ADD_ANNOUNCEMENT', payload: data[0] });
+    return { success: true, data: data[0] };
+  }
+  return { success: false, error };
+};
+
+export const updateAnnouncement = async (dispatch, announcement) => {
+  const { error } = await supabase
+    .from('announcements')
+    .update({
+      text: announcement.text,
+      bg_color: announcement.bg_color,
+      text_color: announcement.text_color,
+      link: announcement.link,
+      is_active: announcement.is_active
+    })
+    .eq('id', announcement.id);
+
+  if (!error) {
+    dispatch({ type: 'UPDATE_ANNOUNCEMENT', payload: announcement });
+    return { success: true };
+  }
+  return { success: false, error };
+};
+
+export const deleteAnnouncement = async (dispatch, announcementId) => {
+  const { error } = await supabase
+    .from('announcements')
+    .delete()
+    .eq('id', announcementId);
+
+  if (!error) {
+    dispatch({ type: 'DELETE_ANNOUNCEMENT', payload: announcementId });
     return { success: true };
   }
   return { success: false, error };
