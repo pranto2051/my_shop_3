@@ -28,6 +28,8 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isEditingDelivery, setIsEditingDelivery] = useState(false);
+  const [tempDeliveryDate, setTempDeliveryDate] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -38,6 +40,10 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
       const nextStage = getNextStage(order, orderStages);
       setSelectedStageId(nextStage ? nextStage.id : order.currentStageId);
       setAdminNote('');
+      // Format date for input type="date" (YYYY-MM-DD)
+      if (order.estimatedDelivery) {
+        setTempDeliveryDate(new Date(order.estimatedDelivery).toISOString().split('T')[0]);
+      }
     }
   }, [order.id, orderStages]); // Use order.id to avoid infinite loops if order object changes
 
@@ -118,6 +124,40 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
     } catch (error) {
       console.error('Error updating order:', error);
       alert('অর্ডার আপডেট করতে সমস্যা হয়েছে!');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleSaveDeliveryDate = async () => {
+    if (!tempDeliveryDate) return;
+    setIsUpdating(true);
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          estimated_delivery: new Date(tempDeliveryDate).toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', order.id);
+
+      if (error) throw error;
+
+      dispatch({
+        type: 'UPDATE_ORDER_INFO',
+        payload: {
+          orderId: order.id,
+          updatedInfo: { estimatedDelivery: new Date(tempDeliveryDate).toISOString() }
+        }
+      });
+
+      setIsEditingDelivery(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error updating delivery date:', error);
+      alert('ডেলিভারি তারিখ আপডেট করতে সমস্যা হয়েছে!');
     } finally {
       setIsUpdating(false);
     }
@@ -318,8 +358,36 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
                   <div className={styles.statItem}>
                     <FaTruck className={styles.icon} />
                     <div className={styles.statContent}>
-                      <span className={styles.statLabel}>ডেলিভারি তারিখ</span>
-                      <span className={styles.statValue}>{new Date(order.estimatedDelivery).toLocaleDateString('bn-BD')}</span>
+                      <div className={styles.statLabelGroup}>
+                        <span className={styles.statLabel}>ডেলিভারি তারিখ</span>
+                        {!isEditingDelivery && (
+                          <button 
+                            className={styles.inlineEditBtn} 
+                            onClick={() => setIsEditingDelivery(true)}
+                            title="সম্পাদনা করুন"
+                          >
+                            <FaPenToSquare size={10} />
+                          </button>
+                        )}
+                      </div>
+                      {isEditingDelivery ? (
+                        <div className={styles.editDeliveryGroup}>
+                          <input 
+                            type="date" 
+                            className={styles.deliveryDateInput}
+                            value={tempDeliveryDate}
+                            onChange={(e) => setTempDeliveryDate(e.target.value)}
+                          />
+                          <button className={styles.inlineSaveBtn} onClick={handleSaveDeliveryDate}>
+                            <FaCheck size={12} />
+                          </button>
+                          <button className={styles.inlineCancelBtn} onClick={() => setIsEditingDelivery(false)}>
+                            <FaXmark size={12} />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className={styles.statValue}>{new Date(order.estimatedDelivery).toLocaleDateString('bn-BD')}</span>
+                      )}
                     </div>
                   </div>
                   {order.orderNote && (

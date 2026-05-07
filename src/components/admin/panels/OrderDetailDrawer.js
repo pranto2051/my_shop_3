@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAdmin, getOrderProgress, getNextStage } from '@/app/context/AdminContext';
+import { supabase } from '@/lib/supabase';
 import styles from './OrderDetailDrawer.module.css';
 import { 
   FaXmark, FaPhone, FaLocationDot, FaCalendar, FaTruck, 
@@ -15,12 +16,17 @@ export default function OrderDetailDrawer({ order, onClose }) {
   const [adminNote, setAdminNote] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isEditingDelivery, setIsEditingDelivery] = useState(false);
+  const [tempDeliveryDate, setTempDeliveryDate] = useState('');
 
   useEffect(() => {
     if (order) {
       const nextStage = getNextStage(order, orderStages);
       setSelectedStageId(nextStage ? nextStage.id : order.currentStageId);
       setAdminNote('');
+      if (order.estimatedDelivery) {
+        setTempDeliveryDate(new Date(order.estimatedDelivery).toISOString().split('T')[0]);
+      }
     }
   }, [order, orderStages]);
 
@@ -78,6 +84,39 @@ export default function OrderDetailDrawer({ order, onClose }) {
     
     setIsUpdating(false);
     setAdminNote('');
+  };
+
+  const handleSaveDeliveryDate = async () => {
+    if (!tempDeliveryDate) return;
+    setIsUpdating(true);
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          estimated_delivery: new Date(tempDeliveryDate).toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', order.id);
+
+      if (error) throw error;
+
+      dispatch({
+        type: 'UPDATE_ORDER_INFO',
+        payload: {
+          orderId: order.id,
+          updatedInfo: { estimatedDelivery: new Date(tempDeliveryDate).toISOString() }
+        }
+      });
+
+      setIsEditingDelivery(false);
+      alert('ডেলিভারি তারিখ আপডেট করা হয়েছে ✅');
+    } catch (error) {
+      console.error('Error updating delivery date:', error);
+      alert('ডেলিভারি তারিখ আপডেট করতে সমস্যা হয়েছে!');
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handleCancelOrder = () => {
@@ -161,7 +200,33 @@ export default function OrderDetailDrawer({ order, onClose }) {
                 </div>
                 <div className={styles.infoRow}>
                   <FaTruck className={styles.icon} />
-                  <span className={styles.accentText}>ডেলিভারি: {new Date(order.estimatedDelivery).toLocaleDateString('bn-BD')}</span>
+                  {isEditingDelivery ? (
+                    <div className={styles.editDeliveryGroup}>
+                      <input 
+                        type="date" 
+                        className={styles.deliveryDateInput}
+                        value={tempDeliveryDate}
+                        onChange={(e) => setTempDeliveryDate(e.target.value)}
+                      />
+                      <button className={styles.inlineSaveBtn} onClick={handleSaveDeliveryDate}>
+                        <FaCheck size={12} />
+                      </button>
+                      <button className={styles.inlineCancelBtn} onClick={() => setIsEditingDelivery(false)}>
+                        <FaXmark size={12} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className={styles.deliveryDateDisplay}>
+                      <span className={styles.accentText}>ডেলিভারি: {new Date(order.estimatedDelivery).toLocaleDateString('bn-BD')}</span>
+                      <button 
+                        className={styles.inlineEditBtn} 
+                        onClick={() => setIsEditingDelivery(true)}
+                        title="সম্পাদনা করুন"
+                      >
+                        <FaPenToSquare size={12} />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 {order.orderNote && (
                   <div className={styles.noteRow}>

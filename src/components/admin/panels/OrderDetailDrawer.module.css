@@ -176,6 +176,90 @@
 
 .accentText { color: var(--honey); font-weight: 600; }
 
+.deliveryDateDisplay {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.editDeliveryGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.deliveryDateInput {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1.5px solid var(--linen-dark);
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  color: var(--walnut-deep);
+  outline: none;
+  background: var(--parchment);
+}
+
+.deliveryDateInput:focus {
+  border-color: var(--honey);
+}
+
+.inlineEditBtn {
+  background: none;
+  border: none;
+  color: var(--honey);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: all 0.2s;
+}
+
+.inlineEditBtn:hover {
+  opacity: 1;
+  background: rgba(212, 136, 42, 0.1);
+}
+
+.inlineSaveBtn, .inlineCancelBtn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.inlineSaveBtn {
+  background: var(--stage-approved);
+  color: white;
+}
+
+.inlineSaveBtn:hover {
+  background: #15803d;
+  transform: scale(1.05);
+}
+
+.inlineCancelBtn {
+  background: var(--linen-dark);
+  color: var(--bark-mid);
+}
+
+.inlineCancelBtn:hover {
+  background: #e5d5cc;
+  transform: scale(1.05);
+}
+
 .noteRow {
   margin-top: 10px;
   display: flex;

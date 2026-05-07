@@ -307,6 +307,90 @@
   letter-spacing: 1px;
 }
 
+.statLabelGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inlineEditBtn {
+  background: none;
+  border: none;
+  color: var(--walnut);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: all 0.2s;
+}
+
+.inlineEditBtn:hover {
+  opacity: 1;
+  background: rgba(124, 75, 42, 0.05);
+}
+
+.editDeliveryGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.deliveryDateInput {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(124, 75, 42, 0.2);
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--walnut-deep);
+  outline: none;
+}
+
+.deliveryDateInput:focus {
+  border-color: var(--honey);
+}
+
+.inlineSaveBtn, .inlineCancelBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.inlineSaveBtn {
+  background: var(--stage-approved);
+  color: white;
+}
+
+.inlineSaveBtn:hover {
+  background: #15803d;
+  transform: scale(1.05);
+}
+
+.inlineCancelBtn {
+  background: #f2ece8;
+  color: var(--bark-mid);
+}
+
+.inlineCancelBtn:hover {
+  background: #e5d5cc;
+  transform: scale(1.05);
+}
+
 .statValue {
   font-family: 'Noto Sans Bengali', sans-serif;
   font-size: 14px;
