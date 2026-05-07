@@ -1,0 +1,97 @@
+.filterContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--linen-dark);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: all 0.3s ease;
+}
+
+.filterContainer:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.1);
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+.calendarIcon {
+  font-size: 14px;
+  color: var(--accent);
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.selectGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: var(--linen-light);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
+
+.select:hover {
+  background: var(--linen-dark);
+}
+
+.select:focus {
+  border-color: var(--accent);
+  background: white;
+}
+
+.clearBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: #fee2e2;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearBtn:hover {
+  background: #fecaca;
+  transform: rotate(90deg);
+}
+
+@media (max-width: 768px) {
+  .filterContainer {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .selectGroup {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .select {
+    min-width: unset;
+  }
+}

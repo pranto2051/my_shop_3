@@ -6,10 +6,11 @@ import { supabase } from '@/lib/supabase';
 import styles from './OrdersPanel.module.css';
 import { FaPlus, FaPhone, FaClipboardList, FaCheckCircle, FaBan, FaCalendarDay, FaChevronLeft, FaChevronRight, FaTrash } from 'react-icons/fa6';
 import ConfirmModal from '../ConfirmModal';
+import DateFilter from '../DateFilter';
 
 export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
   const { state, dispatch } = useAdmin();
-  const { orders, orderStages, orderFilter, orderSearch } = state;
+  const { orders, orderStages, orderFilter, orderSearch, orderDateFilter } = state;
   const [currentPage, setCurrentPage] = useState(1);
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
@@ -29,9 +30,19 @@ export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
                             order.id.toLowerCase().includes(orderSearch.toLowerCase()) ||
                             order.customerName.toLowerCase().includes(orderSearch.toLowerCase());
       
-      const matchesFilter = orderFilter === 'all' || order.status === orderFilter;
       
-      return matchesSearch && matchesFilter;
+      const matchesFilter = orderFilter === 'all' || order.status === orderFilter;
+
+      const orderDate = new Date(order.createdAt);
+      const orderDay = orderDate.getDate().toString().padStart(2, '0');
+      const orderMonth = (orderDate.getMonth() + 1).toString().padStart(2, '0');
+      const orderYear = orderDate.getFullYear().toString();
+
+      const matchesDate = (!orderDateFilter.day || orderDay === orderDateFilter.day) &&
+                          (!orderDateFilter.month || orderMonth === orderDateFilter.month) &&
+                          (!orderDateFilter.year || orderYear === orderDateFilter.year);
+      
+      return matchesSearch && matchesFilter && matchesDate;
     })
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -176,6 +187,12 @@ export default function OrdersPanel({ openCreateModal, openOrderDetail }) {
             onChange={handleSearch}
           />
         </div>
+
+        <DateFilter 
+          dateFilter={orderDateFilter}
+          onFilterChange={(newFilter) => dispatch({ type: 'SET_ORDER_DATE_FILTER', payload: newFilter })}
+          onClear={() => dispatch({ type: 'SET_ORDER_DATE_FILTER', payload: { day: '', month: '', year: '' } })}
+        />
 
         <div className={styles.sortDropdown}>
           <select>

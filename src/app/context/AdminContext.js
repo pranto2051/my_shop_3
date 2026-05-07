@@ -27,6 +27,11 @@ const initialState = {
   tasks: [],
   announcements: [],
   promotionalPopups: [],
+  orderDateFilter: {
+    day: '',
+    month: '',
+    year: ''
+  },
   settings: {
     showAdminHeader: false,
     showAdminFooter: false,
@@ -205,6 +210,12 @@ function adminReducer(state, action) {
       return {
         ...state,
         orderSearch: action.payload,
+      };
+
+    case 'SET_ORDER_DATE_FILTER':
+      return {
+        ...state,
+        orderDateFilter: action.payload,
       };
 
     // Designs actions
