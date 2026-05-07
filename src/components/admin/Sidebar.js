@@ -68,7 +68,7 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
       items: [
         { id: 'products', label: 'পণ্য তালিকা', icon: <FaCouch /> },
         { id: 'categories', label: 'ক্যাটাগরি', icon: <FaLayerGroup /> },
-        { id: 'inventory', label: 'Inventory Management', icon: <FaBoxesStacked /> }
+        { id: 'inventory', label: 'ইনভেন্টরি ম্যানেজমেন্ট', icon: <FaBoxesStacked /> }
       ]
     },
     {
@@ -76,28 +76,28 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
       items: [
         { id: 'orders', label: 'অর্ডার তালিকা', icon: <FaClipboardList />, badge: activeOrdersCount, badgeType: 'honey' },
         { id: 'create-order', label: 'নতুন অর্ডার', icon: <FaCirclePlus /> },
-        { id: 'delivery', label: 'Delivery Management', icon: <FaTruckFast /> },
-        { id: 'order-stages', label: 'Order Stage Config', icon: <FaListCheck />, badge: stagesCount }
+        { id: 'delivery', label: 'ডেলিভারি ম্যানেজমেন্ট', icon: <FaTruckFast /> },
+        { id: 'order-stages', label: 'অর্ডার স্টেজ ব্যবস্থাপনা', icon: <FaListCheck />, badge: stagesCount }
       ]
     },
     {
       title: 'গ্রাহক ব্যবস্থাপনা',
       items: [
-        { id: 'customers', label: 'Customer Management', icon: <FaUsers /> },
-        { id: 'reviews', label: 'Reviews & Ratings', icon: <FaStar /> }
+        { id: 'customers', label: 'গ্রাহক ব্যবস্থাপনা', icon: <FaUsers /> },
+        { id: 'reviews', label: 'রিভিউ ও রেটিং', icon: <FaStar /> }
       ]
     },
     {
       title: 'আর্থিক',
       items: [
-        { id: 'finance', label: 'Financial Management', icon: <FaMoneyBillTrendUp /> },
-        { id: 'pnl', label: 'Profit & Loss', icon: <FaScaleBalanced /> }
+        { id: 'finance', label: 'আর্থিক ব্যবস্থাপনা', icon: <FaMoneyBillTrendUp /> },
+        { id: 'pnl', label: 'লাভ ও ক্ষতি', icon: <FaScaleBalanced /> }
       ]
     },
     {
       title: 'যোগাযোগ',
       items: [
-        { id: 'notifications', label: 'Notifications', icon: <FaBell /> }
+        { id: 'notifications', label: 'নোটিফিকেশন', icon: <FaBell /> }
       ]
     },
     {
@@ -105,23 +105,23 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
       items: [
         { id: 'gallery', label: 'ফটো গ্যালারি', icon: <FaImages /> },
         { id: 'designs', label: 'ডিজাইন গ্যালারি', icon: <FaPalette /> },
-        { id: 'cms', label: 'Content Management', icon: <FaPenToSquare /> },
-        { id: 'seo', label: 'SEO & Marketing', icon: <FaMagnifyingGlassChart /> }
+        { id: 'cms', label: 'কন্টেন্ট ম্যানেজমেন্ট', icon: <FaPenToSquare /> },
+        { id: 'seo', label: 'SEO ও মার্কেটিং', icon: <FaMagnifyingGlassChart /> }
       ]
     },
     {
       title: 'সিস্টেম',
       items: [
-        { id: 'calendar', label: 'Calendar & Tasks', icon: <FaCalendarDays /> },
-        { id: 'backup', label: 'Data & Backup', icon: <FaDatabase /> },
+        { id: 'calendar', label: 'ক্যালেন্ডার ও টাস্কস', icon: <FaCalendarDays /> },
+        { id: 'backup', label: 'ডেটা ব্যাকআপ', icon: <FaDatabase /> },
         { id: 'settings', label: 'সেটিংস', icon: <FaGear /> },
-        { id: 'help', label: 'Help Center', icon: <FaCircleQuestion /> }
+        { id: 'help', label: 'হেল্প সেন্টার', icon: <FaCircleQuestion /> }
       ]
     },
     {
       title: 'প্রোফাইল',
       items: [
-        { id: 'profile', label: 'Store Profile', icon: <FaStore /> },
+        { id: 'profile', label: 'স্টোর প্রোফাইল', icon: <FaStore /> },
         { id: 'logout', label: 'লগআউট', icon: <FaRightFromBracket />, onClick: handleLogout }
       ]
     }

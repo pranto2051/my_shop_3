@@ -168,21 +168,21 @@ export default function AdminPage() {
                 <i className="fas fa-chevron-right separator"></i>
                 <span className="current-path">
                   {activeTab === 'dashboard' ? 'ড্যাশবোর্ড' :
-                   activeTab === 'analytics' ? 'Analytics & Reports' :
+                  //  activeTab === 'analytics' ? 'Analytics & Reports' :
                    activeTab === 'products' ? 'পণ্য তালিকা' :
                    activeTab === 'create-product' ? 'নতুন পণ্য যোগ' :
                    activeTab === 'categories' ? 'ক্যাটাগরি' :
                    activeTab === 'inventory' ? 'Inventory Management' :
                    activeTab === 'orders' ? 'অর্ডার তালিকা' :
                    activeTab === 'create-order' ? 'নতুন অর্ডার' :
-                   activeTab === 'delivery' ? 'Delivery Management' :
-                   activeTab === 'order-stages' ? 'Order Stage Config' :
-                   activeTab === 'customers' ? 'Customer Management' :
-                   activeTab === 'payments' ? 'Payment Management' :
-                   activeTab === 'coupons' ? 'Coupons & Discounts' :
-                   activeTab === 'reviews' ? 'Reviews & Ratings' :
-                   activeTab === 'finance' ? 'Financial Management' :
-                   activeTab === 'pnl' ? 'Profit & Loss' :
+                   activeTab === 'delivery' ? 'ডেলিভারি ম্যানেজমেন্ট' :
+                   activeTab === 'order-stages' ? 'অর্ডার স্টেজ কনফিগ' :
+                   activeTab === 'customers' ? 'গ্রাহক ম্যানেজমেন্ট' :
+                   activeTab === 'payments' ? 'পেমেন্ট ম্যানেজমেন্ট' :
+                   activeTab === 'coupons' ? 'কুপন ও ডিসকাউন্ট' :
+                   activeTab === 'reviews' ? 'রিভিউ ও রেটিং' :
+                   activeTab === 'finance' ? 'আর্থিক ব্যবস্থাপনা' :
+                   activeTab === 'pnl' ? 'লাভ ও ক্ষতি' :
                    activeTab === 'cms' ? 'Content Management' :
                    activeTab === 'settings' ? 'সেটিংস' : 'অর্ডার ব্যবস্থাপনা'}
                 </span>
