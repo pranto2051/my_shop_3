@@ -39,241 +39,329 @@
 }
 
 .addBtn {
+  height: 46px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--walnut);
-  color: var(--parchment);
-  padding: 10px 20px;
-  border-radius: 10px;
+  gap: 10px;
+  background: #8B5A2B;
+  background: linear-gradient(135deg, #8B5A2B 0%, #B67838 100%);
+  color: white;
+  border-radius: 12px;
   border: none;
   font-family: 'Noto Sans Bengali', sans-serif;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 15px -4px rgba(139, 90, 43, 0.3);
 }
 
 .addBtn:hover {
-  background: var(--walnut-deep);
   transform: translateY(-2px);
+  box-shadow: 0 10px 20px -5px rgba(139, 90, 43, 0.4);
+  filter: brightness(1.1);
+}
+
+.addBtn:active {
+  transform: translateY(0);
 }
 
 .editorCard {
   background: white;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
+  border: 1px solid rgba(124, 75, 42, 0.1);
+  border-radius: 24px;
+  padding: 0;
   margin-bottom: 30px;
-  box-shadow: var(--shadow-md);
-  animation: slideDown 0.3s ease-out;
+  box-shadow: 0 20px 40px -10px rgba(124, 75, 42, 0.15);
+  animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
 }
 
 @keyframes slideDown {
-  from { transform: translateY(-20px); opacity: 0; }
+  from { transform: translateY(-30px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+.editorHeader {
+  background: linear-gradient(135deg, #fdf8f4 0%, #fffaf5 100%);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid rgba(124, 75, 42, 0.08);
+}
+
+.editorIcon {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--walnut);
+  box-shadow: 0 4px 12px rgba(124, 75, 42, 0.1);
+  font-size: 16px;
 }
 
 .editorTitle {
   font-family: 'Noto Sans Bengali', sans-serif;
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 800;
   color: var(--walnut-deep);
-  margin: 0 0 20px 0;
+  margin: 0;
 }
 
 .formGrid {
+  padding: 24px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 24px;
 }
 
 @media (max-width: 600px) {
-  .formGrid { grid-template-columns: 1fr; }
+  .formGrid { grid-template-columns: 1fr; padding: 20px; }
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .formGroup label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-family: 'Noto Sans Bengali', sans-serif;
   font-size: 13px;
   font-weight: 700;
-  color: var(--bark-mid);
+  color: var(--walnut-deep);
+}
+
+.labelIcon {
+  color: var(--honey);
+  font-size: 14px;
 }
 
 .formGroup input, .formGroup textarea {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1.5px solid var(--linen-dark);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(124, 75, 42, 0.1);
+  background: #fdfaf7;
   font-family: 'Noto Sans Bengali', sans-serif;
   font-size: 14px;
   outline: none;
+  transition: all 0.2s;
 }
 
 .formGroup input:focus, .formGroup textarea:focus {
   border-color: var(--honey);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(212, 136, 42, 0.08);
 }
 
 .colorPickerWrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  background: #fdfaf7;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(124, 75, 42, 0.1);
 }
 
-.colorPickerWrapper input[type="color"] {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: none;
-  border-radius: 8px;
+.colorPreview {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.colorPreview:hover {
+  transform: scale(1.05);
+}
+
+.hiddenColorInput {
+  display: none;
 }
 
 .colorValue {
   font-family: 'Fira Code', monospace;
   font-size: 14px;
-  color: var(--bark-soft);
+  font-weight: 600;
+  color: var(--walnut);
 }
 
 .editorActions {
+  padding: 28px 24px;
+  background: linear-gradient(to bottom, #ffffff, #fdf8f4);
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
+  gap: 16px;
+  border-top: 1px solid rgba(124, 75, 42, 0.08);
 }
 
 .cancelBtn, .saveBtn {
+  height: 48px;
+  min-width: 140px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: 8px;
+  justify-content: center;
+  gap: 12px;
+  border-radius: 12px;
   font-family: 'Noto Sans Bengali', sans-serif;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  outline: none;
+  white-space: nowrap;
 }
 
 .cancelBtn {
-  background: var(--parchment-2);
-  color: var(--bark-soft);
-  border: 1px solid var(--border);
+  background: #f1e4dc;
+  color: #7c4b2a;
+  border: 1px solid rgba(124, 75, 42, 0.1);
+}
+
+.cancelBtn:hover {
+  background: #e8d5c8;
+  transform: translateY(-2px);
+  color: #5d381f;
 }
 
 .saveBtn {
-  background: var(--honey);
-  color: white;
-  border: none;
+  background: #8B5A2B;
+  background: linear-gradient(135deg, #8B5A2B 0%, #B67838 100%);
+  color: #FFFFFF !important;
+  box-shadow: 0 6px 20px -5px rgba(139, 90, 43, 0.4);
 }
 
-.saveBtn:hover { opacity: 0.9; }
+.saveBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(139, 90, 43, 0.5);
+  filter: brightness(1.1);
+}
+
+.saveBtn:active {
+  transform: translateY(0);
+}
+
+.saveBtn:disabled {
+  background: #d2c1b5;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
 
 .stageList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .stageCard {
-  background: var(--parchment-2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 20px;
+  background: white;
+  border: 1px solid rgba(124, 75, 42, 0.08);
+  border-radius: 16px;
+  padding: 16px 24px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  transition: all 0.2s;
-}
-
-@media (max-width: 600px) {
-  .stageCard {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  
-  .stageMain {
-    width: 100%;
-    order: 1;
-  }
-  
-  .stageActions {
-    width: 100%;
-    justify-content: flex-end;
-    order: 2;
-  }
+  gap: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(124, 75, 42, 0.03);
 }
 
 .stageCard:hover {
-  background: white;
-  box-shadow: var(--shadow-sm);
+  transform: translateX(4px);
+  background: #fffaf5;
+  border-color: rgba(124, 75, 42, 0.15);
+  box-shadow: 0 10px 25px -5px rgba(124, 75, 42, 0.1);
 }
 
 .dragHandle {
-  color: var(--linen-dark);
+  color: #e5d5cc;
   cursor: grab;
+  font-size: 18px;
+  transition: color 0.2s;
+}
+
+.stageCard:hover .dragHandle {
+  color: var(--walnut);
 }
 
 .stageColor {
-  width: 12px;
-  height: 40px;
-  border-radius: 6px;
+  width: 8px;
+  height: 48px;
+  border-radius: 4px;
   flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
 }
 
-.stageMain { flex: 1; }
+.stageMain {
+  flex: 1;
+}
 
 .stageNameRow {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
+  gap: 12px;
+  margin-bottom: 6px;
 }
 
 .stageNameBn {
   font-family: 'Noto Sans Bengali', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   color: var(--walnut-deep);
 }
 
 .stageNameEn {
   font-family: 'Fira Code', monospace;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--bark-soft);
+  background: #fdf8f4;
+  padding: 2px 8px;
+  border-radius: 6px;
 }
 
 .defaultBadge {
-  background: var(--linen-dark);
-  color: var(--bark-soft);
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 4px;
+  background: var(--honey);
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 50px;
   font-family: 'Noto Sans Bengali', sans-serif;
+  letter-spacing: 0.5px;
 }
 
 .stageDesc {
   font-family: 'Noto Sans Bengali', sans-serif;
-  font-size: 12px;
-  color: var(--bark-soft);
+  font-size: 13px;
+  color: var(--bark-mid);
   margin: 0;
+  line-height: 1.5;
 }
 
 .stageActions {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .iconBtn {
-  background: white;
-  border: 1px solid var(--border);
+  background: #fdfaf7;
+  border: 1px solid rgba(124, 75, 42, 0.1);
   color: var(--bark-soft);
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -282,11 +370,16 @@
 }
 
 .iconBtn:hover {
+  background: white;
   color: var(--walnut);
   border-color: var(--walnut);
+  box-shadow: 0 4px 10px rgba(124, 75, 42, 0.1);
+  transform: translateY(-2px);
 }
 
 .deleteBtn:hover {
-  color: var(--stage-cancelled);
-  border-color: var(--stage-cancelled);
+  background: #fff5f5;
+  color: #ef4444;
+  border-color: #fecaca;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1);
 }

@@ -152,12 +152,21 @@ export default function StageManagerPanel() {
 
       {(isAdding || editingId) && (
         <div className={styles.editorCard}>
-          <h3 className={styles.editorTitle}>
-            {editingId ? 'স্টেজ সম্পাদনা করুন' : 'নতুন স্টেজ যোগ করুন'}
-          </h3>
+          <div className={styles.editorHeader}>
+            <div className={styles.editorIcon}>
+              {editingId ? <FaPen /> : <FaPlus />}
+            </div>
+            <h3 className={styles.editorTitle}>
+              {editingId ? 'স্টেজ সম্পাদনা করুন' : 'নতুন স্টেজ যোগ করুন'}
+            </h3>
+          </div>
+          
           <div className={styles.formGrid}>
             <div className={styles.formGroup}>
-              <label>নাম (বাংলা) *</label>
+              <label>
+                <span className={styles.labelIcon}><FaPen /></span>
+                নাম (বাংলা) *
+              </label>
               <input 
                 type="text" 
                 value={formData.name}
@@ -166,7 +175,10 @@ export default function StageManagerPanel() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>নাম (English)</label>
+              <label>
+                <span className={styles.labelIcon}><FaCircleInfo /></span>
+                নাম (English)
+              </label>
               <input 
                 type="text" 
                 value={formData.nameEn}
@@ -175,18 +187,31 @@ export default function StageManagerPanel() {
               />
             </div>
             <div className={styles.formGroup}>
-              <label>রঙ</label>
+              <label>
+                <span className={styles.labelIcon}><FaCircleInfo /></span>
+                রঙ নির্বাচন করুন
+              </label>
               <div className={styles.colorPickerWrapper}>
+                <div 
+                  className={styles.colorPreview} 
+                  style={{ backgroundColor: formData.color }}
+                  onClick={() => document.getElementById('colorInput').click()}
+                />
                 <input 
+                  id="colorInput"
                   type="color" 
                   value={formData.color}
                   onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  className={styles.hiddenColorInput}
                 />
                 <span className={styles.colorValue}>{formData.color}</span>
               </div>
             </div>
             <div className={styles.formGroup}>
-              <label>বিবরণ</label>
+              <label>
+                <span className={styles.labelIcon}><FaCircleInfo /></span>
+                বিবরণ
+              </label>
               <textarea 
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
