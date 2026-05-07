@@ -30,6 +30,25 @@ export async function updatePageBlock(id, blockData) {
   return data;
 }
 
+export async function createPageBlock(blockData) {
+  const { data, error } = await supabase
+    .from('page_blocks')
+    .insert([blockData]);
+  
+  if (error) throw error;
+  return data;
+}
+
+export async function deletePageBlock(id) {
+  const { data, error } = await supabase
+    .from('page_blocks')
+    .delete()
+    .eq('id', id);
+  
+  if (error) throw error;
+  return data;
+}
+
 export async function updatePageHighlight(id, highlightData) {
   const { data, error } = await supabase
     .from('page_highlights')

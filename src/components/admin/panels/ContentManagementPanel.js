@@ -22,6 +22,8 @@ import {
 } from 'react-icons/fa6';
 import { useAdmin, addAnnouncement, updateAnnouncement, deleteAnnouncement } from '@/app/context/AdminContext';
 import ConfirmModal from '../ConfirmModal';
+import PageEditor from '../../pages/admin/PageEditor';
+import { getAdminPageData } from '@/lib/pages/getPageData';
 
 export default function ContentManagementPanel() {
   const { state, dispatch } = useAdmin();
@@ -32,6 +34,11 @@ export default function ContentManagementPanel() {
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+
+  // Page Editor States
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [selectedPageData, setSelectedPageData] = useState(null);
+  const [isEditorLoading, setIsEditorLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     text: '',
@@ -323,9 +330,26 @@ export default function ContentManagementPanel() {
                     <button 
                       className="edit-page-btn secondary"
                       style={{ marginTop: '8px', backgroundColor: '#7C4B2A', color: 'white' }}
-                      onClick={() => alert('এডিটর মোড শীঘ্রই আসছে। আপনি সরাসরি পেজে গিয়ে এডিট করতে পারবেন (যদি লগইন থাকেন)।')}
+                      onClick={async () => {
+                        try {
+                          setIsEditorLoading(true);
+                          const data = await getAdminPageData(config.slug);
+                          if (data) {
+                            setSelectedPageData(data);
+                            setIsEditorOpen(true);
+                          } else {
+                            alert('পেজ ডাটা পাওয়া যায়নি।');
+                          }
+                        } catch (error) {
+                          console.error('Error opening editor:', error);
+                          alert('এডিটর খুলতে সমস্যা হয়েছে।');
+                        } finally {
+                          setIsEditorLoading(false);
+                        }
+                      }}
+                      disabled={isEditorLoading}
                     >
-                      এডিট করুন
+                      {isEditorLoading ? 'লোড হচ্ছে...' : 'এডিট করুন'}
                     </button>
                   </div>
                 ))
@@ -337,6 +361,21 @@ export default function ContentManagementPanel() {
         )}
 
       </div>
+
+      {/* Page Editor Drawer */}
+      {selectedPageData && (
+        <PageEditor 
+          isOpen={isEditorOpen}
+          onClose={() => {
+            setIsEditorOpen(false);
+            setSelectedPageData(null);
+          }}
+          slug={selectedPageData.config.slug}
+          config={selectedPageData.config}
+          sections={selectedPageData.sections}
+          highlights={selectedPageData.highlights}
+        />
+      )}
 
       <style jsx>{`
         .cms-panel { padding: 20px; }

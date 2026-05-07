@@ -3,7 +3,6 @@ import { getPageData } from '@/lib/pages/getPageData';
 import PageHero from '@/components/pages/shared/PageHero';
 import PageSection from '@/components/pages/shared/PageSection';
 import StatsGrid from '@/components/pages/about/StatsGrid';
-import AdminEditBar from '@/components/pages/shared/AdminEditBar';
 
 export const metadata = {
   title: 'আমাদের সম্পর্কে — মা ফার্নিচার',
@@ -20,13 +19,7 @@ export default async function AboutUsPage() {
   const { config, sections, highlights } = data;
 
   return (
-    <main style={{ paddingTop: '48px' }}>
-      <AdminEditBar 
-        slug="about-us" 
-        config={config} 
-        sections={sections} 
-        highlights={highlights} 
-      />
+    <main>
       <PageHero config={config} />
       
       {/* Special section for highlights in About Us */}

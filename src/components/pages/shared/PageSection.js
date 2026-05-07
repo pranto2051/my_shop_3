@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styles from './PageSection.module.css';
 import SectionText from './SectionText';
 import SectionList from './SectionList';
@@ -10,18 +10,9 @@ import SectionHighlight from './SectionHighlight';
 import SectionFAQ from './SectionFAQ';
 import SectionContact from './SectionContact';
 import AboutStory from '../about/AboutStory';
-import { FaPencil, FaEye, FaEyeSlash, FaArrowUp, FaArrowDown } from 'react-icons/fa6';
 
 const PageSection = ({ section }) => {
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsAdmin(localStorage.getItem('adminLoggedIn') === 'true');
-    }
-  }, []);
-
-  if (!section || (!section.is_visible && !isAdmin)) return null;
+  if (!section || !section.is_visible) return null;
 
   const renderContent = () => {
     // Specific layouts based on section_key
@@ -51,21 +42,10 @@ const PageSection = ({ section }) => {
 
   return (
     <section 
-      className={`${styles.section} ${!section.is_visible ? styles.hidden : ''}`} 
+      className={styles.section} 
       id={section.section_key}
     >
       <div className={styles.container}>
-        {isAdmin && (
-          <div className={styles.adminControls}>
-            <button className={styles.adminBtn} title="এডিট"><FaPencil /></button>
-            <button className={styles.adminBtn} title="উপরে"><FaArrowUp /></button>
-            <button className={styles.adminBtn} title="নিচে"><FaArrowDown /></button>
-            <button className={styles.adminBtn} title={section.is_visible ? "লুকান" : "দেখান"}>
-              {section.is_visible ? <FaEye /> : <FaEyeSlash />}
-            </button>
-            <span className={styles.typeBadge}>{section.content_type}</span>
-          </div>
-        )}
         <div className={styles.header}>
           <div className={styles.titleWrapper}>
             {section.icon && <span className={styles.icon}>{section.icon}</span>}

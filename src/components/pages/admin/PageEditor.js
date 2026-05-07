@@ -1,10 +1,16 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import styles from './PageEditor.module.css';
-import { FaXmark, FaFloppyDisk, FaChevronRight } from 'react-icons/fa6';
+import { FaXmark, FaFloppyDisk, FaChevronRight, FaEye, FaEyeSlash, FaTrash, FaPlus, FaPencil } from 'react-icons/fa6';
+import { updatePageConfig, updatePageSection } from '@/lib/pages/updatePageData';
+import SectionEditor from './SectionEditor';
 
-const PageEditor = ({ isOpen, onClose, slug, config, sections, highlights }) => {
+const PageEditor = ({ isOpen, onClose, slug, config, sections: initialSections, highlights }) => {
   const [activeTab, setActiveTab] = useState('info');
+  const [sections, setSections] = useState(initialSections || []);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editingSection, setEditingSection] = useState(null);
+  
   const [formData, setFormData] = useState({
     title_bn: '',
     subtitle: '',
@@ -27,13 +33,39 @@ const PageEditor = ({ isOpen, onClose, slug, config, sections, highlights }) => 
         is_published: config.is_published ?? true
       });
     }
-  }, [config]);
+    if (initialSections) {
+      setSections(initialSections);
+    }
+  }, [config, initialSections]);
 
   if (!isOpen) return null;
 
   const handleSave = async () => {
-    alert('সংরক্ষণ করার ফিচারটি শীঘ্রই আসছে।');
-    // Here we will call updatePageConfig and other update functions
+    try {
+      setIsSaving(true);
+      await updatePageConfig(slug, formData);
+      alert('পেজ তথ্য সফলভাবে সংরক্ষিত হয়েছে!');
+      window.location.reload(); // Refresh to show changes
+    } catch (error) {
+      console.error('Error saving page config:', error);
+      alert('সংরক্ষণ করতে সমস্যা হয়েছে।');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const toggleSectionVisibility = async (sectionId, currentVisibility) => {
+    try {
+      const newVisibility = !currentVisibility;
+      await updatePageSection(sectionId, { is_visible: newVisibility });
+      
+      setSections(sections.map(s => 
+        s.id === sectionId ? { ...s, is_visible: newVisibility } : s
+      ));
+    } catch (error) {
+      console.error('Error toggling visibility:', error);
+      alert('অবস্থা পরিবর্তন করতে সমস্যা হয়েছে।');
+    }
   };
 
   return (
@@ -44,8 +76,12 @@ const PageEditor = ({ isOpen, onClose, slug, config, sections, highlights }) => 
             <button className={styles.closeBtn} onClick={onClose}><FaXmark /></button>
             <h2 className={styles.title}>পেজ এডিটর: {config?.title_bn}</h2>
           </div>
-          <button className={styles.saveBtn} onClick={handleSave}>
-            <FaFloppyDisk /> সংরক্ষণ করুন
+          <button 
+            className={styles.saveBtn} 
+            onClick={handleSave}
+            disabled={isSaving}
+          >
+            <FaFloppyDisk /> {isSaving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
           </button>
         </div>
 
@@ -138,18 +174,35 @@ const PageEditor = ({ isOpen, onClose, slug, config, sections, highlights }) => 
           {activeTab === 'sections' && (
             <div className={styles.sectionsList}>
               {sections?.map((section) => (
-                <div key={section.id} className={styles.sectionItem}>
+                <div key={section.id} className={`${styles.sectionItem} ${!section.is_visible ? styles.inactive : ''}`}>
                   <div className={styles.sectionInfo}>
                     <span className={styles.sectionIcon}>{section.icon}</span>
-                    <span className={styles.sectionTitle}>{section.title}</span>
-                    <span className={styles.sectionType}>{section.content_type}</span>
+                    <div className={styles.sectionTextContent}>
+                      <span className={styles.sectionTitle}>{section.title}</span>
+                      <span className={styles.sectionTypeBadge}>{section.content_type}</span>
+                    </div>
                   </div>
-                  <button className={styles.editSectionBtn}>
-                    এডিট <FaChevronRight />
-                  </button>
+                  <div className={styles.sectionActions}>
+                    <button 
+                      className={styles.editBtn}
+                      onClick={() => setEditingSection(section)}
+                      title="বিভাগ এডিট করুন"
+                    >
+                      <FaPencil />
+                    </button>
+                    <button 
+                      className={styles.visibilityBtn}
+                      onClick={() => toggleSectionVisibility(section.id, section.is_visible)}
+                      title={section.is_visible ? "নিষ্ক্রিয় করুন" : "সক্রিয় করুন"}
+                    >
+                      {section.is_visible ? <FaEye /> : <FaEyeSlash />}
+                    </button>
+                  </div>
                 </div>
               ))}
-              <button className={styles.addSectionBtn}>+ নতুন বিভাগ যোগ করুন</button>
+              <button className={styles.addSectionBtn}>
+                <FaPlus /> নতুন বিভাগ যোগ করুন
+              </button>
             </div>
           )}
 
@@ -168,6 +221,17 @@ const PageEditor = ({ isOpen, onClose, slug, config, sections, highlights }) => 
           )}
         </div>
       </div>
+
+      {editingSection && (
+        <SectionEditor 
+          isOpen={!!editingSection}
+          onClose={() => setEditingSection(null)}
+          section={editingSection}
+          onUpdate={(updatedSection) => {
+            setSections(sections.map(s => s.id === updatedSection.id ? updatedSection : s));
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -14,64 +14,6 @@
   position: relative;
 }
 
-.adminControls {
-  position: absolute;
-  top: -40px;
-  right: 20px;
-  display: flex;
-  gap: 8px;
-  background: #3B1F0C;
-  padding: 5px 10px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  z-index: 10;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.section:hover .adminControls {
-  opacity: 1;
-}
-
-.adminBtn {
-  background: none;
-  border: none;
-  color: #FDF6E8;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s;
-}
-
-.adminBtn:hover {
-  color: #D4882A;
-}
-
-.typeBadge {
-  font-family: 'Fira Code', monospace;
-  font-size: 10px;
-  color: #D4882A;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-left: 5px;
-  text-transform: uppercase;
-}
-
-.hidden {
-  opacity: 0.5;
-  background: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 10px,
-    rgba(0, 0, 0, 0.05) 10px,
-    rgba(0, 0, 0, 0.05) 20px
-  );
-}
-
 .header {
   margin-bottom: 40px;
   text-align: left;

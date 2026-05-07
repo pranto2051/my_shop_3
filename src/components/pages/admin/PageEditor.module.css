@@ -192,15 +192,49 @@
   font-family: 'Fira Code', monospace;
 }
 
-.editSectionBtn {
+.sectionActions {
+  display: flex;
+  gap: 8px;
+}
+
+.editBtn, .visibilityBtn {
   background: none;
-  border: none;
-  color: #D4882A;
-  font-weight: 600;
-  cursor: pointer;
+  border: 1px solid #D9C5A0;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  cursor: pointer;
+  color: #6B3D22;
+  transition: all 0.2s;
+}
+
+.editBtn:hover {
+  background: #7C4B2A;
+  color: white;
+  border-color: #7C4B2A;
+}
+
+.visibilityBtn:hover {
+  background: #F7EBCF;
+}
+
+.inactive {
+  opacity: 0.5;
+}
+
+.sectionTextContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionTypeBadge {
+  font-size: 10px;
+  color: #D4882A;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 .addSectionBtn {
