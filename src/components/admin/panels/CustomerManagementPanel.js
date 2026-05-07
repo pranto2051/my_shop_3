@@ -86,7 +86,9 @@ export default function CustomerManagementPanel({ customers = [], orders = [], s
         lastOrderDate: lastOrder ? new Date(lastOrder.createdAt).toLocaleDateString('bn-BD') : 'নেই',
         status: c.status || 'Active',
         isVIP: totalSpent > 50000 || c.is_vip,
-        created_at: c.created_at || c.createdAt
+        created_at: c.created_at || c.createdAt,
+        address: c.address || lastOrder?.deliveryAddress || 'ঠিকানা নেই',
+        joinedDate: new Date(c.created_at || c.createdAt || Date.now()).toLocaleDateString('bn-BD'),
       };
     });
   }, [customers, orders]);
