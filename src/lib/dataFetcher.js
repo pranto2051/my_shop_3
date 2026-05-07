@@ -50,6 +50,7 @@ export async function fetchAllData() {
     if (shopInfoArray && shopInfoArray.length > 0) {
       const rawInfo = shopInfoArray[0];
       shopInfo = {
+        id: rawInfo.id,
         name: rawInfo.name,
         contactLabel: rawInfo.contact_label,
         showroomAddress: {

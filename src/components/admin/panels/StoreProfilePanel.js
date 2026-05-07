@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { useAdmin } from '@/app/context/AdminContext';
+import { supabase } from '@/lib/supabase';
+import ConfirmModal from '../ConfirmModal';
 import { 
   FaStore, 
   FaCamera, 
@@ -17,10 +19,12 @@ import {
 } from 'react-icons/fa6';
 
 export default function StoreProfilePanel() {
-  const { state } = useAdmin();
+  const { state, dispatch } = useAdmin();
   const { shopInfo } = state;
   const [formData, setFormData] = useState(shopInfo || {
     name: 'M.A Furniture',
+    tagline: '',
+    website: '',
     contactLabel: 'যোগাযোগ করুন',
     showroomAddress: { label: 'শোরুমের ঠিকানা', address: 'মিরপুর ১০, ঢাকা' },
     callNumbers: { label: 'ফোন করুন', numbers: ['01700112233'] },
@@ -28,6 +32,92 @@ export default function StoreProfilePanel() {
     email: { label: 'ইমেইল', address: 'info@mafurniture.com' },
     openingHours: { label: 'খোলা থাকার সময়', schedule: ['শনি - বৃহস্পতি: সকাল ১০টা - রাত ৮টা'] }
   });
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'confirm'
+  });
+
+  const handleChange = (e, field, subfield = null, index = null) => {
+    const value = e.target.value;
+    setFormData(prev => {
+      if (index !== null && subfield) {
+        return {
+          ...prev,
+          [field]: {
+            ...prev[field],
+            [subfield]: prev[field][subfield].map((item, i) => i === index ? value : item)
+          }
+        };
+      } else if (subfield) {
+        return {
+          ...prev,
+          [field]: {
+            ...prev[field],
+            [subfield]: value
+          }
+        };
+      } else {
+        return {
+          ...prev,
+          [field]: value
+        };
+      }
+    });
+  };
+
+  const handleSaveClick = () => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'প্রোফাইল আপডেট নিশ্চিত করুন',
+      message: 'আপনি কি নিশ্চিত যে আপনি দোকানের তথ্য পরিবর্তন করতে চান?',
+      type: 'confirm'
+    });
+  };
+
+  const handleConfirmSave = async () => {
+    setConfirmModal({ ...confirmModal, isOpen: false });
+    setIsSaving(true);
+
+    const dbData = {
+      name: formData.name,
+      showroom_address: formData.showroomAddress.address,
+      call_numbers: formData.callNumbers.numbers,
+      whatsapp_number: formData.whatsapp.number,
+      email_address: formData.email.address,
+      opening_hours_schedule: formData.openingHours.schedule,
+    };
+
+    try {
+      const { error } = await supabase
+        .from('shop_info')
+        .update(dbData)
+        .eq('id', shopInfo?.id || 1);
+
+      if (error) throw error;
+
+      dispatch({ type: 'UPDATE_SHOP_INFO', payload: formData });
+      setConfirmModal({
+        isOpen: true,
+        title: 'সফল!',
+        message: 'দোকানের তথ্য সফলভাবে আপডেট হয়েছে!',
+        type: 'success'
+      });
+    } catch (err) {
+      console.error('Error updating shop info:', err);
+      setConfirmModal({
+        isOpen: true,
+        title: 'ত্রুটি!',
+        message: 'তথ্য আপডেট করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।',
+        type: 'confirm'
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="store-profile-panel">
@@ -37,8 +127,8 @@ export default function StoreProfilePanel() {
           <p>আপনার দোকানের পাবলিক তথ্য এবং যোগাযোগের বিবরণ আপডেট করুন</p>
         </div>
         <div className="header-actions">
-          <button className="reset-btn"><FaArrowRotateRight /> বাতিল</button>
-          <button className="save-btn"><FaFloppyDisk /> পরিবর্তন সেভ করুন</button>
+          <button className="reset-btn" onClick={() => setFormData(shopInfo)} disabled={isSaving}><FaArrowRotateRight /> বাতিল</button>
+          <button className="save-btn" onClick={handleSaveClick} disabled={isSaving}><FaFloppyDisk /> {isSaving ? 'সেভ হচ্ছে...' : 'পরিবর্তন সেভ করুন'}</button>
         </div>
       </div>
 
@@ -78,11 +168,20 @@ export default function StoreProfilePanel() {
             <div className="form-row">
               <div className="form-group">
                 <label>দোকানের নাম</label>
-                <input type="text" value={formData.name} onChange={() => {}} />
+                <input 
+                  type="text" 
+                  value={formData.name} 
+                  onChange={(e) => handleChange(e, 'name')} 
+                />
               </div>
               <div className="form-group">
                 <label>ট্যাগলাইন (ঐচ্ছিক)</label>
-                <input type="text" placeholder="সেরা মানের ফার্নিচার..." />
+                <input 
+                  type="text" 
+                  placeholder="সেরা মানের ফার্নিচার..." 
+                  value={formData.tagline || ''}
+                  onChange={(e) => handleChange(e, 'tagline')}
+                />
               </div>
             </div>
           </div>
@@ -94,7 +193,11 @@ export default function StoreProfilePanel() {
             </div>
             <div className="form-group full">
               <label>শোরুমের ঠিকানা</label>
-              <textarea rows="3" value={formData.showroomAddress.address}></textarea>
+              <textarea 
+                rows="3" 
+                value={formData.showroomAddress.address}
+                onChange={(e) => handleChange(e, 'showroomAddress', 'address')}
+              ></textarea>
             </div>
           </div>
 
@@ -108,28 +211,45 @@ export default function StoreProfilePanel() {
                 <label>প্রাইমারি ফোন নম্বর</label>
                 <div className="input-with-icon">
                   <FaPhone />
-                  <input type="text" value={formData.callNumbers.numbers[0]} />
+                  <input 
+                    type="text" 
+                    value={formData.callNumbers.numbers[0]} 
+                    onChange={(e) => handleChange(e, 'callNumbers', 'numbers', 0)}
+                  />
                 </div>
               </div>
               <div className="form-group">
                 <label>হোয়াটসঅ্যাপ নম্বর</label>
                 <div className="input-with-icon">
                   <FaWhatsapp />
-                  <input type="text" value={formData.whatsapp.number} />
+                  <input 
+                    type="text" 
+                    value={formData.whatsapp.number} 
+                    onChange={(e) => handleChange(e, 'whatsapp', 'number')}
+                  />
                 </div>
               </div>
               <div className="form-group">
                 <label>ইমেইল অ্যাড্রেস</label>
                 <div className="input-with-icon">
                   <FaEnvelope />
-                  <input type="email" value={formData.email.address} />
+                  <input 
+                    type="email" 
+                    value={formData.email.address} 
+                    onChange={(e) => handleChange(e, 'email', 'address')}
+                  />
                 </div>
               </div>
               <div className="form-group">
                 <label>ওয়েবসাইট লিঙ্ক</label>
                 <div className="input-with-icon">
                   <FaGlobe />
-                  <input type="text" placeholder="https://..." />
+                  <input 
+                    type="text" 
+                    placeholder="https://..." 
+                    value={formData.website || ''}
+                    onChange={(e) => handleChange(e, 'website')}
+                  />
                 </div>
               </div>
             </div>
@@ -142,11 +262,26 @@ export default function StoreProfilePanel() {
             </div>
             <div className="form-group full">
               <label>সময়সূচী (বাংলায়)</label>
-              <input type="text" value={formData.openingHours.schedule[0]} />
+              <input 
+                type="text" 
+                value={formData.openingHours.schedule[0]} 
+                onChange={(e) => handleChange(e, 'openingHours', 'schedule', 0)}
+              />
             </div>
           </div>
         </div>
       </div>
+
+      <ConfirmModal 
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type={confirmModal.type}
+        confirmText={confirmModal.type === 'success' ? 'ঠিক আছে' : 'হ্যাঁ, সেভ করুন'}
+        cancelText="বাতিল"
+        onConfirm={confirmModal.type === 'success' ? () => setConfirmModal({ ...confirmModal, isOpen: false }) : handleConfirmSave}
+        onCancel={confirmModal.type === 'success' ? null : () => setConfirmModal({ ...confirmModal, isOpen: false })}
+      />
 
       <style jsx>{`
         .store-profile-panel { padding: 20px; }

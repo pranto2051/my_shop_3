@@ -248,6 +248,12 @@ function adminReducer(state, action) {
         deliveryZones: state.deliveryZones.filter(z => z.id !== action.payload),
       };
 
+    case 'UPDATE_SHOP_INFO':
+      return {
+        ...state,
+        shopInfo: action.payload,
+      };
+
     default:
       return state;
   }

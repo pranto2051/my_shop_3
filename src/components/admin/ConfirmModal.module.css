@@ -88,9 +88,23 @@
   color: white;
 }
 
+.confirmBtn.success {
+  background: #2E7D32;
+}
+
 .confirmBtn:hover {
   background: #C53030;
   box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+}
+
+.confirmBtn.success:hover {
+  background: #1B5E20;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+.iconWrapper.success {
+  background: #E8F5E9;
+  color: #2E7D32;
 }
 
 @keyframes fadeIn {
