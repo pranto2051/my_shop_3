@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import styles from './ProductsPanel.module.css'; // Reusing some base styles if possible, but let's define specific ones
 import { 
   FaUser, 
@@ -21,7 +21,7 @@ import {
   FaXmark
 } from 'react-icons/fa6';
 
-export default function CustomerManagementPanel({ customers = [] }) {
+export default function CustomerManagementPanel({ customers = [], orders = [], setActiveTab }) {
   const [activeSegment, setActiveSegment] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('newest');
@@ -37,17 +37,89 @@ export default function CustomerManagementPanel({ customers = [] }) {
     { label: 'Blocked', icon: '⚠️' }
   ];
 
-  const filteredCustomers = customers.filter(c => {
-    if (activeSegment === 'VIP') return c.is_vip;
-    if (activeSegment === 'New') return c.status === 'New';
-    if (activeSegment === 'Active') return c.status === 'Active';
-    if (activeSegment === 'Blocked') return c.status === 'Blocked';
-    return true;
-  }).filter(c => 
-    (c.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (c.phone || '').includes(searchQuery) ||
-    (c.email || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const processedCustomers = useMemo(() => {
+    // 1. Get all unique customer phones from orders
+    const guestCustomers = [];
+    const seenPhones = new Set();
+    
+    // Add phones from profiles first so we don't duplicate
+    customers.forEach(c => {
+      if (c.phone) seenPhones.add(c.phone);
+      if (c.phone_number) seenPhones.add(c.phone_number);
+    });
+
+    orders.forEach(o => {
+      if (o.customerPhone && !seenPhones.has(o.customerPhone)) {
+        seenPhones.add(o.customerPhone);
+        guestCustomers.push({
+          id: `guest-${o.customerPhone}`,
+          name: o.customerName || 'বেনামী গ্রাহক',
+          phone: o.customerPhone,
+          email: 'N/A',
+          status: 'Active',
+          is_guest: true,
+          created_at: o.createdAt
+        });
+      }
+    });
+
+    const allCustomers = [...customers, ...guestCustomers];
+
+    return allCustomers.map(c => {
+      // Find orders for this customer by phone
+      const customerOrders = orders.filter(o => 
+        (o.customerPhone && (o.customerPhone === c.phone || o.customerPhone === c.phone_number))
+      );
+
+      const totalSpent = customerOrders.reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+      const lastOrder = customerOrders.length > 0 ? customerOrders[0] : null;
+
+      return {
+        ...c,
+        id: c.id,
+        name: c.name || c.full_name || c.customerName || 'বেনামী গ্রাহক',
+        phone: c.phone || c.phone_number || 'N/A',
+        email: c.email || 'N/A',
+        avatar: c.avatar || c.avatar_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
+        totalOrders: customerOrders.length,
+        totalSpent: totalSpent,
+        lastOrderDate: lastOrder ? new Date(lastOrder.createdAt).toLocaleDateString('bn-BD') : 'নেই',
+        status: c.status || 'Active',
+        isVIP: totalSpent > 50000 || c.is_vip,
+        created_at: c.created_at || c.createdAt
+      };
+    });
+  }, [customers, orders]);
+
+  const filteredCustomers = useMemo(() => {
+    return processedCustomers.filter(c => {
+      if (activeSegment === 'VIP') return c.isVIP;
+      if (activeSegment === 'New') {
+        const monthAgo = new Date();
+        monthAgo.setMonth(monthAgo.getMonth() - 1);
+        return new Date(c.created_at) > monthAgo;
+      }
+      if (activeSegment === 'Active') return c.totalOrders > 0;
+      if (activeSegment === 'Blocked') return c.status === 'Blocked';
+      return true;
+    }).filter(c => 
+      (c.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (c.phone || '').includes(searchQuery) ||
+      (c.email || '').toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [processedCustomers, activeSegment, searchQuery]);
+
+  const sortedCustomers = useMemo(() => {
+    let sorted = [...filteredCustomers];
+    if (sortBy === 'newest') {
+      sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (sortBy === 'orders') {
+      sorted.sort((a, b) => b.totalOrders - a.totalOrders);
+    } else if (sortBy === 'spent') {
+      sorted.sort((a, b) => b.totalSpent - a.totalSpent);
+    }
+    return sorted;
+  }, [filteredCustomers, sortBy]);
 
   const toggleSelectAll = () => {
     if (selectedCustomers.length === filteredCustomers.length) {
@@ -70,6 +142,9 @@ export default function CustomerManagementPanel({ customers = [] }) {
     setShowDetailDrawer(true);
   };
 
+  const activeOrdersCount = orders.filter(o => o.status === 'active').length;
+
+
   return (
     <div className="crm-panel">
       <div className="panel-header">
@@ -78,11 +153,11 @@ export default function CustomerManagementPanel({ customers = [] }) {
           <p>আপনার দোকানের সকল গ্রাহকদের তালিকা ও প্রোফাইল</p>
         </div>
         <div className="header-actions">
-          <button className="export-btn">
-            <FaFileExport /> এক্সপোর্ট CSV
+          <button className="export-btn" onClick={() => setActiveTab('orders')}>
+            <FaBagShopping /> অর্ডার তালিকা ({activeOrdersCount}টি সক্রিয়)
           </button>
-          <button className="add-btn">
-            <FaPlus /> নতুন গ্রাহক
+          <button className="add-btn" onClick={() => setActiveTab('create-order')}>
+            <FaPlus /> নতুন অর্ডার / ডাটা নিন
           </button>
         </div>
       </div>
@@ -154,57 +229,65 @@ export default function CustomerManagementPanel({ customers = [] }) {
             </tr>
           </thead>
           <tbody>
-            {filteredCustomers.map(customer => (
-              <tr key={customer.id} className={selectedCustomers.includes(customer.id) ? 'selected' : ''}>
-                <td className="checkbox-col">
-                  <input 
-                    type="checkbox" 
-                    checked={selectedCustomers.includes(customer.id)}
-                    onChange={() => toggleSelectCustomer(customer.id)}
-                  />
-                </td>
-                <td>
-                  <div className="customer-info-cell" onClick={() => openDetails(customer)}>
-                    <img src={customer.avatar} alt="" className="customer-avatar" />
-                    <div className="customer-names">
-                      <span className="customer-name">{customer.name} {customer.isVIP && <FaCrown className="vip-icon" title="VIP Customer" />}</span>
-                      <span className="customer-id">{customer.id}</span>
+            {sortedCustomers.length > 0 ? (
+              sortedCustomers.map(customer => (
+                <tr key={customer.id} className={selectedCustomers.includes(customer.id) ? 'selected' : ''}>
+                  <td className="checkbox-col">
+                    <input 
+                      type="checkbox" 
+                      checked={selectedCustomers.includes(customer.id)}
+                      onChange={() => toggleSelectCustomer(customer.id)}
+                    />
+                  </td>
+                  <td>
+                    <div className="customer-info-cell" onClick={() => openDetails(customer)}>
+                      <img src={customer.avatar} alt="" className="customer-avatar" />
+                      <div className="customer-names">
+                        <span className="customer-name">{customer.name} {customer.isVIP && <FaCrown className="vip-icon" title="VIP Customer" />}</span>
+                        <span className="customer-id">{customer.id}</span>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td>
-                  <div className="contact-cell">
-                    <span><FaPhone /> {customer.phone}</span>
-                    <span className="email-sub"><FaEnvelope /> {customer.email}</span>
-                  </div>
-                </td>
-                <td>
-                  <div className="order-count">
-                    <FaBagShopping /> {customer.totalOrders}টি
-                  </div>
-                </td>
-                <td>
-                  <div className="spent-amount">
-                    ৳{customer.totalSpent.toLocaleString('bn-BD')}
-                  </div>
-                </td>
-                <td>
-                  <div className="date-cell">
-                    <FaClock /> {customer.lastOrderDate}
-                  </div>
-                </td>
-                <td>
-                  <span className={`status-badge ${customer.status.toLowerCase()}`}>
-                    {customer.status}
-                  </span>
-                </td>
-                <td>
-                  <button className="action-btn" onClick={() => openDetails(customer)}>
-                    <FaEllipsisVertical />
-                  </button>
+                  </td>
+                  <td>
+                    <div className="contact-cell">
+                      <span><FaPhone /> {customer.phone}</span>
+                      <span className="email-sub"><FaEnvelope /> {customer.email}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="order-count">
+                      <FaBagShopping /> {customer.totalOrders}টি
+                    </div>
+                  </td>
+                  <td>
+                    <div className="spent-amount">
+                      ৳{customer.totalSpent?.toLocaleString('bn-BD') || 0}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="date-cell">
+                      <FaClock /> {customer.lastOrderDate}
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`status-badge ${customer.status?.toLowerCase() || 'active'}`}>
+                      {customer.status || 'Active'}
+                    </span>
+                  </td>
+                  <td>
+                    <button className="action-btn" onClick={() => openDetails(customer)}>
+                      <FaEllipsisVertical />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="empty-row">
+                  কোন গ্রাহক পাওয়া যায়নি
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -525,6 +608,14 @@ export default function CustomerManagementPanel({ customers = [] }) {
 
         .customer-table tr.selected td {
           background: #fff8f0;
+        }
+
+        .empty-row {
+          text-align: center;
+          padding: 40px !important;
+          color: #95a5a6;
+          font-weight: 600;
+          font-size: 16px;
         }
 
         .checkbox-col {

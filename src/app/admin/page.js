@@ -616,6 +616,8 @@ export default function AdminPage() {
             {activeTab === 'customers' && (
               <CustomerManagementPanel 
                 customers={state.customers} 
+                orders={state.orders}
+                setActiveTab={handleTabChange}
               />
             )}
 
