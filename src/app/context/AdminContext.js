@@ -254,6 +254,23 @@ function adminReducer(state, action) {
         shopInfo: action.payload,
       };
 
+    // Task actions
+    case 'ADD_TASK':
+      return {
+        ...state,
+        tasks: [...state.tasks, action.payload].sort((a, b) => new Date(a.date) - new Date(b.date)),
+      };
+    case 'UPDATE_TASK':
+      return {
+        ...state,
+        tasks: state.tasks.map(t => t.id === action.payload.id ? action.payload : t),
+      };
+    case 'DELETE_TASK':
+      return {
+        ...state,
+        tasks: state.tasks.filter(t => t.id !== action.payload),
+      };
+
     default:
       return state;
   }
@@ -287,6 +304,65 @@ export const deleteDeliveryZone = async (dispatch, zoneId) => {
 
   if (!error) {
     dispatch({ type: 'DELETE_DELIVERY_ZONE', payload: zoneId });
+    return { success: true };
+  }
+  return { success: false, error };
+};
+
+export const addTask = async (dispatch, taskData) => {
+  const { data, error } = await supabase
+    .from('tasks')
+    .insert([{
+      title: taskData.title,
+      task_date: taskData.date,
+      task_time: taskData.time,
+      task_type: taskData.type,
+      is_completed: false
+    }])
+    .select();
+
+  if (!error && data) {
+    const newTask = {
+      id: data[0].id,
+      title: data[0].title,
+      date: data[0].task_date,
+      time: data[0].task_time,
+      type: data[0].task_type,
+      completed: data[0].is_completed
+    };
+    dispatch({ type: 'ADD_TASK', payload: newTask });
+    return { success: true, data: newTask };
+  }
+  return { success: false, error };
+};
+
+export const updateTask = async (dispatch, task) => {
+  const { error } = await supabase
+    .from('tasks')
+    .update({
+      title: task.title,
+      task_date: task.date,
+      task_time: task.time,
+      task_type: task.type,
+      is_completed: task.completed
+    })
+    .eq('id', task.id);
+
+  if (!error) {
+    dispatch({ type: 'UPDATE_TASK', payload: task });
+    return { success: true };
+  }
+  return { success: false, error };
+};
+
+export const deleteTask = async (dispatch, taskId) => {
+  const { error } = await supabase
+    .from('tasks')
+    .delete()
+    .eq('id', taskId);
+
+  if (!error) {
+    dispatch({ type: 'DELETE_TASK', payload: taskId });
     return { success: true };
   }
   return { success: false, error };
