@@ -42,6 +42,7 @@ export default function OurWorkPage() {
               </div>
             ))}
           </div>
+          {/* Empty Gallery Message */}
 
           {gallery.length === 0 && (
             <div className="empty-gallery" suppressHydrationWarning>
