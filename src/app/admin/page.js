@@ -689,7 +689,7 @@ export default function AdminPage() {
       <style jsx>{`
         .admin-wrapper { height: 100vh; overflow: hidden; background: #f8f9fa; position: relative; }
         .admin-dashboard-layout { display: flex; height: 100vh; transition: all 0.3s ease; }
-        .admin-main-content { flex: 1; padding: 30px; overflow-y: auto; height: 100vh; transition: all 0.3s ease; width: 100%; }
+        .admin-main-content { flex: 1; padding: 30px; overflow-y: auto; overflow-x: hidden; height: 100vh; transition: all 0.3s ease; width: 100%; min-width: 0; }
         
         .dashboard-top-bar { 
           background: white; 

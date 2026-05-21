@@ -3,27 +3,22 @@
 import React, { useState } from 'react';
 import { 
   FaStar, 
-  FaUser, 
   FaCheck, 
   FaXmark, 
   FaReply, 
   FaTrash,
   FaFilter,
   FaChartBar,
-  FaCircleCheck,
-  FaImage,
-  FaChevronDown,
-  FaChevronUp,
-  FaPaperPlane,
   FaArrowTrendUp,
   FaBullhorn,
   FaCircleInfo,
   FaRobot
 } from 'react-icons/fa6';
+import ReviewDetailsModal from './ReviewDetailsModal';
 
 export default function ReviewsPanel({ reviews: dbReviews = [] }) {
   const [activeTab, setActiveTab] = useState('All');
-  const [expandedReview, setExpandedReview] = useState(null);
+  const [selectedReview, setSelectedReview] = useState(null);
   const [replyingTo, setReplyingTo] = useState(null);
   const [ratingFilter, setRatingFilter] = useState('All');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
@@ -62,6 +57,22 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
     const matchesRating = ratingFilter === 'All' || r.rating === parseInt(ratingFilter);
     return matchesTab && matchesRating;
   });
+
+  const getStatusLabel = (status) => {
+    if (status === 'Pending') return 'অপেক্ষমান';
+    if (status === 'Approved') return 'অনুমোদিত';
+    return 'বাতিল';
+  };
+
+  const openReviewDetails = (review) => {
+    setSelectedReview(review);
+    setReplyingTo(review.id);
+  };
+
+  const closeReviewDetails = () => {
+    setSelectedReview(null);
+    setReplyingTo(null);
+  };
 
   const renderStars = (count, size = "14px") => {
     return [...Array(5)].map((_, i) => (
@@ -187,68 +198,66 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
       <div className="reviews-grid">
         {filteredReviews.length > 0 ? (
           filteredReviews.map(review => (
-            <div key={review.id} className={`modern-review-card ${review.status.toLowerCase()}`}>
-              {/* Card Header: Product & Customer */}
-              <div className="card-top">
+            <div
+              key={review.id}
+              className={`modern-review-card ${review.status.toLowerCase()}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => openReviewDetails(review)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  openReviewDetails(review);
+                }
+              }}
+            >
+              <div className="card-top compact-top">
                 <div className="prod-meta">
-                  <div className="prod-img-box">
-                    <img src={review.productImage} alt="" />
+                  <div className="prod-img-box compact-image">
+                    <img src={review.productImage} alt={review.productName} />
                   </div>
                   <div className="prod-details">
+                    <div className="card-kicker">{review.date}</div>
                     <h4 className="p-title">{review.productName}</h4>
-                    <span className="r-date">{review.date}</span>
+                    <span className="summary-line">{review.customerName}</span>
                   </div>
                 </div>
                 <div className="cust-meta">
-                  <div className="cust-info">
-                    <span className="c-name"><FaUser /> {review.customerName}</span>
-                    <span className="c-phone">{review.customerPhone}</span>
-                  </div>
                   <div className="r-status-badge">
                     <span className={`status-dot ${review.status.toLowerCase()}`}></span>
-                    {review.status === 'Pending' ? 'অপেক্ষমান' : review.status === 'Approved' ? 'অনুমোদিত' : 'বাতিল'}
+                    {getStatusLabel(review.status)}
                   </div>
                 </div>
               </div>
 
-              {/* Card Body: Rating & Text */}
-              <div className="card-mid">
-                <div className="rating-row">
+              <div className="card-mid compact-mid">
+                <div className="rating-row compact-row">
                   <div className="stars-box">{renderStars(review.rating)}</div>
                   {review.isFeatured && <span className="featured-pill"><FaStar /> Featured</span>}
                 </div>
-                <div className="review-content">
-                  <p className={expandedReview === review.id ? 'full' : 'short'}>
-                    {review.text}
-                  </p>
-                  {review.text.length > 150 && (
-                    <button className="read-more" onClick={() => setExpandedReview(expandedReview === review.id ? null : review.id)}>
-                      {expandedReview === review.id ? 'কম দেখুন' : 'পুরো রিভিউ পড়ুন'} 
-                      {expandedReview === review.id ? <FaChevronUp /> : <FaChevronDown />}
-                    </button>
-                  )}
+
+                <div className="summary-details">
+                  <div className="summary-item">
+                    <span className="summary-label">ফোন</span>
+                    <span className="summary-value">{review.customerPhone || 'N/A'}</span>
+                  </div>
+                  <div className="summary-item">
+                    <span className="summary-label">ছবি</span>
+                    <span className="summary-value">{review.images.length}</span>
+                  </div>
                 </div>
 
-                {review.images.length > 0 && (
-                  <div className="review-gallery">
-                    {review.images.map((img, idx) => (
-                      <div key={idx} className="gallery-img">
-                        <img src={img} alt="" />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <div className="review-content compact-content">
+                  <p>{review.text || 'কোন মন্তব্য নেই'}</p>
+                </div>
 
-                {review.reply && (
-                  <div className="reply-bubble">
-                    <div className="reply-head"><FaReply /> আপনার রিপ্লাই</div>
-                    <p>{review.reply}</p>
-                  </div>
-                )}
+                <div className="summary-footer">
+                  <span className="open-details-pill">বিস্তারিত দেখুন</span>
+                  {review.reply ? <span className="reply-marker">রিপ্লাই আছে</span> : <span className="reply-marker muted">রিপ্লাই নেই</span>}
+                </div>
               </div>
 
-              {/* Card Footer: Actions */}
-              <div className="card-bottom">
+              <div className="card-bottom compact-bottom" onClick={(event) => event.stopPropagation()}>
                 <div className="action-group">
                   {review.status === 'Pending' && (
                     <>
@@ -256,9 +265,9 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
                       <button className="action-btn reject"><FaXmark /> বাতিল</button>
                     </>
                   )}
-                  <button 
+                  <button
                     className={`action-btn reply ${replyingTo === review.id ? 'active' : ''}`}
-                    onClick={() => setReplyingTo(replyingTo === review.id ? null : review.id)}
+                    onClick={() => openReviewDetails(review)}
                   >
                     <FaReply /> রিপ্লাই
                   </button>
@@ -268,14 +277,6 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
                   <button className="action-btn delete"><FaTrash /></button>
                 </div>
               </div>
-
-              {/* Reply Input Box */}
-              {replyingTo === review.id && (
-                <div className="reply-input-section">
-                  <textarea placeholder="এখানে আপনার উত্তর লিখুন..."></textarea>
-                  <button className="send-btn"><FaPaperPlane /> পাঠান</button>
-                </div>
-              )}
             </div>
           ))
         ) : (
@@ -287,9 +288,22 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
         )}
       </div>
 
+      {selectedReview && (
+        <ReviewDetailsModal
+          review={selectedReview}
+          getStatusLabel={getStatusLabel}
+          renderStars={renderStars}
+          onClose={closeReviewDetails}
+        />
+      )}
+
       <style jsx>{`
         .reviews-container {
           padding: 10px;
+          width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
+          overflow-x: hidden;
           animation: fadeIn 0.5s ease;
         }
 
@@ -475,79 +489,223 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
         .dropdown-item:not(:last-child) { border-bottom: 1px solid #f8fafc; }
 
         /* Review Cards */
-        .reviews-grid { display: grid; gap: 20px; }
-        .modern-review-card { 
-          background: white; 
-          border-radius: 24px; 
-          padding: 25px; 
-          border: 1px solid #f0f0f0; 
-          box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
-          transition: 0.3s;
+        .reviews-grid {
+          display: grid;
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          gap: 16px;
+          width: 100%;
+          min-width: 0;
         }
-        .modern-review-card:hover { transform: scale(1.01); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .modern-review-card {
+          background: linear-gradient(180deg, #ffffff 0%, #fcfcfd 100%);
+          border-radius: 22px;
+          padding: 16px;
+          border: 1px solid #edf2f7;
+          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+          transition: 0.25s ease;
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          min-height: 100%;
+          position: relative;
+          overflow: hidden;
+        }
+        .modern-review-card::before {
+          content: '';
+          position: absolute;
+          inset: 0 auto auto 0;
+          width: 100%;
+          height: 4px;
+          background: linear-gradient(90deg, #7C4B2A, #f59e0b);
+          opacity: 0.9;
+        }
+        .modern-review-card:hover,
+        .modern-review-card:focus-visible {
+          transform: translateY(-4px);
+          box-shadow: 0 16px 40px rgba(15, 23, 42, 0.09);
+          border-color: #dbe3ef;
+          outline: none;
+        }
 
-        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f8fafc; }
-        .prod-meta { display: flex; gap: 15px; align-items: center; }
-        .prod-img-box { width: 60px; height: 60px; border-radius: 12px; overflow: hidden; background: #f8fafc; border: 1px solid #f1f5f9; }
+        .card-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .compact-top { margin-bottom: 14px; }
+        .prod-meta {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          min-width: 0;
+        }
+        .prod-img-box {
+          width: 60px;
+          height: 60px;
+          border-radius: 14px;
+          overflow: hidden;
+          background: #f8fafc;
+          border: 1px solid #eef2f7;
+          flex-shrink: 0;
+        }
+        .compact-image { width: 54px; height: 54px; }
         .prod-img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .p-title { font-size: 16px; font-weight: 700; color: #1e293b; margin: 0 0 4px 0; }
-        .r-date { font-size: 12px; color: #94a3b8; }
+        .prod-details { min-width: 0; }
+        .card-kicker {
+          display: inline-flex;
+          align-items: center;
+          padding: 3px 8px;
+          border-radius: 999px;
+          background: #f8fafc;
+          color: #64748b;
+          font-size: 11px;
+          font-weight: 700;
+          margin-bottom: 6px;
+        }
+        .p-title {
+          font-size: 14px;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0 0 4px 0;
+          line-height: 1.25;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .summary-line {
+          display: block;
+          font-size: 12px;
+          color: #64748b;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
 
         .cust-meta { text-align: right; }
-        .c-name { display: block; font-weight: 700; color: #334155; font-size: 14px; margin-bottom: 4px; }
-        .c-phone { font-size: 12px; color: #64748b; }
-        .r-status-badge { 
-          display: inline-flex; 
-          align-items: center; 
-          gap: 6px; 
-          background: #f8fafc; 
-          padding: 4px 12px; 
-          border-radius: 20px; 
-          font-size: 11px; 
-          font-weight: 800; 
-          margin-top: 8px; 
+        .r-status-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #f8fafc;
+          padding: 5px 10px;
+          border-radius: 999px;
+          font-size: 11px;
+          font-weight: 800;
           color: #475569;
         }
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; }
         .status-dot.pending { background: #f59e0b; }
         .status-dot.approved { background: #10b981; }
         .status-dot.rejected { background: #ef4444; }
 
-        .card-mid { margin-bottom: 25px; }
-        .rating-row { display: flex; align-items: center; gap: 15px; margin-bottom: 12px; }
+        .compact-mid {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          flex: 1;
+        }
+        .rating-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+        .compact-row { margin-bottom: 0; }
         .star { color: #e2e8f0; margin-right: 2px; }
         .star.filled { color: #f59e0b; }
-        
-        .featured-pill { background: #fffbeb; color: #b45309; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; display: flex; align-items: center; gap: 5px; border: 1px solid #fef3c7; }
 
-        .review-content p { font-size: 15px; color: #334155; line-height: 1.6; margin: 0; }
-        .review-content p.short { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .read-more { background: none; border: none; color: #7C4B2A; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 10px; display: flex; align-items: center; gap: 5px; padding: 0; }
+        .featured-pill {
+          background: #fffbeb;
+          color: #b45309;
+          padding: 4px 8px;
+          border-radius: 999px;
+          font-size: 11px;
+          font-weight: 800;
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          border: 1px solid #fef3c7;
+        }
 
-        .review-gallery { display: flex; gap: 12px; margin-top: 20px; }
-        .gallery-img { width: 80px; height: 80px; border-radius: 12px; overflow: hidden; border: 1px solid #f1f5f9; cursor: zoom-in; }
-        .gallery-img img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
-        .gallery-img:hover img { transform: scale(1.1); }
+        .summary-details {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
+        }
+        .summary-item {
+          background: #f8fafc;
+          border: 1px solid #eef2f7;
+          border-radius: 14px;
+          padding: 10px 12px;
+        }
+        .summary-label {
+          display: block;
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          color: #94a3b8;
+          margin-bottom: 4px;
+          font-weight: 800;
+        }
+        .summary-value { font-size: 12px; color: #0f172a; font-weight: 700; }
 
-        .reply-bubble { margin-top: 25px; background: #f0fdf4; border-radius: 16px; padding: 15px 20px; border-left: 4px solid #10b981; }
-        .reply-head { font-size: 12px; font-weight: 800; color: #166534; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
-        .reply-bubble p { font-size: 14px; color: #15803d; font-style: italic; margin: 0; }
+        .review-content { flex: 1; }
+        .compact-content p {
+          font-size: 13px;
+          color: #334155;
+          line-height: 1.55;
+          margin: 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
 
-        .card-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 1px solid #f8fafc; }
-        .action-group, .danger-group { display: flex; gap: 8px; }
-        
-        .action-btn { 
-          padding: 8px 16px; 
-          border-radius: 10px; 
-          border: 1px solid #e2e8f0; 
-          background: white; 
-          color: #475569; 
-          font-size: 13px; 
-          font-weight: 600; 
-          cursor: pointer; 
-          display: flex; 
-          align-items: center; 
-          gap: 8px; 
+        .summary-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          margin-top: auto;
+          padding-top: 4px;
+        }
+        .open-details-pill,
+        .reply-marker {
+          font-size: 11px;
+          font-weight: 800;
+          border-radius: 999px;
+          padding: 4px 8px;
+          background: #f8fafc;
+          color: #64748b;
+        }
+        .reply-marker.muted { opacity: 0.8; }
+
+        .card-mid { margin-bottom: 0; }
+        .card-bottom {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 14px;
+          margin-top: 14px;
+          border-top: 1px solid #eef2f7;
+        }
+        .compact-bottom { flex-wrap: wrap; gap: 10px; }
+        .action-group, .danger-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .action-btn {
+          padding: 8px 12px;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          background: white;
+          color: #475569;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 7px;
           transition: 0.2s;
         }
         .action-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
@@ -559,21 +717,194 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
         .action-btn.delete { color: #94a3b8; border: none; padding: 8px; }
         .action-btn.delete:hover { color: #ef4444; background: #fef2f2; }
 
-        /* Reply Input */
-        .reply-input-section { margin-top: 20px; display: flex; gap: 12px; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .reply-input-section textarea { flex: 1; height: 45px; border-radius: 12px; border: 1px solid #e2e8f0; padding: 12px 16px; font-size: 14px; resize: none; transition: 0.3s; }
-        .reply-input-section textarea:focus { border-color: #7C4B2A; outline: none; height: 80px; box-shadow: 0 0 0 4px rgba(124, 75, 42, 0.1); }
-        .send-btn { background: #7C4B2A; color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .send-btn:hover { background: #a67c52; transform: translateY(-2px); }
-
         .empty-state { text-align: center; padding: 60px 20px; background: #f8fafc; border-radius: 24px; border: 2px dashed #e2e8f0; color: #94a3b8; }
         .empty-state h3 { color: #475569; margin: 15px 0 5px; }
         .empty-state :global(svg) { font-size: 48px; }
 
+        .review-modal-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.55);
+          backdrop-filter: blur(10px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          z-index: 60;
+          animation: fadeIn 0.18s ease;
+        }
+        .review-modal {
+          width: min(1200px, 100%);
+          max-height: min(92vh, 980px);
+          overflow: auto;
+          background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+          border-radius: 28px;
+          border: 1px solid rgba(255, 255, 255, 0.55);
+          box-shadow: 0 30px 80px rgba(15, 23, 42, 0.28);
+          padding: 24px;
+          animation: modalRise 0.22s ease;
+        }
+        @keyframes modalRise {
+          from { opacity: 0; transform: translateY(18px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .review-modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+        .modal-eyebrow {
+          display: inline-flex;
+          padding: 4px 10px;
+          border-radius: 999px;
+          background: #f8fafc;
+          color: #7C4B2A;
+          font-size: 11px;
+          font-weight: 800;
+          margin-bottom: 8px;
+        }
+        .review-modal-header h3 {
+          margin: 0 0 6px;
+          font-size: 28px;
+          color: #0f172a;
+          line-height: 1.2;
+        }
+        .review-modal-header p { margin: 0; color: #64748b; }
+        .modal-close {
+          width: 42px;
+          height: 42px;
+          border: none;
+          border-radius: 999px;
+          background: #f8fafc;
+          color: #334155;
+          cursor: pointer;
+          display: grid;
+          place-items: center;
+          transition: 0.2s ease;
+          flex-shrink: 0;
+        }
+        .modal-close:hover { background: #e2e8f0; transform: rotate(6deg); }
+
+        .review-modal-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1.8fr) minmax(300px, 0.9fr);
+          gap: 18px;
+        }
+        .review-modal-main,
+        .review-modal-side {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .modal-card {
+          background: white;
+          border: 1px solid #edf2f7;
+          border-radius: 22px;
+          padding: 18px;
+          box-shadow: 0 10px 24px rgba(15, 23, 42, 0.03);
+        }
+        .highlight-card {
+          background: linear-gradient(135deg, #fff9f4 0%, #ffffff 60%);
+          border-color: #f4e6db;
+        }
+        .modal-product-row {
+          display: flex;
+          gap: 16px;
+          align-items: center;
+        }
+        .modal-product-image { width: 88px; height: 88px; border-radius: 18px; }
+        .modal-product-copy h4 {
+          font-size: 20px;
+          color: #0f172a;
+          margin: 6px 0 6px;
+        }
+        .modal-product-copy p { margin: 0; color: #64748b; line-height: 1.6; }
+
+        .modal-section-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 12px;
+        }
+        .modal-section-head h4,
+        .side-card h4 {
+          margin: 0;
+          font-size: 15px;
+          color: #0f172a;
+        }
+        .modal-review-text {
+          margin: 0;
+          color: #334155;
+          line-height: 1.75;
+          font-size: 15px;
+        }
+
+        .modal-gallery {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 12px;
+        }
+        .modal-gallery-img { width: 100%; height: 120px; border-radius: 16px; }
+
+        .meta-chip,
+        .status-pill {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 6px 10px;
+          border-radius: 999px;
+          font-size: 11px;
+          font-weight: 800;
+          line-height: 1;
+        }
+        .meta-chip { background: #f8fafc; color: #475569; }
+        .meta-chip.success { background: #ecfdf5; color: #047857; }
+        .meta-chip.neutral { background: #f8fafc; color: #64748b; }
+        .status-pill.pending { background: #fff7ed; color: #b45309; }
+        .status-pill.approved { background: #ecfdf5; color: #047857; }
+        .status-pill.rejected { background: #fef2f2; color: #b91c1c; }
+
+        .modal-reply-bubble { margin-top: 0; }
+        .modal-muted { margin: 0; color: #64748b; line-height: 1.7; }
+        .reply-editor textarea {
+          width: 100%;
+          min-height: 100px;
+          border-radius: 16px;
+          border: 1px solid #e2e8f0;
+          padding: 14px 16px;
+          font-size: 14px;
+          resize: vertical;
+          margin-bottom: 12px;
+          transition: 0.2s ease;
+        }
+        .reply-editor textarea:focus {
+          outline: none;
+          border-color: #7C4B2A;
+          box-shadow: 0 0 0 4px rgba(124, 75, 42, 0.1);
+        }
+        .reply-editor .send-btn { width: fit-content; }
+
+        .detail-stack { display: flex; flex-direction: column; gap: 10px; }
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 10px 0;
+          border-bottom: 1px solid #eef2f7;
+        }
+        .detail-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .detail-label { font-size: 12px; color: #94a3b8; font-weight: 700; }
+        .detail-value { font-size: 13px; color: #0f172a; font-weight: 700; text-align: right; }
+        .status-chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
         @media (max-width: 1024px) {
           .analytics-dashboard { grid-template-columns: 1fr 1.2fr; }
           .automation-card { grid-column: span 2; }
+          .reviews-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+          .review-modal-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
           .analytics-dashboard { grid-template-columns: 1fr; }
@@ -582,6 +913,19 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
           .card-top { flex-direction: column; gap: 15px; }
           .cust-meta { text-align: left; }
           .card-bottom { flex-wrap: wrap; gap: 15px; }
+          .reviews-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .review-modal { padding: 18px; }
+          .review-modal-header h3 { font-size: 22px; }
+          .review-modal-backdrop { padding: 14px; }
+          .modal-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .detail-row { flex-direction: column; }
+          .detail-value { text-align: left; }
+        }
+        @media (max-width: 560px) {
+          .reviews-grid { grid-template-columns: 1fr; }
+          .summary-details { grid-template-columns: 1fr; }
+          .modal-product-row { flex-direction: column; align-items: flex-start; }
+          .modal-gallery { grid-template-columns: 1fr; }
         }
       `}</style>
     </div>
