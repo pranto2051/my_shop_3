@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAdmin } from '@/app/context/AdminContext';
 import Image from 'next/image';
 import { FaTimes, FaTree, FaMoneyBillWave, FaClock, FaFingerprint, FaDownload, FaSearchPlus, FaSearchMinus, FaExpand } from 'react-icons/fa';
@@ -46,6 +46,19 @@ export default function DesignsPage() {
     e.stopPropagation();
     setZoomScale(prev => Math.max(prev - 0.5, 1));
   };
+
+  useEffect(() => {
+    const shouldLockScroll = Boolean(selectedDesign || fullScreenImage);
+    const previousOverflow = document.body.style.overflow;
+
+    if (shouldLockScroll) {
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [selectedDesign, fullScreenImage]);
   
   const filteredDesigns = activeFilter === 'সবগুলো' 
     ? designs 
