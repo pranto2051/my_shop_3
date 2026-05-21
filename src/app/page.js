@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import ProductModal from '@/components/ProductModal';
 import OrderProcess from '@/components/OrderProcess';
+import ShowReview from '@/components/home/ShowReview';
 import ContactSection from '@/components/ContactSection';
 import HeroSlider from '@/components/HeroSlider';
 import SearchSection from '@/components/SearchSection';
@@ -21,7 +22,9 @@ export default function Home() {
     categories: allCategories, 
     designs, 
     gallery,
-    shopInfo: fetchedShopInfo
+    shopInfo: fetchedShopInfo,
+    reviews: fetchedReviews,
+    orders: fetchedOrders
   } = state;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -160,6 +163,9 @@ export default function Home() {
         <OurWorkSection gallery={gallery} />
 
         <OrderProcess storeInfo={storeInfo} />
+
+        <ShowReview reviews={fetchedReviews} orders={fetchedOrders} />
+
         <OrderTrackingSection />
         <ContactSection storeInfo={storeInfo} />
 
