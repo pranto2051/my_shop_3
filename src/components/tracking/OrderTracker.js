@@ -35,7 +35,7 @@ export default function OrderTracker() {
       const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
         .select(`
-          id, customerName:customer_name, customerPhone:customer_phone, 
+          id, customerName:customer_name, customerPhone:customer_phone, productId:product_id,
           productName:product_name, productImage:product_image, 
           quantity, totalPrice:total_price, advancePaid:advance_paid, 
           remainingAmount:remaining_amount, deliveryAddress:delivery_address, 

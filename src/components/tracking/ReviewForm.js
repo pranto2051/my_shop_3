@@ -13,6 +13,72 @@ export default function ReviewForm({ order, onSubmitted }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalConfig, setModalConfig] = useState({ isOpen: false, type: 'confirm', title: '', message: '' });
 
+  const buildReviewPayloads = () => {
+    const baseReviewData = {
+      customer_name: order.customerName,
+      customer_phone: order.customerPhone,
+      rating,
+      review_text: comment,
+      is_approved: false,
+      ...(order.productId ? { product_id: order.productId } : {}),
+      ...(order.productName ? { product_name: order.productName } : {}),
+      ...(order.productImage ? { product_image: order.productImage } : {}),
+      ...(order.id ? { order_id: order.id } : {})
+    };
+
+    return [
+      baseReviewData,
+      (({ order_id, ...payload }) => payload)(baseReviewData),
+      (({ product_image, ...payload }) => payload)(baseReviewData),
+      (({ product_name, ...payload }) => payload)(baseReviewData),
+      (({ product_name, product_image, order_id, ...payload }) => payload)(baseReviewData)
+    ];
+  };
+
+  const insertReview = async () => {
+    let lastError = null;
+
+    for (const payload of buildReviewPayloads()) {
+      const { error } = await supabase
+        .from('customer_reviews')
+        .insert([payload]);
+
+      if (!error) {
+        return;
+      }
+
+      lastError = error;
+
+      const isForeignKeyError =
+        error.code === '23503' ||
+        /customer_reviews_product_id_fkey|foreign key/i.test(error.message || '');
+
+      const isMissingColumnError =
+        error.code === '42703' ||
+        /schema cache|column/i.test(error.message || '');
+
+      if (isForeignKeyError && payload.product_id) {
+        const { product_id, ...fallbackPayload } = payload;
+        const retry = await supabase
+          .from('customer_reviews')
+          .insert([fallbackPayload]);
+
+        if (!retry.error) {
+          return;
+        }
+
+        lastError = retry.error;
+        continue;
+      }
+
+      if (!isMissingColumnError) {
+        break;
+      }
+    }
+
+    throw lastError || new Error('রিভিউ জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (rating === 0) {
@@ -28,41 +94,7 @@ export default function ReviewForm({ order, onSubmitted }) {
 
     setIsSubmitting(true);
     try {
-      const reviewData = {
-        product_name: order.productName,
-        product_image: order.productImage,
-        customer_name: order.customerName,
-        customer_phone: order.customerPhone,
-        rating: rating,
-        review_text: comment,
-        is_approved: false,
-        order_id: order.id
-      };
-
-      let { error } = await supabase
-        .from('customer_reviews')
-        .insert([reviewData]);
-
-      // Handle missing order_id column fallback
-      if (error && (error.code === '42703' || error.message?.includes('order_id'))) {
-        delete reviewData.order_id;
-        const retry = await supabase
-          .from('customer_reviews')
-          .insert([reviewData]);
-        error = retry.error;
-      }
-
-      if (error) {
-        // Handle RLS or other errors
-        let errorMsg = 'রিভিউ জমা দিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।';
-        if (error.code === '42501') {
-          errorMsg = 'সার্ভার পারমিশন সমস্যা (RLS)। দয়া করে এডমিনকে জানান।';
-        } else if (error.message) {
-          errorMsg = `সমস্যা: ${error.message}`;
-        }
-        
-        throw new Error(errorMsg);
-      }
+      await insertReview();
 
       setModalConfig({
         isOpen: true,

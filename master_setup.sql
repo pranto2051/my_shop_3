@@ -118,6 +118,9 @@ CREATE TABLE IF NOT EXISTS shop_info (
 CREATE TABLE IF NOT EXISTS customer_reviews (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   product_id VARCHAR(50) REFERENCES products(id) ON DELETE CASCADE,
+  product_name VARCHAR(255),
+  product_image TEXT,
+  order_id VARCHAR(50) REFERENCES orders(id) ON DELETE CASCADE,
   customer_name VARCHAR(255) NOT NULL,
   customer_phone VARCHAR(20),
   rating INTEGER CHECK (rating >= 1 AND rating <= 5),
