@@ -2,28 +2,33 @@
 
 import { useState } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaTimes, FaLayerGroup } from 'react-icons/fa';
+import { supabase } from '@/lib/supabase';
 import styles from './CategoriesPanel.module.css';
 
 export default function CategoriesPanel({ categories, onUpdateCategories }) {
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     nameEn: '',
-    icon: 'couch',
+    icon: '',
     description: ''
   });
 
-  const icons = [
-    { value: 'chair', label: 'চেয়ার' },
-    { value: 'table', label: 'টেবিল' },
-    { value: 'door-open', label: 'দরজা' },
-    { value: 'border-all', label: 'জানালা' },
-    { value: 'couch', label: 'সোফা' },
-    { value: 'bed', label: 'বেড' },
-    { value: 'box', label: 'ওয়ার্ডরোব' },
-    { value: 'book', label: 'শেলফ' }
-  ];
+  const getNextCategoryId = () => {
+    const ids = categories
+      .map(category => category.id)
+      .filter(id => typeof id === 'string' && id.startsWith('cat_'))
+      .map(id => Number.parseInt(id.replace('cat_', ''), 10))
+      .filter(Number.isFinite);
+
+    if (ids.length === 0) {
+      return 'cat_001';
+    }
+
+    return `cat_${String(Math.max(...ids) + 1).padStart(3, '0')}`;
+  };
 
   const handleOpenModal = (category = null) => {
     if (category) {
@@ -36,31 +41,78 @@ export default function CategoriesPanel({ categories, onUpdateCategories }) {
       });
     } else {
       setEditingCategory(null);
-      setFormData({ name: '', nameEn: '', icon: 'couch', description: '' });
+      setFormData({ name: '', nameEn: '', icon: '', description: '' });
     }
     setShowModal(true);
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    if (editingCategory) {
-      onUpdateCategories(categories.map(c =>
-        c.id === editingCategory.id ? { ...c, ...formData } : c
-      ));
-    } else {
-      const newCategory = {
-        id: `cat_${String(categories.length + 1).padStart(3, '0')}`,
-        ...formData,
-        productCount: 0
-      };
-      onUpdateCategories([...categories, newCategory]);
+
+    const categoryPayload = {
+      name: formData.name,
+      name_en: formData.nameEn,
+      icon: formData.icon,
+      description: formData.description,
+      product_count: editingCategory?.productCount || 0
+    };
+
+    setIsSaving(true);
+
+    try {
+      let updatedCategory;
+
+      if (editingCategory) {
+        const { data, error } = await supabase
+          .from('categories')
+          .update(categoryPayload)
+          .eq('id', editingCategory.id)
+          .select('id, name, nameEn:name_en, icon, description, productCount:product_count')
+          .single();
+
+        if (error) throw error;
+        updatedCategory = data;
+      } else {
+        const { data, error } = await supabase
+          .from('categories')
+          .insert([{ id: getNextCategoryId(), ...categoryPayload }])
+          .select('id, name, nameEn:name_en, icon, description, productCount:product_count')
+          .single();
+
+        if (error) throw error;
+        updatedCategory = data;
+      }
+
+      if (editingCategory) {
+        onUpdateCategories(categories.map(category => (
+          category.id === editingCategory.id ? updatedCategory : category
+        )));
+      } else {
+        onUpdateCategories([...categories, updatedCategory]);
+      }
+
+      setShowModal(false);
+      setEditingCategory(null);
+    } catch (error) {
+      console.error('Error saving category:', error);
+      alert('ক্যাটাগরি সংরক্ষণ করতে সমস্যা হয়েছে!');
+    } finally {
+      setIsSaving(false);
     }
-    setShowModal(false);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (confirm('আপনি কি নিশ্চিত যে এই ক্যাটাগরি মুছে ফেলতে চান?')) {
-      onUpdateCategories(categories.filter(c => c.id !== id));
+      try {
+        const { error } = await supabase.from('categories').delete().eq('id', id);
+
+        if (error) throw error;
+
+        onUpdateCategories(categories.filter(category => category.id !== id));
+      } catch (error) {
+        console.error('Error deleting category:', error);
+        alert('ক্যাটাগরি মুছে ফেলতে সমস্যা হয়েছে!');
+      }
     }
   };
 
@@ -151,20 +203,16 @@ export default function CategoriesPanel({ categories, onUpdateCategories }) {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label className={styles.formLabel}>আইকন নির্বাচন করুন</label>
-                  <div className={styles.iconSelector}>
-                    {icons.map(icon => (
-                      <button
-                        key={icon.value}
-                        type="button"
-                        className={`${styles.iconOption} ${formData.icon === icon.value ? styles.selected : ''}`}
-                        onClick={() => setFormData({...formData, icon: icon.value})}
-                      >
-                        <i className={`fas fa-${icon.value}`}></i>
-                        <span>{icon.label}</span>
-                      </button>
-                    ))}
-                  </div>
+                    <label className={styles.formLabel}>আইকন নাম</label>
+                    <input
+                      type="text"
+                      className={styles.formInput}
+                      placeholder="যেমন: couch, chair, table"
+                      value={formData.icon}
+                      onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+                      required
+                    />
+                    <p className={styles.formHint}>ডাটাবেসে সংরক্ষিত Font Awesome icon name ব্যবহার করুন।</p>
                 </div>
 
                 <div className={styles.formGroup}>
@@ -182,8 +230,8 @@ export default function CategoriesPanel({ categories, onUpdateCategories }) {
                   <button type="button" className={styles.cancelBtn} onClick={() => setShowModal(false)}>
                     বাতিল
                   </button>
-                  <button type="submit" className={styles.submitBtn}>
-                    <FaPlus /> সংরক্ষণ করুন
+                  <button type="submit" className={styles.submitBtn} disabled={isSaving}>
+                    <FaPlus /> {isSaving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
                   </button>
                 </div>
               </form>
