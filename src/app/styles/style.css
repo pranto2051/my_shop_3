@@ -319,7 +319,7 @@ h4 { font-size: clamp(0.95rem, 1.8vw, 1.15rem); font-weight: 600; }
 .dropdown-menu {
   position: absolute;
   top: calc(100% + 8px);
-  left: 50%;
+  left: -50%;
   transform: translateX(-50%) translateY(-8px);
   background: white;
   border: 1px solid var(--border);
