@@ -80,7 +80,7 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
       <FaStar 
         key={i} 
         style={{ fontSize: size }}
-        className={i < count ? 'star filled' : 'star empty'} 
+        className={`${styles.star} ${i < count ? styles.starFilled : styles.starEmpty}`}
       />
     ));
   };
@@ -234,8 +234,12 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
               </div>
 
               <div className={`${styles.cardMid} ${styles.compactMid}`}>
-                <div className={`${styles.ratingRow} ${styles.compactRow}`}>
-                  <div className={styles.starsBox}>{renderStars(review.rating)}</div>
+                <div className={styles.ratingRow}>
+                  <div className={styles.ratingIcon}><FaStar /></div>
+                  <div className={styles.ratingMeta}>
+                    <div className={styles.starsBox}>{renderStars(review.rating)}</div>
+                    <span className={styles.ratingText}>{review.rating}/5 রেটিং</span>
+                  </div>
                   {review.isFeatured && <span className={styles.featuredPill}><FaStar /> Featured</span>}
                 </div>
 
