@@ -1,11 +1,51 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaXmark, FaReply, FaPaperPlane, FaStar } from 'react-icons/fa6';
+import { supabase } from '@/lib/supabase';
 import styles from './ReviewDetailsModal.module.css';
 
-export default function ReviewDetailsModal({ review, renderStars, getStatusLabel, onClose }) {
+export default function ReviewDetailsModal({ review, renderStars, getStatusLabel, onClose, onReplySaved }) {
+  const [replyText, setReplyText] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [inlineError, setInlineError] = useState('');
+
+  useEffect(() => {
+    setReplyText(review?.reply || '');
+    setInlineError('');
+  }, [review]);
+
   if (!review) return null;
+
+  const handleSendReply = async () => {
+    const trimmedReply = replyText.trim();
+
+    if (!trimmedReply) {
+      setInlineError('দয়া করে রিপ্লাই লিখুন।');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setInlineError('');
+
+    try {
+      const { error } = await supabase
+        .from('customer_reviews')
+        .update({ admin_reply: trimmedReply })
+        .eq('id', review.id);
+
+      if (error) throw error;
+
+      if (typeof onReplySaved === 'function') {
+        onReplySaved(review.id, trimmedReply);
+      }
+    } catch (error) {
+      console.error('Saving review reply failed:', error);
+      setInlineError(error?.message || 'রিপ্লাই সেভ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className={styles.backdrop} onClick={onClose}>
@@ -84,10 +124,24 @@ export default function ReviewDetailsModal({ review, renderStars, getStatusLabel
                 <h4>নতুন রিপ্লাই</h4>
                 <span className={styles.metaChip}>দ্রুত উত্তর</span>
               </div>
-              <textarea placeholder="এখানে আপনার উত্তর লিখুন..." />
-              <button className={styles.sendButton} type="button">
+              <textarea
+                placeholder="এখানে আপনার উত্তর লিখুন..."
+                value={replyText}
+                onChange={(event) => setReplyText(event.target.value)}
+                disabled={isSubmitting}
+              />
+              {inlineError && <p className={styles.inlineError}>{inlineError}</p>}
+              <div className={styles.replyActions}>
+                <span className={styles.replyHint}>রিভিউতে আপনার উত্তর দেখানো হবে।</span>
+                <button
+                  className={styles.sendButton}
+                  type="button"
+                  onClick={handleSendReply}
+                  disabled={isSubmitting}
+                >
                 <FaPaperPlane /> পাঠান
-              </button>
+                </button>
+              </div>
             </div>
           </div>
 

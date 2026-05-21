@@ -809,12 +809,23 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
+  white-space: nowrap;
   transition: 0.2s ease;
 }
 
 .actionBtn:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
+}
+
+.actionBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.actionBtnBusy {
+  opacity: 0.65;
+  pointer-events: none;
 }
 
 .approve {
@@ -858,15 +869,26 @@
   background: #fef3c7;
 }
 
+.featureActive {
+  background: #7C4B2A;
+  color: #ffffff;
+  border-color: #7C4B2A;
+}
+
+.featureActive:hover {
+  background: #6e4225;
+}
+
 .delete {
-  color: #94a3b8;
-  border: none;
-  padding: 8px;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
 }
 
 .delete:hover {
-  color: #ef4444;
-  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fca5a5;
+  background: #ffe4e6;
 }
 
 /* Empty State */
@@ -929,8 +951,18 @@
   }
 
   .cardBottom {
-    flex-wrap: wrap;
-    gap: 15px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .actionGroup,
+  .dangerGroup {
+    width: 100%;
+  }
+
+  .actionBtn {
+    justify-content: center;
   }
 
   .reviewsGrid {
@@ -954,5 +986,17 @@
 
   .filterActions {
     align-self: flex-end;
+  }
+
+  .actionGroup,
+  .dangerGroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .actionBtn {
+    width: 100%;
+    justify-content: center;
   }
 }

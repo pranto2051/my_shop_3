@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   FaStar, 
   FaCheck, 
@@ -14,6 +14,8 @@ import {
   FaCircleInfo,
   FaRobot
 } from 'react-icons/fa6';
+import { supabase } from '@/lib/supabase';
+import ConfirmModal from '../ConfirmModal';
 import ReviewDetailsModal from './ReviewDetailsModal';
 import styles from './ReviewsPanel.module.css';
 
@@ -23,22 +25,51 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
   const [replyingTo, setReplyingTo] = useState(null);
   const [ratingFilter, setRatingFilter] = useState('All');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [processingReviewId, setProcessingReviewId] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'success',
+    confirmText: 'ঠিক আছে',
+    cancelText: 'বাতিল',
+    onConfirm: null,
+    onCancel: null
+  });
 
   // Data normalization
-  const reviews = dbReviews.map(r => ({
-    id: r.id,
-    productName: r.product_name || 'পণ্য',
-    productImage: r.product_image || 'https://placehold.co/100x100/7C4B2A/FDF6E8?text=Review',
-    customerName: r.customer_name || 'বেনামী গ্রাহক',
-    customerPhone: r.customer_phone || '',
-    rating: r.rating || 0,
-    text: r.review_text || '',
-    date: new Date(r.created_at).toLocaleDateString('bn-BD'),
-    status: r.is_approved ? 'Approved' : 'Pending',
-    images: r.images || [],
-    reply: r.admin_reply || null,
-    isFeatured: r.is_featured || false
-  }));
+  const normalizeReview = (r) => {
+    const rawStatus = (r.status || '').toString().toLowerCase();
+
+    let status = 'Pending';
+    if (rawStatus.includes('reject')) {
+      status = 'Rejected';
+    } else if (r.is_approved) {
+      status = 'Approved';
+    } else if (rawStatus.includes('approve')) {
+      status = 'Approved';
+    }
+
+    return {
+      id: r.id,
+      productName: r.product_name || 'পণ্য',
+      productImage: r.product_image || 'https://placehold.co/100x100/7C4B2A/FDF6E8?text=Review',
+      customerName: r.customer_name || 'বেনামী গ্রাহক',
+      customerPhone: r.customer_phone || '',
+      rating: r.rating || 0,
+      text: r.review_text || '',
+      date: r.created_at ? new Date(r.created_at).toLocaleDateString('bn-BD') : 'N/A',
+      status,
+      images: Array.isArray(r.images) ? r.images : [],
+      reply: r.admin_reply || null,
+      isFeatured: !!r.is_featured
+    };
+  };
+
+  useEffect(() => {
+    setReviews(dbReviews.map(normalizeReview));
+  }, [dbReviews]);
 
   const stats = {
     total: reviews.length,
@@ -73,6 +104,157 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
   const closeReviewDetails = () => {
     setSelectedReview(null);
     setReplyingTo(null);
+  };
+
+  const closeModal = () => {
+    setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const openSuccessModal = (message) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'সফল!',
+      message,
+      type: 'success',
+      confirmText: 'ঠিক আছে',
+      cancelText: 'বাতিল',
+      onConfirm: closeModal,
+      onCancel: null
+    });
+  };
+
+  const openErrorModal = (message) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'ত্রুটি!',
+      message,
+      type: 'confirm',
+      confirmText: 'ঠিক আছে',
+      cancelText: 'বাতিল',
+      onConfirm: closeModal,
+      onCancel: null
+    });
+  };
+
+  const updateReviewWithFallback = async (reviewId, payloadVariants) => {
+    let lastError = null;
+
+    for (const payload of payloadVariants) {
+      const { error } = await supabase
+        .from('customer_reviews')
+        .update(payload)
+        .eq('id', reviewId);
+
+      if (!error) {
+        return;
+      }
+
+      lastError = error;
+      const errorMessage = (error.message || '').toLowerCase();
+      const isMissingColumnError =
+        errorMessage.includes('column') &&
+        (errorMessage.includes('does not exist') || errorMessage.includes('schema cache'));
+
+      if (!isMissingColumnError) {
+        break;
+      }
+    }
+
+    throw lastError;
+  };
+
+  const handleReviewAction = async (review, action) => {
+    setProcessingReviewId(review.id);
+
+    try {
+      if (action === 'approve') {
+        await updateReviewWithFallback(review.id, [
+          { is_approved: true, status: 'Approved' },
+          { is_approved: true }
+        ]);
+
+        setReviews((prev) => prev.map((item) => (
+          item.id === review.id ? { ...item, status: 'Approved' } : item
+        )));
+        openSuccessModal('রিভিউটি সফলভাবে অনুমোদিত হয়েছে।');
+      }
+
+      if (action === 'reject') {
+        await updateReviewWithFallback(review.id, [
+          { is_approved: false, status: 'Rejected' },
+          { is_approved: false }
+        ]);
+
+        setReviews((prev) => prev.map((item) => (
+          item.id === review.id ? { ...item, status: 'Rejected' } : item
+        )));
+        openSuccessModal('রিভিউটি বাতিল করা হয়েছে।');
+      }
+
+      if (action === 'feature') {
+        const nextFeaturedState = !review.isFeatured;
+
+        await updateReviewWithFallback(review.id, [
+          { is_featured: nextFeaturedState }
+        ]);
+
+        setReviews((prev) => prev.map((item) => (
+          item.id === review.id ? { ...item, isFeatured: nextFeaturedState } : item
+        )));
+        openSuccessModal(nextFeaturedState ? 'রিভিউটি ফিচার করা হয়েছে।' : 'রিভিউটি ফিচার তালিকা থেকে সরানো হয়েছে।');
+      }
+
+      if (action === 'delete') {
+        const { error } = await supabase
+          .from('customer_reviews')
+          .delete()
+          .eq('id', review.id);
+
+        if (error) throw error;
+
+        setReviews((prev) => prev.filter((item) => item.id !== review.id));
+
+        if (selectedReview?.id === review.id) {
+          closeReviewDetails();
+        }
+
+        openSuccessModal('রিভিউটি সফলভাবে ডিলিট করা হয়েছে।');
+      }
+    } catch (error) {
+      console.error(`Review ${action} failed:`, error);
+      openErrorModal(error?.message || 'অপারেশনটি সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।');
+    } finally {
+      setProcessingReviewId(null);
+    }
+  };
+
+  const handleDeleteClick = (review) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'রিভিউ ডিলিট নিশ্চিত করুন',
+      message: 'এই রিভিউ ডিলিট করলে এটি আর ফিরে পাওয়া যাবে না। আপনি কি নিশ্চিত?',
+      type: 'confirm',
+      confirmText: 'হ্যাঁ, ডিলিট করুন',
+      cancelText: 'বাতিল',
+      onConfirm: () => {
+        closeModal();
+        handleReviewAction(review, 'delete');
+      },
+      onCancel: closeModal
+    });
+  };
+
+  const handleReplySaved = (reviewId, replyText) => {
+    setReviews((prev) => prev.map((item) => (
+      item.id === reviewId ? { ...item, reply: replyText } : item
+    )));
+
+    setSelectedReview((prev) => {
+      if (!prev || prev.id !== reviewId) return prev;
+      return { ...prev, reply: replyText };
+    });
+
+    openSuccessModal('রিভিউ রিপ্লাই সফলভাবে সেভ হয়েছে।');
   };
 
   const renderStars = (count, size = "14px") => {
@@ -268,21 +450,51 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
                 <div className={styles.actionGroup}>
                   {review.status === 'Pending' && (
                     <>
-                      <button type="button" className={`${styles.actionBtn} ${styles.approve}`}><FaCheck /> অনুমোদন</button>
-                      <button type="button" className={`${styles.actionBtn} ${styles.reject}`}><FaXmark /> বাতিল</button>
+                      <button
+                        type="button"
+                        className={`${styles.actionBtn} ${styles.approve} ${processingReviewId === review.id ? styles.actionBtnBusy : ''}`}
+                        onClick={() => handleReviewAction(review, 'approve')}
+                        disabled={processingReviewId === review.id}
+                      >
+                        <FaCheck /> অনুমোদন
+                      </button>
+                      <button
+                        type="button"
+                        className={`${styles.actionBtn} ${styles.reject} ${processingReviewId === review.id ? styles.actionBtnBusy : ''}`}
+                        onClick={() => handleReviewAction(review, 'reject')}
+                        disabled={processingReviewId === review.id}
+                      >
+                        <FaXmark /> বাতিল
+                      </button>
                     </>
                   )}
                   <button
                     type="button"
-                    className={`${styles.actionBtn} ${styles.reply} ${replyingTo === review.id ? styles.replyActive : ''}`}
+                    className={`${styles.actionBtn} ${styles.reply} ${replyingTo === review.id ? styles.replyActive : ''} ${processingReviewId === review.id ? styles.actionBtnBusy : ''}`}
                     onClick={() => openReviewDetails(review)}
+                    disabled={processingReviewId === review.id}
                   >
                     <FaReply /> রিপ্লাই
                   </button>
-                  <button type="button" className={`${styles.actionBtn} ${styles.feature}`}><FaBullhorn /> ফিচার</button>
+                  <button
+                    type="button"
+                    className={`${styles.actionBtn} ${styles.feature} ${review.isFeatured ? styles.featureActive : ''} ${processingReviewId === review.id ? styles.actionBtnBusy : ''}`}
+                    onClick={() => handleReviewAction(review, 'feature')}
+                    disabled={processingReviewId === review.id}
+                  >
+                    <FaBullhorn /> {review.isFeatured ? 'আনফিচার' : 'ফিচার'}
+                  </button>
                 </div>
                 <div className={styles.dangerGroup}>
-                  <button type="button" className={`${styles.actionBtn} ${styles.delete}`}><FaTrash /></button>
+                  <button
+                    type="button"
+                    className={`${styles.actionBtn} ${styles.delete} ${processingReviewId === review.id ? styles.actionBtnBusy : ''}`}
+                    onClick={() => handleDeleteClick(review)}
+                    disabled={processingReviewId === review.id}
+                    aria-label="রিভিউ ডিলিট"
+                  >
+                    <FaTrash /> ডিলিট
+                  </button>
                 </div>
               </div>
             </div>
@@ -302,8 +514,20 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
           getStatusLabel={getStatusLabel}
           renderStars={renderStars}
           onClose={closeReviewDetails}
+          onReplySaved={handleReplySaved}
         />
       )}
+
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type={confirmModal.type}
+        confirmText={confirmModal.confirmText}
+        cancelText={confirmModal.cancelText}
+        onConfirm={confirmModal.onConfirm || closeModal}
+        onCancel={confirmModal.onCancel}
+      />
 
     </div>
   );
