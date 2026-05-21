@@ -63,6 +63,7 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
       status,
       images: Array.isArray(r.images) ? r.images : [],
       reply: r.admin_reply || null,
+      replyUpdatedAt: r.admin_reply_at || r.updated_at || null,
       isFeatured: !!r.is_featured
     };
   };
@@ -244,14 +245,16 @@ export default function ReviewsPanel({ reviews: dbReviews = [] }) {
     });
   };
 
-  const handleReplySaved = (reviewId, replyText) => {
+  const handleReplySaved = (reviewId, replyText, replyUpdatedAt = null) => {
     setReviews((prev) => prev.map((item) => (
-      item.id === reviewId ? { ...item, reply: replyText } : item
+      item.id === reviewId
+        ? { ...item, reply: replyText, replyUpdatedAt: replyUpdatedAt || new Date().toISOString() }
+        : item
     )));
 
     setSelectedReview((prev) => {
       if (!prev || prev.id !== reviewId) return prev;
-      return { ...prev, reply: replyText };
+      return { ...prev, reply: replyText, replyUpdatedAt: replyUpdatedAt || new Date().toISOString() };
     });
 
     openSuccessModal('রিভিউ রিপ্লাই সফলভাবে সেভ হয়েছে।');

@@ -203,6 +203,13 @@
   text-transform: uppercase;
 }
 
+.replyMeta {
+  font-size: 11px;
+  color: #15803d;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
 .replyBubble p {
   font-size: 14px;
   color: #15803d;

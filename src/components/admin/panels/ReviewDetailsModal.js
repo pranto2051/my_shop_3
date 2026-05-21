@@ -17,6 +17,21 @@ export default function ReviewDetailsModal({ review, renderStars, getStatusLabel
 
   if (!review) return null;
 
+  const formatDateTime = (value) => {
+    if (!value) return 'N/A';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'N/A';
+
+    return date.toLocaleString('bn-BD', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   const handleSendReply = async () => {
     const trimmedReply = replyText.trim();
 
@@ -29,16 +44,38 @@ export default function ReviewDetailsModal({ review, renderStars, getStatusLabel
     setInlineError('');
 
     try {
-      const { error } = await supabase
-        .from('customer_reviews')
-        .update({ admin_reply: trimmedReply })
-        .eq('id', review.id);
+      const replySavedAt = new Date().toISOString();
+      const payloadVariants = [
+        { admin_reply: trimmedReply, admin_reply_at: replySavedAt },
+        { admin_reply: trimmedReply }
+      ];
 
-      if (error) throw error;
+      let lastError = null;
+      for (const payload of payloadVariants) {
+        const { error } = await supabase
+          .from('customer_reviews')
+          .update(payload)
+          .eq('id', review.id);
 
-      if (typeof onReplySaved === 'function') {
-        onReplySaved(review.id, trimmedReply);
+        if (!error) {
+          if (typeof onReplySaved === 'function') {
+            onReplySaved(review.id, trimmedReply, replySavedAt);
+          }
+          return;
+        }
+
+        lastError = error;
+        const errorMessage = (error.message || '').toLowerCase();
+        const isMissingColumnError =
+          errorMessage.includes('column') &&
+          (errorMessage.includes('does not exist') || errorMessage.includes('schema cache'));
+
+        if (!isMissingColumnError) {
+          break;
+        }
       }
+
+      throw lastError;
     } catch (error) {
       console.error('Saving review reply failed:', error);
       setInlineError(error?.message || 'রিপ্লাই সেভ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
@@ -112,6 +149,7 @@ export default function ReviewDetailsModal({ review, renderStars, getStatusLabel
               {review.reply ? (
                 <div className={styles.replyBubble}>
                   <div className={styles.replyHead}><FaReply /> আপনার রিপ্লাই</div>
+                  <div className={styles.replyMeta}>শেষ আপডেট: {formatDateTime(review.replyUpdatedAt)}</div>
                   <p>{review.reply}</p>
                 </div>
               ) : (
@@ -139,7 +177,7 @@ export default function ReviewDetailsModal({ review, renderStars, getStatusLabel
                   onClick={handleSendReply}
                   disabled={isSubmitting}
                 >
-                <FaPaperPlane /> পাঠান
+                  <FaPaperPlane /> পাঠান
                 </button>
               </div>
             </div>
@@ -164,6 +202,10 @@ export default function ReviewDetailsModal({ review, renderStars, getStatusLabel
                 <div className={styles.detailRow}>
                   <span className={styles.detailLabel}>রিভিউ আইডি</span>
                   <span className={styles.detailValue}>#{review.id}</span>
+                </div>
+                <div className={styles.detailRow}>
+                  <span className={styles.detailLabel}>শেষ রিপ্লাই</span>
+                  <span className={styles.detailValue}>{formatDateTime(review.replyUpdatedAt)}</span>
                 </div>
               </div>
             </div>
