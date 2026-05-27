@@ -10,6 +10,7 @@ import { AdminProvider } from './context/AdminContext';
 import { supabase } from '@/lib/supabase';
 
 import PromotionalPopup from '@/components/PromotionalPopup';
+import Toast from '@/components/Toast';
 
 export async function generateMetadata() {
   const { data: shopInfoArray } = await supabase.from('shop_info').select('*').limit(1);
@@ -105,6 +106,7 @@ export default async function RootLayout({ children }) {
           <Header storeInfo={storeInfo} categories={categories} />
           <AnimationManager />
           <PromotionalPopup />
+          <Toast />
           {children}
           <Footer storeInfo={storeInfo} categories={categories} />
         </AdminProvider>

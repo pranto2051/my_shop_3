@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAdmin } from '@/app/context/AdminContext';
 
 export default function ProductModal({ isOpen, onClose, product, categories, storeInfo }) {
+  const { showToast } = useAdmin();
   const [activeImage, setActiveImage] = useState('');
 
   useEffect(() => {
@@ -25,6 +27,11 @@ export default function ProductModal({ isOpen, onClose, product, categories, sto
   }, [isOpen]);
 
   if (!isOpen || !product) return null;
+
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(product.id);
+    showToast('ID সফলভাবে কপি করা হয়েছে!', 'success');
+  };
 
   const cat = categories.find(c => c.id === product.categoryId);
   const discount = product.originalPrice > product.price
@@ -62,7 +69,7 @@ export default function ProductModal({ isOpen, onClose, product, categories, sto
             </div>
           </div>
           <div className="modal-right">
-            <button className="modal-id" onClick={() => navigator.clipboard.writeText(product.id)} title="ক্লিক করে কপি করুন">
+            <button className="modal-id" onClick={handleCopyId} title="ক্লিক করে কপি করুন">
               <i className="fas fa-copy"></i> #{product.id}
             </button>
 

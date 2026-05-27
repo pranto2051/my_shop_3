@@ -1,9 +1,18 @@
 'use client';
 
+import { useAdmin } from '@/app/context/AdminContext';
+
 export default function ProductCard({ product, categories, storeInfo, openProductDetail, index }) {
+  const { showToast } = useAdmin();
   const cat = categories.find(c => c.id === product.categoryId);
   const discount = product.originalPrice > product.price
     ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
+
+  const handleCopyId = (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(product.id);
+    showToast('ID সফলভাবে কপি করা হয়েছে!', 'success');
+  };
 
   return (
     <div className="product-card" style={{ animationDelay: `${index * 0.08}s` }} suppressHydrationWarning>
@@ -17,7 +26,7 @@ export default function ProductCard({ product, categories, storeInfo, openProduc
         <div className="card-overlay-actions">
           <a href={`https://wa.me/88${storeInfo.whatsapp.number.replace(/-/g, '')}?text=আমি+${encodeURIComponent(product.name)}+(ID%3A+${product.id})+অর্ডার+করতে+চাই।`} className="card-wa-btn" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp অর্ডার"><i className="fab fa-whatsapp"></i></a>
         </div>
-        <button className="product-id-badge" onClick={() => navigator.clipboard.writeText(product.id)} aria-label="ID কপি করুন">#{product.id}</button>
+        <button className="product-id-badge" onClick={handleCopyId} aria-label="ID কপি করুন">#{product.id}</button>
       </div>
       <div className="card-body">
         {cat && <div className="category-tag"><i className={`fas fa-${cat.icon}`}></i> {cat.name}</div>}

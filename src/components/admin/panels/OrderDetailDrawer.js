@@ -11,7 +11,7 @@ import {
 } from 'react-icons/fa6';
 
 export default function OrderDetailDrawer({ order, onClose }) {
-  const { state, dispatch } = useAdmin();
+  const { state, dispatch, showToast } = useAdmin();
   const { orderStages } = state;
   const [adminNote, setAdminNote] = useState('');
   const [selectedStageId, setSelectedStageId] = useState('');
@@ -80,7 +80,7 @@ export default function OrderDetailDrawer({ order, onClose }) {
     });
 
     // 3. Show success toast (simulated here)
-    alert('অর্ডার আপডেট সফল হয়েছে ✅');
+    showToast('অর্ডার আপডেট সফল হয়েছে ✅', 'success');
     
     setIsUpdating(false);
     setAdminNote('');
@@ -143,7 +143,7 @@ export default function OrderDetailDrawer({ order, onClose }) {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    alert('কপি করা হয়েছে!');
+    showToast('কপি করা হয়েছে!', 'success');
   };
 
   const templates = [

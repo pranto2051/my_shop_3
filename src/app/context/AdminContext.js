@@ -37,6 +37,11 @@ const initialState = {
     showAdminHeader: false,
     showAdminFooter: false,
   },
+  toast: {
+    show: false,
+    message: '',
+    type: 'success'
+  }
 };
 
 function adminReducer(state, action) {
@@ -321,6 +326,25 @@ function adminReducer(state, action) {
         promotionalPopups: state.promotionalPopups.filter(p => p.id !== action.payload),
       };
 
+    case 'SHOW_TOAST':
+      return {
+        ...state,
+        toast: {
+          show: true,
+          message: action.payload.message,
+          type: action.payload.type || 'success'
+        }
+      };
+
+    case 'HIDE_TOAST':
+      return {
+        ...state,
+        toast: {
+          ...state.toast,
+          show: false
+        }
+      };
+
     default:
       return state;
   }
@@ -571,8 +595,15 @@ export function AdminProvider({ children }) {
     });
   }, []);
 
+  const showToast = (message, type = 'success') => {
+    dispatch({ type: 'SHOW_TOAST', payload: { message, type } });
+    setTimeout(() => {
+      dispatch({ type: 'HIDE_TOAST' });
+    }, 3000);
+  };
+
   return (
-    <AdminContext.Provider value={{ state, dispatch }}>
+    <AdminContext.Provider value={{ state, dispatch, showToast }}>
       {children}
     </AdminContext.Provider>
   );

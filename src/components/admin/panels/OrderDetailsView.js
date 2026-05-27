@@ -13,7 +13,7 @@ import {
 import ConfirmModal from '../ConfirmModal';
 
 export default function OrderDetailsView({ order: initialOrder, onClose }) {
-  const { state, dispatch } = useAdmin();
+  const { state, dispatch, showToast } = useAdmin();
   const { orderStages, orders } = state;
   
   // Find the current order from state to ensure real-time updates
@@ -280,7 +280,7 @@ export default function OrderDetailsView({ order: initialOrder, onClose }) {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    alert('কপি করা হয়েছে!');
+    showToast('কপি করা হয়েছে!', 'success');
   };
 
   const templates = [

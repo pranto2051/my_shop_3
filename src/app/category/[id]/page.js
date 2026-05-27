@@ -9,7 +9,7 @@ export default function CategoryPage({ params: paramsPromise }) {
   const params = use(paramsPromise);
   const categoryId = params.id;
   
-  const { state } = useAdmin();
+  const { state, showToast } = useAdmin();
   const { products: productsData, categories, shopInfo: fetchedShopInfo } = state;
   const category = categories.find(c => c.id === categoryId);
   
@@ -262,7 +262,7 @@ export default function CategoryPage({ params: paramsPromise }) {
                         <div className="card-overlay-actions">
                           <a href={`https://wa.me/88${storeInfo.whatsapp.number.replace(/-/g, '')}?text=আমি+${encodeURIComponent(product.name)}+(ID%3A+${product.id})+অর্ডার+করতে+চাই।`} className="card-wa-btn" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp অর্ডার"><i className="fab fa-whatsapp"></i></a>
                         </div>
-                        <button className="product-id-badge" onClick={() => navigator.clipboard.writeText(product.id)} aria-label="ID কপি করুন">#{product.id}</button>
+                        <button className="product-id-badge" onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(product.id); showToast('ID সফলভাবে কপি করা হয়েছে!', 'success'); }} aria-label="ID কপি করুন">#{product.id}</button>
                       </div>
                       <div className="card-body">
                         <div className="category-tag"><i className={`fas fa-${category.icon}`}></i> {category.name}</div>
