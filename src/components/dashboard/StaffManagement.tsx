@@ -135,7 +135,7 @@ export default function StaffManagement() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-700 px-[18px]">
+    <div className="space-y-6 animate-in fade-in duration-700 px-4.5">
 
       {/* ── PAGE HEADER ── */}
       <div className="relative overflow-hidden rounded-[40px] bg-linear-to-br from-[#3D1F0D] via-[#5D321A] to-[#7C4B2A] shadow-2xl p-8 md:p-12 lg:p-14">
@@ -191,7 +191,7 @@ export default function StaffManagement() {
       </div>
 
       {/* ── CONTROL BAR ── */}
-      <div className="flex flex-col xl:flex-row gap-6 items-stretch xl:items-center bg-white/50 backdrop-blur-sm p-4 rounded-[32px] border border-[#E8D5C4]/50 shadow-sm">
+      <div className="flex flex-col xl:flex-row gap-6 items-stretch xl:items-center bg-white/50 backdrop-blur-sm p-4 rounded-4xl border border-[#E8D5C4]/50 shadow-sm">
         {/* Search */}
         <div className="relative flex-1 group">
           <div className="absolute left-5 top-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-xl shadow-sm border border-[#E8D5C4] flex items-center justify-center text-[#A0826C] group-focus-within:text-[#7C4B2A] group-focus-within:border-[#7C4B2A] transition-all">
