@@ -1,43 +1,46 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, 
-  Plus, 
-  UserPlus, 
-  Trash2, 
-  Edit2, 
-  Shield, 
-  Briefcase,
-  Mail,
-  Phone,
-  X,
-  ChevronDown,
+  ArrowRight,
   Loader2,
   Clock,
-  ArrowRight
+  ChevronDown,
+  X,
+  Phone,
+  Mail,
+  Briefcase,
+  Shield,
+  Edit2,
+  Trash2,
+  UserPlus,
+  Plus,
+  Search
 } from 'lucide-react';
+
 import { useAdmin, addUser, updateUser, deleteUser } from '@/app/context/AdminContext';
 
 const RoleBadge = ({ role }: { role: string }) => (
-  <span className={`px-4 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 w-fit shadow-sm ${
+  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.12em] border ${
     role === 'admin' 
-      ? 'bg-amber-100/90 text-amber-800 border border-amber-200 backdrop-blur-sm' 
-      : 'bg-emerald-100/90 text-emerald-800 border border-emerald-200 backdrop-blur-sm'
+      ? 'bg-amber-50 text-amber-700 border-amber-200' 
+      : 'bg-emerald-50 text-emerald-700 border-emerald-200'
   }`}>
-    {role === 'admin' ? <Shield size={12} className="text-amber-600" /> : <Briefcase size={12} className="text-emerald-600" />}
+    {role === 'admin' 
+      ? <Shield size={10} strokeWidth={2.5} /> 
+      : <Briefcase size={10} strokeWidth={2.5} />}
     {role === 'admin' ? 'অ্যাডমিন' : 'স্টাফ'}
   </span>
 );
 
-const StatusIndicator = ({ status }: { status: string }) => (
-  <span className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full shadow-sm ${
+const StatusPill = ({ status }: { status: string }) => (
+  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] ${
     status === 'active' 
-      ? 'bg-green-100/90 text-green-800 border border-green-200' 
-      : 'bg-red-100/90 text-red-800 border border-red-200'
+      ? 'bg-green-100 text-green-700' 
+      : 'bg-red-100 text-red-700'
   }`}>
-    <span className={`w-2 h-2 rounded-full ${status === 'active' ? 'bg-green-500' : 'bg-red-500'} shadow-[0_0_8px_rgba(34,197,94,0.4)]`} />
-    {status === 'active' ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
-  </span>
+    <span className={`w-1.5 h-1.5 rounded-full ${status === 'active' ? 'bg-green-500' : 'bg-red-500'}`} />
+    {status === 'active' ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+  </div>
 );
 
 export default function StaffManagement() {
@@ -49,7 +52,6 @@ export default function StaffManagement() {
   const [isSaving, setIsSaving] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
 
-  // Form State
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -79,7 +81,7 @@ export default function StaffManagement() {
         last_name: user.last_name || '',
         email: user.email,
         mobile: user.mobile,
-        password: '', // Don't show password
+        password: '',
         role_id: user.role_id,
         department_id: user.department_id?.toString() || '1',
         status: user.status,
@@ -104,11 +106,9 @@ export default function StaffManagement() {
 
   const handleDelete = async (userId: string) => {
     if (!window.confirm('আপনি কি নিশ্চিত যে আপনি এই স্টাফ সদস্যকে মুছে ফেলতে চান?')) return;
-    
     setIsDeleting(userId);
     const result = await deleteUser(dispatch, userId);
     setIsDeleting(null);
-
     if (result.success) {
       showToast('স্টাফ সদস্য সফলভাবে মুছে ফেলা হয়েছে', 'success');
     } else {
@@ -119,14 +119,12 @@ export default function StaffManagement() {
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSaving(true);
-
     let result: { success: boolean; data?: any; error?: any };
     if (editingUser) {
       result = await updateUser(dispatch, { ...formData, id: editingUser.id });
     } else {
       result = await addUser(dispatch, formData);
     }
-
     setIsSaving(false);
     if (result.success) {
       showToast(editingUser ? 'তথ্য আপডেট করা হয়েছে' : 'নতুন স্টাফ যোগ করা হয়েছে', 'success');
@@ -137,344 +135,418 @@ export default function StaffManagement() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      {/* Page Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-[#FDF8F5] p-10 rounded-[40px] border border-[#E8D5C4] shadow-xl relative overflow-hidden group ring-1 ring-[#7C4B2A]/5">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-linear-to-br from-[#7C4B2A]/10 to-transparent rounded-full -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-1000 opacity-60" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-linear-to-tr from-[#7C4B2A]/5 to-transparent rounded-full -ml-32 -mb-32 transition-transform group-hover:scale-125 duration-1000 opacity-40" />
-        
-        <div className="relative z-1">
-          <div className="flex items-center gap-6 mb-2">
-            <div className="w-16 h-16 rounded-[24px] bg-linear-to-br from-[#7C4B2A] to-[#5D321A] flex items-center justify-center text-white shadow-2xl shadow-[#7C4B2A]/40 transform group-hover:rotate-6 transition-transform">
-              <UserPlus size={32} />
+    <div className="space-y-6 animate-in fade-in duration-700">
+
+      {/* ── PAGE HEADER ── */}
+      <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-[#3D1F0D] via-[#5D321A] to-[#7C4B2A] p-8 shadow-2xl">
+        {/* Decorative rings */}
+        <div className="pointer-events-none absolute -right-24 -top-24 w-72 h-72 rounded-full border border-white/10" />
+        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border border-white/10" />
+        <div className="pointer-events-none absolute right-8 bottom-8 w-32 h-32 rounded-full border border-white/10" />
+        <div className="pointer-events-none absolute -left-8 -bottom-8 w-40 h-40 rounded-full bg-white/5" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-xl">
+              <UserPlus size={26} className="text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-black text-[#432412] tracking-tight mb-1">অ্যাডমিন ও স্টাফ ব্যবস্থাপনা</h1>
-              <p className="text-[#A0826C] text-sm font-bold flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#7C4B2A]" />
-                আপনার দোকানের সকল অ্যাডমিন ও স্টাফদের তথ্য এবং পারমিশন ম্যানেজ করুন।
+              <h1 className="text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight">
+                অ্যাডমিন ও স্টাফ ব্যবস্থাপনা
+              </h1>
+              <p className="text-white/60 text-xs font-semibold mt-1">
+                আপনার দোকানের সকল অ্যাডমিন ও স্টাফদের তথ্য এবং পারমিশন ম্যানেজ করুন
               </p>
             </div>
           </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-3 relative z-1">
-          <button 
+
+          <button
             onClick={() => handleOpenModal()}
-            className="bg-linear-to-r from-[#7C4B2A] to-[#5D321A] hover:from-[#5D321A] hover:to-[#432412] text-white px-10 py-4.5 rounded-[22px] font-black text-sm flex items-center justify-center gap-3 shadow-2xl shadow-[#7C4B2A]/30 transition-all active:scale-95 group flex-1 sm:flex-none"
+            className="group flex items-center gap-2.5 bg-white text-[#5D321A] px-6 py-3.5 rounded-2xl font-black text-sm shadow-xl hover:bg-[#7C4B2A]/5 transition-all active:scale-95"
           >
-            <Plus size={22} className="group-hover:rotate-90 transition-transform duration-500" />
+            <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
             নতুন স্টাফ যোগ করুন
           </button>
         </div>
+
+        {/* Stats row */}
+        <div className="relative z-10 mt-8 grid grid-cols-3 gap-4">
+          {[
+            { label: 'মোট সদস্য', value: (state.users || []).length },
+            { label: 'অ্যাডমিন', value: (state.users || []).filter((u: any) => u.role_id === 'admin').length },
+            { label: 'স্টাফ', value: (state.users || []).filter((u: any) => u.role_id === 'employee').length },
+          ].map((stat) => (
+            <div key={stat.label} className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 px-5 py-3 text-center">
+              <p className="text-2xl font-black text-white">{stat.value}</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mt-0.5">{stat.label}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Control Bar */}
-      <div className="flex flex-col md:flex-row gap-6 items-center bg-[#FDF8F5]/90 backdrop-blur-xl p-6 rounded-[32px] border border-[#E8D5C4] shadow-xl sticky top-4 z-10 ring-1 ring-[#7C4B2A]/5">
-        <div className="relative flex-1 w-full group">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-[#A0826C] group-focus-within:text-[#7C4B2A] transition-colors" size={22} />
-          <input 
-            type="text" 
-            placeholder="নাম, ইমেইল বা মোবাইল দিয়ে খুঁজুন..." 
-            className="w-full bg-white border border-[#E8D5C4] rounded-2xl py-4 pl-16 pr-8 outline-none focus:ring-4 focus:ring-[#7C4B2A]/15 focus:border-[#7C4B2A] transition-all text-sm font-semibold text-[#5D321A] placeholder:text-[#A0826C] shadow-sm"
+      {/* ── CONTROL BAR ── */}
+      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
+        {/* Search */}
+        <div className="relative flex-1 group">
+          <Search
+            className="absolute left-5 top-1/2 -translate-y-1/2 text-[#A0826C] group-focus-within:text-[#7C4B2A] transition-colors"
+            size={18}
+          />
+          <input
+            type="text"
+            placeholder="নাম, ইমেইল বা মোবাইল দিয়ে খুঁজুন..."
+            className="w-full h-12 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl pl-12 pr-5 outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] text-sm font-semibold text-[#5D321A] placeholder:text-[#C4A898] transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-2 bg-[#F9F3EF] p-2 rounded-2xl border border-[#E8D5C4]/60 w-full md:w-auto shadow-inner">
-          {['all', 'admin', 'employee'].map((role) => (
+
+        {/* Role Filter */}
+        <div className="flex items-center gap-1.5 bg-[#FDF8F5] border border-[#E8D5C4] p-1.5 rounded-2xl">
+          {[
+            { key: 'all', label: 'সবাই' },
+            { key: 'admin', label: 'অ্যাডমিন' },
+            { key: 'employee', label: 'স্টাফ' },
+          ].map(({ key, label }) => (
             <button
-              key={role}
-              onClick={() => setSelectedRole(role)}
-              className={`flex-1 md:flex-none px-8 py-3 rounded-xl text-[12px] font-black uppercase tracking-widest transition-all duration-300 ${
-                selectedRole === role 
-                  ? 'bg-white text-[#7C4B2A] shadow-md shadow-[#7C4B2A]/10 scale-100 ring-1 ring-[#7C4B2A]/10' 
-                  : 'text-[#A0826C] hover:text-[#7C4B2A] hover:bg-white/50 scale-95'
+              key={key}
+              onClick={() => setSelectedRole(key)}
+              className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-200 ${
+                selectedRole === key
+                  ? 'bg-[#7C4B2A] text-white shadow-md'
+                  : 'text-[#A0826C] hover:text-[#7C4B2A] hover:bg-[#7C4B2A]/10'
               }`}
             >
-              {role === 'all' ? 'সব' : role === 'admin' ? 'অ্যাডমিন' : 'স্টাফ'}
+              {label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Grid Container */}
+      {/* ── STAFF CARDS GRID ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-stretch">
         <AnimatePresence mode="popLayout">
-          {filteredUsers.length > 0 ? filteredUsers.map((user: any) => (
-            <motion.div 
+          {filteredUsers.length > 0 ? filteredUsers.map((user: any, i: number) => (
+            <motion.div
               layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
               key={user.id}
-              className="group bg-[#FDF8F5] rounded-[40px] border border-[#E8D5C4] p-8 hover:shadow-2xl hover:shadow-[#7C4B2A]/20 transition-all duration-500 relative overflow-hidden ring-1 ring-[#7C4B2A]/5 flex flex-col"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0, transition: { delay: i * 0.05 } }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="group relative bg-white border border-[#EDE0D6] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-[#7C4B2A]/10 hover:-translate-y-0.5 transition-all duration-300"
             >
-              {/* Card Background Decoration */}
-              <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-[#7C4B2A]/10 to-transparent rounded-full -mr-20 -mt-20 group-hover:scale-150 transition-transform duration-1000 opacity-50" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-linear-to-tr from-[#7C4B2A]/5 to-transparent rounded-full -ml-16 -mb-16 group-hover:scale-125 transition-transform duration-1000 opacity-30" />
-              
-              <div className="relative z-1 flex flex-col h-full">
-                {/* User Header */}
-                <div className="flex items-start justify-between mb-8">
-                  <div className="flex items-center gap-5 min-w-0">
-                    <div className="relative shrink-0">
-                      <div className={`w-20 h-20 rounded-[28px] p-1.5 shadow-xl ${user.role_id === 'admin' ? 'bg-linear-to-br from-[#7C4B2A] to-[#5D321A]' : 'bg-linear-to-br from-[#A0826C] to-[#7C4B2A]'}`}>
-                        <div className="w-full h-full rounded-[22px] bg-white overflow-hidden ring-2 ring-white/50">
-                          <img 
-                            src={user.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.first_name}`} 
-                            alt="" 
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                          />
-                        </div>
-                      </div>
-                      <div className="absolute -bottom-2 -right-2 transform scale-110">
-                        <StatusIndicator status={user.status} />
-                      </div>
+              {/* Top accent strip based on role */}
+              <div className={`absolute top-0 left-0 right-0 h-1 ${
+                user.role_id === 'admin'
+                  ? 'bg-linear-to-r from-amber-400 via-[#7C4B2A] to-amber-500'
+                  : 'bg-linear-to-r from-emerald-400 via-teal-500 to-emerald-400'
+              }`} />
+
+              {/* Card Body */}
+              <div className="p-6">
+                {/* Top row: avatar + name + actions */}
+                <div className="flex items-start gap-4">
+                  {/* Avatar */}
+                  <div className="relative shrink-0">
+                    <div className={`w-16 h-16 rounded-2xl overflow-hidden ring-2 ${
+                      user.role_id === 'admin' ? 'ring-amber-200' : 'ring-emerald-200'
+                    } shadow-md`}>
+                      <img
+                        src={user.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.first_name}`}
+                        alt=""
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
                     </div>
-                    <div className="min-w-0">
-                      <h3 className="text-xl font-black text-[#432412] group-hover:text-[#7C4B2A] transition-colors leading-tight mb-2 truncate">
-                        {user.first_name} {user.last_name}
-                      </h3>
-                      <div className="flex flex-col gap-2">
-                        <RoleBadge role={user.role_id} />
-                        <span className="text-[10px] font-black text-[#A0826C] uppercase tracking-[0.2em] ml-1 truncate">
-                          {state.departments?.find((d: any) => d.id === user.department_id)?.name || 'General'}
-                        </span>
-                      </div>
+                    {/* Online dot */}
+                    <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+                      user.status === 'active' ? 'bg-green-500' : 'bg-red-400'
+                    }`} />
+                  </div>
+
+                  {/* Name & role */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-black text-[#2D1505] truncate leading-tight">
+                      {user.first_name} {user.last_name}
+                    </h3>
+                    <p className="text-[10px] font-bold text-[#A0826C] uppercase tracking-widest mt-0.5 truncate">
+                      {state.departments?.find((d: any) => d.id === user.department_id)?.name || 'General'}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <RoleBadge role={user.role_id} />
+                      <StatusPill status={user.status} />
                     </div>
                   </div>
-                  
-                  <div className="flex flex-col gap-2.5 ml-4 shrink-0">
-                    <button 
+
+                  {/* Action buttons */}
+                  <div className="flex flex-col gap-1.5 shrink-0">
+                    <button
                       onClick={() => handleOpenModal(user)}
-                      className="p-3 bg-white text-[#A0826C] border border-[#E8D5C4]/50 hover:text-[#7C4B2A] hover:border-[#7C4B2A] hover:bg-[#FDF8F5] rounded-2xl transition-all shadow-sm active:scale-90"
+                      className="w-8 h-8 rounded-xl bg-[#FDF8F5] border border-[#E8D5C4] flex items-center justify-center text-[#A0826C] hover:text-[#7C4B2A] hover:border-[#7C4B2A] hover:bg-[#7C4B2A]/10 transition-all active:scale-90"
                       title="এডিট করুন"
                     >
-                      <Edit2 size={18} />
+                      <Edit2 size={14} />
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleDelete(user.id)}
                       disabled={isDeleting === user.id}
-                      className="p-3 bg-white text-[#A0826C] border border-[#E8D5C4]/50 hover:text-red-600 hover:border-red-200 hover:bg-red-50 rounded-2xl transition-all shadow-sm active:scale-90 disabled:opacity-50"
+                      className="w-8 h-8 rounded-xl bg-[#FDF8F5] border border-[#E8D5C4] flex items-center justify-center text-[#A0826C] hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all active:scale-90 disabled:opacity-40"
                       title="মুছে ফেলুন"
                     >
-                      {isDeleting === user.id ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                      {isDeleting === user.id
+                        ? <Loader2 size={14} className="animate-spin" />
+                        : <Trash2 size={14} />}
                     </button>
                   </div>
                 </div>
 
-                {/* Contact Info */}
-                <div className="mt-auto space-y-4 bg-white/60 backdrop-blur-sm rounded-[28px] p-6 border border-[#E8D5C4]/50 group-hover:bg-white group-hover:border-[#7C4B2A]/20 transition-all duration-500 shadow-sm">
-                  <div className="flex items-center gap-4 group/item overflow-hidden">
-                    <div className="w-10 h-10 rounded-xl bg-[#FDF8F5] border border-[#E8D5C4] flex items-center justify-center text-[#7C4B2A] shadow-xs group-hover/item:scale-110 transition-transform shrink-0">
-                      <Mail size={16} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[10px] text-[#A0826C] font-black uppercase tracking-[0.15em] mb-1">Email Address</p>
-                      <p className="text-sm font-bold text-[#5D321A] truncate" title={user.email}>{user.email}</p>
-                    </div>
-                  </div>
-                  <div className="w-full h-px bg-linear-to-r from-transparent via-[#E8D5C4]/50 to-transparent" />
-                  <div className="flex items-center gap-4 group/item overflow-hidden">
-                    <div className="w-10 h-10 rounded-xl bg-[#FDF8F5] border border-[#E8D5C4] flex items-center justify-center text-[#7C4B2A] shadow-xs group-hover/item:scale-110 transition-transform shrink-0">
-                      <Phone size={16} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[10px] text-[#A0826C] font-black uppercase tracking-[0.15em] mb-1">Mobile Number</p>
-                      <p className="text-sm font-bold text-[#5D321A] truncate">{user.mobile}</p>
-                    </div>
-                  </div>
-                </div>
+                {/* Divider */}
+                <div className="my-5 h-px bg-linear-to-r from-transparent via-[#E8D5C4] to-transparent" />
 
-                {/* Footer Info */}
-                <div className="mt-8 flex items-center justify-between px-2 shrink-0">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-6 h-6 rounded-lg bg-[#F9F3EF] flex items-center justify-center shrink-0">
-                      <Clock size={12} className="text-[#A0826C]" />
+                {/* Contact Info */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 group/c">
+                    <div className="w-7 h-7 rounded-lg bg-[#FDF8F5] border border-[#E8D5C4] flex items-center justify-center shrink-0">
+                      <Mail size={13} className="text-[#7C4B2A]" />
                     </div>
-                    <span className="text-[10px] text-[#A0826C] font-black uppercase tracking-[0.15em] truncate">Added: 24 May 2026</span>
+                    <div className="min-w-0">
+                      <p className="text-[9px] font-black text-[#B8967E] uppercase tracking-widest">ইমেইল</p>
+                      <p className="text-xs font-bold text-[#5D321A] truncate" title={user.email}>{user.email}</p>
+                    </div>
                   </div>
-                  <button className="w-10 h-10 rounded-2xl bg-white border border-[#E8D5C4] flex items-center justify-center text-[#A0826C] hover:text-[#7C4B2A] hover:border-[#7C4B2A] hover:bg-[#FDF8F5] transition-all shadow-xs group/btn shrink-0">
-                    <ArrowRight size={18} className="group-hover/btn:translate-x-0.5 transition-transform" />
-                  </button>
+                  <div className="flex items-center gap-3 group/c">
+                    <div className="w-7 h-7 rounded-lg bg-[#FDF8F5] border border-[#E8D5C4] flex items-center justify-center shrink-0">
+                      <Phone size={13} className="text-[#7C4B2A]" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[9px] font-black text-[#B8967E] uppercase tracking-widest">মোবাইল</p>
+                      <p className="text-xs font-bold text-[#5D321A] truncate">{user.mobile}</p>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              {/* Card Footer */}
+              <div className="flex items-center justify-between px-6 py-3.5 bg-[#FDFAF8] border-t border-[#EDE0D6]">
+                <div className="flex items-center gap-2">
+                  <Clock size={11} className="text-[#B8967E]" />
+                  <span className="text-[10px] font-bold text-[#B8967E] uppercase tracking-wider">যোগ দেওয়া: ২৪ মে ২০২৬</span>
+                </div>
+                <button className="w-7 h-7 rounded-xl bg-white border border-[#E8D5C4] flex items-center justify-center text-[#B8967E] hover:text-[#7C4B2A] hover:border-[#7C4B2A] hover:bg-[#7C4B2A]/5 transition-all group/arr">
+                  <ArrowRight size={13} className="group-hover/arr:translate-x-0.5 transition-transform" />
+                </button>
               </div>
             </motion.div>
           )) : (
-            <div className="col-span-full py-32 text-center bg-[#FDF8F5] rounded-[48px] border-2 border-dashed border-[#E8D5C4] shadow-inner">
-              <div className="w-24 h-24 bg-white border border-[#E8D5C4] rounded-full flex items-center justify-center mx-auto mb-6 text-[#A0826C] shadow-sm">
-                <Search size={40} />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="col-span-full py-28 flex flex-col items-center gap-4 bg-[#FDF8F5] rounded-3xl border-2 border-dashed border-[#E8D5C4]"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-white border border-[#E8D5C4] flex items-center justify-center text-[#C4A898] shadow-sm">
+                <Search size={28} />
               </div>
-              <h3 className="text-2xl font-black text-[#432412]">কোনো তথ্য পাওয়া যায়নি</h3>
-              <p className="text-[#A0826C] mt-2 font-bold uppercase tracking-widest text-xs">আপনার সার্চ টার্ম পরিবর্তন করে আবার চেষ্টা করুন।</p>
-            </div>
+              <div className="text-center">
+                <h3 className="text-lg font-black text-[#432412]">কোনো তথ্য পাওয়া যায়নি</h3>
+                <p className="text-[#A0826C] text-xs font-bold uppercase tracking-widest mt-1">আপনার সার্চ টার্ম পরিবর্তন করুন</p>
+              </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Pagination */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 px-10 py-8 bg-[#FDF8F5] rounded-[40px] border border-[#E8D5C4] shadow-xl ring-1 ring-[#7C4B2A]/5">
-        <p className="text-sm text-[#A0826C] font-black uppercase tracking-widest">
-          মোট <span className="text-[#7C4B2A] text-lg mx-1">{filteredUsers.length}</span> জনের মধ্যে {filteredUsers.length} জন দেখাচ্ছে
+      {/* ── PAGINATION ── */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#FDF8F5] border border-[#E8D5C4] rounded-3xl px-7 py-5">
+        <p className="text-sm text-[#A0826C] font-bold">
+          মোট <span className="text-[#7C4B2A] font-black">{filteredUsers.length}</span> জনের মধ্যে {filteredUsers.length} জন দেখাচ্ছে
         </p>
-        <div className="flex items-center gap-3 bg-[#F9F3EF] p-2 rounded-2xl border border-[#E8D5C4]/60 shadow-inner">
-          <button className="px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-[#A0826C] hover:text-[#7C4B2A] hover:bg-white transition-all disabled:opacity-30" disabled>পূর্ববর্তী</button>
-          <button className="w-12 h-12 rounded-xl bg-linear-to-br from-[#7C4B2A] to-[#5D321A] text-white text-sm font-black shadow-xl shadow-[#7C4B2A]/30 scale-110 ring-2 ring-white/20">১</button>
-          <button className="px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-[#A0826C] hover:text-[#7C4B2A] hover:bg-white transition-all" disabled>পরবর্তী</button>
+        <div className="flex items-center gap-2 bg-white border border-[#E8D5C4] p-1.5 rounded-2xl">
+          <button className="px-4 py-2 rounded-xl text-xs font-black text-[#C4A898] uppercase tracking-wider disabled:opacity-40" disabled>পূর্ববর্তী</button>
+          <button className="w-9 h-9 rounded-xl bg-[#7C4B2A] text-white text-sm font-black shadow-md">১</button>
+          <button className="px-4 py-2 rounded-xl text-xs font-black text-[#C4A898] uppercase tracking-wider disabled:opacity-40" disabled>পরবর্তী</button>
         </div>
       </div>
 
-      {/* Add/Edit Modal */}
+      {/* ── ADD / EDIT MODAL ── */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-999 flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => !isSaving && setIsModalOpen(false)}
-              className="absolute inset-0 bg-gray-900/80 backdrop-blur-xl"
+              className="absolute inset-0 bg-[#1A0A00]/70 backdrop-blur-md"
             />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 24 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              className="relative w-full max-w-2xl bg-[#FDF8F5] border border-[#E8D5C4] rounded-[48px] shadow-2xl overflow-hidden ring-1 ring-[#7C4B2A]/5"
+              exit={{ opacity: 0, scale: 0.95, y: 24 }}
+              className="relative w-full max-w-2xl bg-white rounded-[36px] shadow-2xl overflow-hidden border border-[#E8D5C4]"
             >
               <form onSubmit={handleSave}>
-                <div className="p-10 border-b border-[#E8D5C4] flex items-center justify-between bg-linear-to-br from-[#F9F3EF] to-[#FDF8F5]">
-                  <div>
-                    <h2 className="text-3xl font-black text-[#432412] tracking-tight">
-                      {editingUser ? 'স্টাফ তথ্য আপডেট' : 'নতুন স্টাফ যোগ'}
-                    </h2>
-                    <p className="text-sm text-[#A0826C] font-bold mt-2 flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-[#7C4B2A] animate-pulse" />
-                      সিস্টেমে নতুন সদস্য যুক্ত করতে নিচের ফর্মটি পূরণ করুন।
-                    </p>
+                {/* Modal Header */}
+                <div className="relative overflow-hidden bg-linear-to-br from-[#3D1F0D] to-[#7C4B2A] px-8 py-7">
+                  <div className="pointer-events-none absolute -right-10 -top-10 w-40 h-40 rounded-full border border-white/10" />
+                  <div className="pointer-events-none absolute right-12 bottom-4 w-20 h-20 rounded-full border border-white/10" />
+                  <div className="relative z-10 flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-black text-white tracking-tight">
+                        {editingUser ? 'স্টাফ তথ্য আপডেট করুন' : 'নতুন স্টাফ যোগ করুন'}
+                      </h2>
+                      <p className="text-white/50 text-xs font-semibold mt-1">
+                        সিস্টেমে নতুন সদস্য যুক্ত করতে ফর্মটি পূরণ করুন
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(false)}
+                      className="w-9 h-9 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-all"
+                    >
+                      <X size={18} />
+                    </button>
                   </div>
-                  <button 
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="p-4 bg-white border border-[#E8D5C4] hover:bg-red-50 hover:text-red-500 hover:border-red-100 rounded-[24px] text-[#A0826C] shadow-sm transition-all active:scale-90 group"
-                  >
-                    <X size={24} className="group-hover:rotate-90 transition-transform" />
-                  </button>
                 </div>
 
-                <div className="p-10 max-h-[70vh] overflow-y-auto custom-scrollbar bg-white/40">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="space-y-3">
-                      <label className="text-[11px] font-black text-[#A0826C] uppercase tracking-[0.2em] ml-2">নাম (প্রথম অংশ)</label>
-                      <input 
-                        type="text" 
+                {/* Modal Body */}
+                <div className="p-8 max-h-[62vh] overflow-y-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    {/* First Name */}
+                    <div className="space-y-2">
+                      <label className="block text-[10px] font-black text-[#A0826C] uppercase tracking-[0.15em]">নাম (প্রথম অংশ)</label>
+                      <input
+                        type="text"
                         required
                         value={formData.first_name}
-                        onChange={(e) => setFormData({...formData, first_name: e.target.value})}
-                        placeholder="যেমন: প্রান্ত" 
-                        className="w-full bg-white border-2 border-[#E8D5C4]/60 rounded-3xl px-6 py-4.5 text-sm font-bold text-[#5D321A] outline-none focus:ring-4 focus:ring-[#7C4B2A]/10 focus:border-[#7C4B2A] transition-all placeholder:text-[#E8D5C4]" 
+                        onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                        placeholder="যেমন: প্রান্ত"
+                        className="w-full h-12 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-5 text-sm font-bold text-[#5D321A] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all placeholder:text-[#D4B8A8]"
                       />
                     </div>
-                    <div className="space-y-3">
-                      <label className="text-[11px] font-black text-[#A0826C] uppercase tracking-[0.2em] ml-2">নাম (শেষ অংশ)</label>
-                      <input 
-                        type="text" 
+
+                    {/* Last Name */}
+                    <div className="space-y-2">
+                      <label className="block text-[10px] font-black text-[#A0826C] uppercase tracking-[0.15em]">নাম (শেষ অংশ)</label>
+                      <input
+                        type="text"
                         value={formData.last_name}
-                        onChange={(e) => setFormData({...formData, last_name: e.target.value})}
-                        placeholder="যেমন: ইসলাম" 
-                        className="w-full bg-white border-2 border-[#E8D5C4]/60 rounded-3xl px-6 py-4.5 text-sm font-bold text-[#5D321A] outline-none focus:ring-4 focus:ring-[#7C4B2A]/10 focus:border-[#7C4B2A] transition-all placeholder:text-[#E8D5C4]" 
+                        onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                        placeholder="যেমন: ইসলাম"
+                        className="w-full h-12 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-5 text-sm font-bold text-[#5D321A] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all placeholder:text-[#D4B8A8]"
                       />
                     </div>
-                    <div className="space-y-3">
-                      <label className="text-[11px] font-black text-[#A0826C] uppercase tracking-[0.2em] ml-2">মোবাইল নম্বর</label>
-                      <input 
-                        type="tel" 
-                        required
-                        value={formData.mobile}
-                        onChange={(e) => setFormData({...formData, mobile: e.target.value})}
-                        placeholder="০১৭XXXXXXXX" 
-                        className="w-full bg-white border-2 border-[#E8D5C4]/60 rounded-3xl px-6 py-4.5 text-sm font-bold text-[#5D321A] outline-none focus:ring-4 focus:ring-[#7C4B2A]/10 focus:border-[#7C4B2A] transition-all placeholder:text-[#E8D5C4]" 
-                      />
+
+                    {/* Mobile */}
+                    <div className="space-y-2">
+                      <label className="block text-[10px] font-black text-[#A0826C] uppercase tracking-[0.15em]">মোবাইল নম্বর</label>
+                      <div className="relative">
+                        <Phone size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A0826C]" />
+                        <input
+                          type="tel"
+                          required
+                          value={formData.mobile}
+                          onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                          placeholder="০১৭XXXXXXXX"
+                          className="w-full h-12 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl pl-10 pr-5 text-sm font-bold text-[#5D321A] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all placeholder:text-[#D4B8A8]"
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-3">
-                      <label className="text-[11px] font-black text-[#A0826C] uppercase tracking-[0.2em] ml-2">ইমেইল ঠিকানা</label>
-                      <input 
-                        type="email" 
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        placeholder="name@myshop.com" 
-                        className="w-full bg-white border-2 border-[#E8D5C4]/60 rounded-3xl px-6 py-4.5 text-sm font-bold text-[#5D321A] outline-none focus:ring-4 focus:ring-[#7C4B2A]/10 focus:border-[#7C4B2A] transition-all placeholder:text-[#E8D5C4]" 
-                      />
+
+                    {/* Email */}
+                    <div className="space-y-2">
+                      <label className="block text-[10px] font-black text-[#A0826C] uppercase tracking-[0.15em]">ইমেইল ঠিকানা</label>
+                      <div className="relative">
+                        <Mail size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A0826C]" />
+                        <input
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          placeholder="name@myshop.com"
+                          className="w-full h-12 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl pl-10 pr-5 text-sm font-bold text-[#5D321A] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all placeholder:text-[#D4B8A8]"
+                        />
+                      </div>
                     </div>
+
+                    {/* Password (add only) */}
                     {!editingUser && (
-                      <div className="space-y-3">
-                        <label className="text-[11px] font-black text-[#A0826C] uppercase tracking-[0.2em] ml-2">পাসওয়ার্ড</label>
-                        <input 
-                          type="password" 
+                      <div className="space-y-2">
+                        <label className="block text-[10px] font-black text-[#A0826C] uppercase tracking-[0.15em]">পাসওয়ার্ড</label>
+                        <input
+                          type="password"
                           required
                           value={formData.password}
-                          onChange={(e) => setFormData({...formData, password: e.target.value})}
-                          placeholder="••••••••" 
-                          className="w-full bg-white border-2 border-[#E8D5C4]/60 rounded-3xl px-6 py-4.5 text-sm font-bold text-[#5D321A] outline-none focus:ring-4 focus:ring-[#7C4B2A]/10 focus:border-[#7C4B2A] transition-all placeholder:text-[#E8D5C4]" 
+                          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                          placeholder="••••••••"
+                          className="w-full h-12 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-5 text-sm font-bold text-[#5D321A] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all placeholder:text-[#D4B8A8]"
                         />
                       </div>
                     )}
-                    <div className="space-y-3 md:col-span-2">
-                      <label className="text-[11px] font-black text-[#A0826C] uppercase tracking-[0.2em] ml-2">প্রোফাইল ছবির লিঙ্ক</label>
-                      <input 
-                        type="url" 
+
+                    {/* Photo URL */}
+                    <div className={`space-y-2 ${!editingUser ? '' : 'md:col-span-2'}`}>
+                      <label className="block text-[10px] font-black text-[#A0826C] uppercase tracking-[0.15em]">প্রোফাইল ছবির লিঙ্ক</label>
+                      <input
+                        type="url"
                         value={formData.photo_url}
-                        onChange={(e) => setFormData({...formData, photo_url: e.target.value})}
-                        placeholder="https://example.com/photo.jpg" 
-                        className="w-full bg-white border-2 border-[#E8D5C4]/60 rounded-3xl px-6 py-4.5 text-sm font-bold text-[#5D321A] outline-none focus:ring-4 focus:ring-[#7C4B2A]/10 focus:border-[#7C4B2A] transition-all placeholder:text-[#E8D5C4]" 
+                        onChange={(e) => setFormData({ ...formData, photo_url: e.target.value })}
+                        placeholder="https://example.com/photo.jpg"
+                        className="w-full h-12 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-5 text-sm font-bold text-[#5D321A] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all placeholder:text-[#D4B8A8]"
                       />
                     </div>
-                    <div className="space-y-3">
-                      <label className="text-[11px] font-black text-[#A0826C] uppercase tracking-[0.2em] ml-2">রোল নির্বাচন</label>
-                      <div className="relative group">
-                        <select 
+
+                    {/* Role */}
+                    <div className="space-y-2">
+                      <label className="block text-[10px] font-black text-[#A0826C] uppercase tracking-[0.15em]">রোল নির্বাচন</label>
+                      <div className="relative">
+                        <select
                           value={formData.role_id}
-                          onChange={(e) => setFormData({...formData, role_id: e.target.value})}
-                          className="w-full bg-white border-2 border-[#E8D5C4]/60 rounded-3xl px-6 py-4.5 text-sm font-black text-[#5D321A] outline-none focus:ring-4 focus:ring-[#7C4B2A]/10 focus:border-[#7C4B2A] transition-all appearance-none cursor-pointer"
+                          onChange={(e) => setFormData({ ...formData, role_id: e.target.value })}
+                          className="w-full h-12 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-5 text-sm font-bold text-[#5D321A] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all appearance-none cursor-pointer"
                         >
                           <option value="employee">স্টাফ (Employee)</option>
                           <option value="admin">অ্যাডমিন (Admin)</option>
                         </select>
-                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-[#A0826C] group-focus-within:rotate-180 transition-transform pointer-events-none" size={20} />
+                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#A0826C] pointer-events-none" />
                       </div>
                     </div>
-                    <div className="space-y-3">
-                      <label className="text-[11px] font-black text-[#A0826C] uppercase tracking-[0.2em] ml-2">ডিপার্টমেন্ট</label>
-                      <div className="relative group">
-                        <select 
+
+                    {/* Department */}
+                    <div className="space-y-2">
+                      <label className="block text-[10px] font-black text-[#A0826C] uppercase tracking-[0.15em]">ডিপার্টমেন্ট</label>
+                      <div className="relative">
+                        <select
                           value={formData.department_id}
-                          onChange={(e) => setFormData({...formData, department_id: e.target.value})}
-                          className="w-full bg-white border-2 border-[#E8D5C4]/60 rounded-3xl px-6 py-4.5 text-sm font-black text-[#5D321A] outline-none focus:ring-4 focus:ring-[#7C4B2A]/10 focus:border-[#7C4B2A] transition-all appearance-none cursor-pointer"
+                          onChange={(e) => setFormData({ ...formData, department_id: e.target.value })}
+                          className="w-full h-12 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-5 text-sm font-bold text-[#5D321A] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all appearance-none cursor-pointer"
                         >
                           {state.departments?.map((dept: any) => (
                             <option key={dept.id} value={dept.id.toString()}>{dept.name}</option>
                           ))}
                         </select>
-                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-[#A0826C] group-focus-within:rotate-180 transition-transform pointer-events-none" size={20} />
+                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#A0826C] pointer-events-none" />
                       </div>
                     </div>
+
                   </div>
                 </div>
 
-                <div className="p-10 bg-[#F9F3EF] border-t border-[#E8D5C4] flex items-center justify-end gap-5">
-                  <button 
+                {/* Modal Footer */}
+                <div className="flex items-center justify-end gap-3 px-8 py-5 bg-[#FDF8F5] border-t border-[#E8D5C4]">
+                  <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="px-10 py-4.5 rounded-3xl border-2 border-[#E8D5C4] bg-white text-[#A0826C] hover:bg-[#FDF8F5] hover:text-[#7C4B2A] transition-all font-black text-sm active:scale-95 shadow-sm"
+                    className="px-7 py-3 rounded-2xl border border-[#E8D5C4] bg-white text-sm font-black text-[#A0826C] hover:text-[#7C4B2A] hover:border-[#7C4B2A] hover:bg-[#7C4B2A]/5 transition-all active:scale-95"
                   >
                     বাতিল করুন
                   </button>
-                  <button 
+                  <button
                     type="submit"
                     disabled={isSaving}
-                    className="bg-linear-to-r from-[#7C4B2A] to-[#5D321A] hover:from-[#5D321A] hover:to-[#432412] text-white px-12 py-4.5 rounded-3xl font-black text-sm shadow-2xl shadow-[#7C4B2A]/40 transition-all active:scale-95 flex items-center gap-3 ring-2 ring-white/10"
+                    className="flex items-center gap-2 bg-linear-to-r from-[#7C4B2A] to-[#5D321A] text-white px-8 py-3 rounded-2xl text-sm font-black shadow-lg shadow-[#7C4B2A]/30 hover:shadow-xl transition-all active:scale-95 disabled:opacity-60"
                   >
-                    {isSaving ? <Loader2 size={20} className="animate-spin" /> : <Plus size={20} />}
+                    {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
                     সংরক্ষণ করুন
                   </button>
                 </div>
@@ -486,4 +558,3 @@ export default function StaffManagement() {
     </div>
   );
 }
-
