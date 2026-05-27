@@ -1,0 +1,331 @@
+import React, { useState } from 'react';
+import { 
+  LayoutDashboard, 
+  ShieldCheck, 
+  Settings, 
+  LogOut, 
+  Bell, 
+  Search,
+  Menu,
+  X,
+  ChevronDown,
+  Package,
+  ShoppingCart,
+  Users2,
+  Wallet,
+  MessageSquare,
+  Layout,
+  Calendar,
+  Database,
+  HelpCircle,
+  Store
+} from 'lucide-react';
+
+interface SidebarItemData {
+  icon: React.ElementType;
+  label: string;
+  roles: string[];
+  subItems?: { label: string; roles: string[]; count?: number }[];
+}
+
+interface MenuGroup {
+  title: string;
+  items: SidebarItemData[];
+}
+
+interface SidebarItemProps {
+  icon: React.ElementType;
+  label: string;
+  active?: boolean;
+  onClick: () => void;
+  isOpen?: boolean;
+  hasSubmenu?: boolean;
+  isSidebarOpen: boolean;
+}
+
+const SidebarItem = ({ icon: Icon, label, active, onClick, isOpen, hasSubmenu, isSidebarOpen }: SidebarItemProps) => (
+  <button
+    onClick={onClick}
+    className={`w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl transition-all duration-200 group ${
+      active 
+        ? 'bg-green-500/20 text-green-500 border border-green-500/30' 
+        : 'text-slate-400 hover:bg-white/5 hover:text-white'
+    }`}
+  >
+    <Icon size={18} />
+    {isSidebarOpen && (
+      <>
+        <span className="font-medium text-sm flex-1 text-left">{label}</span>
+        {hasSubmenu && (
+          <div className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
+            <ChevronDown size={14} />
+          </div>
+        )}
+      </>
+    )}
+    {!isSidebarOpen && active && <div className="absolute left-0 w-1 h-6 bg-green-500 rounded-r-full" />}
+  </button>
+);
+
+const SidebarSubItem = ({ label, active, onClick }: { label: string; active?: boolean; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    className={`w-full flex items-center space-x-3 pl-11 pr-4 py-2 rounded-lg transition-all duration-200 text-xs ${
+      active 
+        ? 'text-green-500 font-bold' 
+        : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'
+    }`}
+  >
+    <span>{label}</span>
+  </button>
+);
+
+export default function DashboardLayout({ children, role }: { children: React.ReactNode, role: 'admin' | 'employee' }) {
+  const [activeTab, setActiveTab] = useState('ড্যাশবোর্ড');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['পণ্য ব্যবস্থাপনা', 'অর্ডার ব্যবস্থাপনা', 'টিম ব্যবস্থাপনা']);
+
+  const toggleMenu = (label: string) => {
+    setExpandedMenus(prev => 
+      prev.includes(label) ? prev.filter(m => m !== label) : [...prev, label]
+    );
+  };
+
+  const menuGroups: MenuGroup[] = [
+    {
+      title: 'প্রধান',
+      items: [
+        { icon: LayoutDashboard, label: 'ড্যাশবোর্ড', roles: ['admin', 'employee'] },
+      ]
+    },
+    {
+      title: 'পণ্য ব্যবস্থাপনা',
+      items: [
+        { 
+          icon: Package, 
+          label: 'পণ্য ব্যবস্থাপনা', 
+          roles: ['admin', 'employee'],
+          subItems: [
+            { label: 'পণ্য তালিকা', roles: ['admin', 'employee'] },
+            { label: 'ক্যাটাগরি', roles: ['admin'] },
+            { label: 'ইনভেন্টরি ম্যানেজমেন্ট', roles: ['admin'] },
+          ]
+        },
+      ]
+    },
+    {
+      title: 'অর্ডার ব্যবস্থাপনা',
+      items: [
+        { 
+          icon: ShoppingCart, 
+          label: 'অর্ডার ব্যবস্থাপনা', 
+          roles: ['admin', 'employee'],
+          subItems: [
+            { label: 'অর্ডার তালিকা', roles: ['admin', 'employee'], count: 1 },
+            { label: 'নতুন অর্ডার', roles: ['admin', 'employee'] },
+            { label: 'ডেলিভারি ম্যানেজমেন্ট', roles: ['admin', 'employee'] },
+            { label: 'অর্ডার স্টেজ ব্যবস্থাপনা', roles: ['admin'], count: 9 },
+          ]
+        },
+      ]
+    },
+    {
+      title: 'গ্রাহক ব্যবস্থাপনা',
+      items: [
+        { 
+          icon: Users2, 
+          label: 'গ্রাহক ব্যবস্থাপনা', 
+          roles: ['admin', 'employee'],
+          subItems: [
+            { label: 'গ্রাহক তালিকা', roles: ['admin', 'employee'] },
+            { label: 'রিভিউ ও রেটিং', roles: ['admin', 'employee'] },
+          ]
+        },
+      ]
+    },
+    {
+      title: 'টিম ব্যবস্থাপনা',
+      items: [
+        { 
+          icon: ShieldCheck, 
+          label: 'টিম ব্যবস্থাপনা', 
+          roles: ['admin'],
+          subItems: [
+            { label: 'অ্যাডমিন ও স্টাফ ব্যবস্থাপনা', roles: ['admin'] },
+            { label: 'একটিভিটি লগ', roles: ['admin'] },
+          ]
+        },
+      ]
+    },
+    {
+      title: 'আর্থিক',
+      items: [
+        { icon: Wallet, label: 'আর্থিক ব্যবস্থাপনা', roles: ['admin'] },
+      ]
+    },
+    {
+      title: 'যোগাযোগ',
+      items: [
+        { icon: MessageSquare, label: 'নোটিফিকেশন', roles: ['admin', 'employee'] },
+      ]
+    },
+    {
+      title: 'কন্টেন্ট',
+      items: [
+        { 
+          icon: Layout, 
+          label: 'কন্টেন্ট', 
+          roles: ['admin'],
+          subItems: [
+            { label: 'ফটো গ্যালারি', roles: ['admin'] },
+            { label: 'ডিজাইন গ্যালারি', roles: ['admin'] },
+            { label: 'প্রোমোশনাল পপআপ', roles: ['admin'] },
+            { label: 'কন্টেন্ট ম্যানেজমেন্ট', roles: ['admin'] },
+            { label: 'SEO ও মার্কেটিং', roles: ['admin'] },
+          ]
+        },
+      ]
+    },
+    {
+      title: 'সিস্টেম',
+      items: [
+        { icon: Calendar, label: 'ক্যালেন্ডার ও টাস্কস', roles: ['admin', 'employee'] },
+        { icon: Database, label: 'ডেটা ব্যাকআপ', roles: ['admin'] },
+        { icon: Settings, label: 'সেটিিংস', roles: ['admin'] },
+        { icon: HelpCircle, label: 'হেল্প সেন্টার', roles: ['admin', 'employee'] },
+      ]
+    },
+    {
+      title: 'প্রোফাইল',
+      items: [
+        { icon: Store, label: 'স্টোর প্রোফাইল', roles: ['admin'] },
+      ]
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#020617] text-white flex overflow-hidden font-sans">
+      {/* Sidebar */}
+      <aside 
+        className={`${
+          isSidebarOpen ? 'w-72' : 'w-20'
+        } transition-all duration-300 glass-dark border-r border-slate-800 flex flex-col z-50`}
+      >
+        <div className="p-6 flex items-center justify-between">
+          {isSidebarOpen && (
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.4)]">
+                <ShieldCheck className="text-white" size={18} />
+              </div>
+              <span className="font-bold text-lg tracking-tight">মা ফার্নিচার</span>
+            </div>
+          )}
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="p-2 hover:bg-white/5 rounded-lg text-slate-400"
+          >
+            {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-6 custom-scrollbar">
+          {menuGroups.map((group) => {
+            const visibleItems = group.items.filter(item => item.roles.includes(role));
+            if (visibleItems.length === 0) return null;
+
+            return (
+              <div key={group.title} className="space-y-1">
+                {isSidebarOpen && (
+                  <p className="px-4 text-[10px] font-bold text-slate-600 uppercase tracking-widest mb-2">
+                    {group.title}
+                  </p>
+                )}
+                {visibleItems.map((item) => (
+                  <div key={item.label} className="space-y-1">
+                    <SidebarItem
+                      icon={item.icon}
+                      label={item.label}
+                      isSidebarOpen={isSidebarOpen}
+                      active={activeTab === item.label}
+                      hasSubmenu={!!item.subItems}
+                      isOpen={expandedMenus.includes(item.label)}
+                      onClick={() => {
+                        if (item.subItems) {
+                          toggleMenu(item.label);
+                        } else {
+                          setActiveTab(item.label);
+                        }
+                      }}
+                    />
+                    {isSidebarOpen && item.subItems && expandedMenus.includes(item.label) && (
+                      <div className="space-y-1 mt-1">
+                        {item.subItems.map((sub) => (
+                          <SidebarSubItem
+                            key={sub.label}
+                            label={sub.label}
+                            active={activeTab === sub.label}
+                            onClick={() => setActiveTab(sub.label)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </nav>
+
+        <div className="p-4 border-t border-slate-800">
+          <button className="w-full flex items-center space-x-3 px-4 py-3 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all">
+            <LogOut size={18} />
+            {isSidebarOpen && <span className="font-medium text-sm">লগআউট</span>}
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* Navbar */}
+        <header className="h-20 glass border-b border-slate-800 flex items-center justify-between px-8 z-40">
+          <div className="flex items-center flex-1 max-w-xl">
+            <div className="relative w-full group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-green-500 transition-colors" size={18} />
+              <input 
+                type="text" 
+                placeholder="সার্চ করুন..." 
+                className="w-full bg-slate-900/50 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/50 transition-all text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-6">
+            <button className="relative p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
+              <Bell size={20} />
+              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[#020617]" />
+            </button>
+            
+            <div className="flex items-center space-x-4 pl-4 border-l border-slate-800">
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-semibold">Pranto Islam</p>
+                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{role === 'admin' ? 'অ্যাডমিন' : 'স্টাফ'}</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-slate-800 p-0.5 bg-linear-to-tr from-green-500 to-blue-500">
+                <img 
+                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Pranto" 
+                  alt="Avatar" 
+                  className="w-full h-full rounded-lg bg-slate-900"
+                />
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Scrollable Area */}
+        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-950/50">
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+}

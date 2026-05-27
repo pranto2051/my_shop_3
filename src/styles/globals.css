@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0F172A;
+  --color-on-primary: #FFFFFF;
+  --color-secondary: #1E293B;
+  --color-accent: #22C55E;
+  --color-background: #020617;
+  --color-foreground: #F8FAFC;
+  --color-muted: #1A1E2F;
+  --color-border: #334155;
+  --color-destructive: #EF4444;
+  --color-ring: #0F172A;
+
+  --font-sans: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-(--color-background) text-(--color-foreground) font-sans;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl;
+  }
+
+  .glass-dark {
+    @apply bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 shadow-2xl;
+  }
+
+  .glass-card {
+    @apply glass-dark rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-green-500/10;
+  }
+
+  .btn-primary {
+    @apply bg-(--color-accent) text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 hover:opacity-90 hover:-translate-y-px active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent text-(--color-foreground) border-2 border-(--color-border) px-6 py-3 rounded-lg font-semibold transition-all duration-200 hover:bg-white/5;
+  }
+
+  .input-field {
+    @apply bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 text-white outline-none ring-offset-0 focus:ring-2 focus:ring-green-500/50 transition-all;
+  }
+}

@@ -481,6 +481,109 @@ VALUES
 )
 ON CONFLICT (slug) DO NOTHING;
 
+-- 9. RBAC: ADMIN & EMPLOYEE MANAGEMENT
+-- ========================================================
+
+CREATE TABLE IF NOT EXISTS user_roles (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    permissions JSONB DEFAULT '{}',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS departments (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Migrating admins to a more robust users table
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    mobile VARCHAR(20) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role_id VARCHAR(50) REFERENCES user_roles(id),
+    department_id INTEGER REFERENCES departments(id),
+    photo_url TEXT,
+    status VARCHAR(20) DEFAULT 'active', -- active, inactive
+    last_login TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS activity_logs (
+    id SERIAL PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    action VARCHAR(255) NOT NULL,
+    entity VARCHAR(100), -- 'order', 'product', 'user', etc.
+    entity_id VARCHAR(100),
+    details JSONB,
+    ip_address VARCHAR(45),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Updating tasks to link with users
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS assigned_to UUID REFERENCES users(id);
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS priority VARCHAR(20) DEFAULT 'medium'; -- low, medium, high
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+-- Trigger for users updated_at
+DROP TRIGGER IF EXISTS set_users_updated_at ON users;
+CREATE TRIGGER set_users_updated_at
+    BEFORE UPDATE ON users
+    FOR EACH ROW
+    EXECUTE FUNCTION handle_updated_at();
+
+-- 10. RBAC SEED DATA
+-- ========================================================
+
+INSERT INTO user_roles (id, name, permissions) VALUES 
+('admin', 'Administrator', '{
+    "users": ["create", "read", "update", "delete"],
+    "roles": ["create", "read", "update", "delete"],
+    "reports": ["read"],
+    "settings": ["update"],
+    "tasks": ["create", "read", "update", "delete", "assign"],
+    "logs": ["read"]
+}'),
+('employee', 'Employee', '{
+    "users": ["read"],
+    "tasks": ["read", "update"],
+    "reports": ["read"]
+}')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO departments (name, description) VALUES 
+('Management', 'Core management and administration'),
+('Sales', 'Product sales and customer relationship'),
+('Production', 'Furniture manufacturing and quality control'),
+('Delivery', 'Logistics and delivery management')
+ON CONFLICT DO NOTHING;
+
+-- Initial Admin (Example)
+INSERT INTO users (first_name, last_name, email, mobile, password, role_id, department_id, status)
+VALUES ('Admin', 'User', 'admin@myshop.com', '01700000000', 'admin123', 'admin', 1, 'active')
+ON CONFLICT (email) DO NOTHING;
+
+INSERT INTO users (first_name, last_name, email, mobile, password, role_id, department_id, status)
+VALUES ('Employee', 'One', 'employee@myshop.com', '01711111111', 'emp123', 'employee', 2, 'active')
+ON CONFLICT (email) DO NOTHING;
+
+-- 11. SECURITY: DISABLE RLS FOR NEW TABLES
+-- ========================================================
+
+ALTER TABLE user_roles DISABLE ROW LEVEL SECURITY;
+ALTER TABLE departments DISABLE ROW LEVEL SECURITY;
+ALTER TABLE users DISABLE ROW LEVEL SECURITY;
+ALTER TABLE activity_logs DISABLE ROW LEVEL SECURITY;
+
+-- 12. CMS SEED DATA (CONTINUED)
+-- ========================================================
+
 INSERT INTO page_highlights
   (page_slug, icon, number_value, label_text, accent_color, display_order)
 VALUES
