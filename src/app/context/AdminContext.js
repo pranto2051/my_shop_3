@@ -28,6 +28,8 @@ const initialState = {
   announcements: [],
   promotionalPopups: [],
   pageConfigs: [],
+  users: [],
+  departments: [],
   orderDateFilter: {
     day: '',
     month: '',
@@ -67,6 +69,8 @@ function adminReducer(state, action) {
         announcements: action.payload.announcements || [],
         promotionalPopups: action.payload.promotionalPopups || [],
         pageConfigs: action.payload.pageConfigs || [],
+        users: action.payload.users || [],
+        departments: action.payload.departments || [],
       };
 
     case 'UPDATE_SETTINGS':
@@ -326,6 +330,22 @@ function adminReducer(state, action) {
         promotionalPopups: state.promotionalPopups.filter(p => p.id !== action.payload),
       };
 
+    case 'ADD_USER':
+      return {
+        ...state,
+        users: [action.payload, ...state.users],
+      };
+    case 'UPDATE_USER':
+      return {
+        ...state,
+        users: state.users.map(u => u.id === action.payload.id ? action.payload : u),
+      };
+    case 'DELETE_USER':
+      return {
+        ...state,
+        users: state.users.filter(u => u.id !== action.payload),
+      };
+
     case 'SHOW_TOAST':
       return {
         ...state,
@@ -552,6 +572,86 @@ export const deletePromotionalPopup = async (dispatch, popupId) => {
     return { success: true };
   }
   return { success: false, error };
+};
+
+export const addUser = async (dispatch, userData) => {
+  console.log('Adding user:', userData);
+  const { data, error } = await supabase
+    .from('users')
+    .insert([{
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      email: userData.email,
+      mobile: userData.mobile,
+      password: userData.password,
+      role_id: userData.role_id,
+      department_id: parseInt(userData.department_id),
+      status: userData.status || 'active',
+      photo_url: userData.photo_url
+    }])
+    .select();
+
+  if (error) {
+    console.error('Error adding user:', error);
+    return { success: false, error };
+  }
+
+  if (data) {
+    dispatch({ type: 'ADD_USER', payload: data[0] });
+    return { success: true, data: data[0] };
+  }
+  return { success: false, error: 'No data returned' };
+};
+
+export const updateUser = async (dispatch, user) => {
+  console.log('Updating user:', user);
+  const updateData = {
+    first_name: user.first_name,
+    last_name: user.last_name,
+    email: user.email,
+    mobile: user.mobile,
+    role_id: user.role_id,
+    department_id: parseInt(user.department_id),
+    status: user.status,
+    photo_url: user.photo_url
+  };
+
+  if (user.password) {
+    updateData.password = user.password;
+  }
+
+  const { data, error } = await supabase
+    .from('users')
+    .update(updateData)
+    .eq('id', user.id)
+    .select();
+
+  if (error) {
+    console.error('Error updating user:', error);
+    return { success: false, error };
+  }
+
+  if (data && data.length > 0) {
+    dispatch({ type: 'UPDATE_USER', payload: data[0] });
+    return { success: true, data: data[0] };
+  }
+  return { success: false, error: 'No data returned' };
+};
+
+export const deleteUser = async (dispatch, userId) => {
+  console.log('Deleting user:', userId);
+  const { error } = await supabase
+    .from('users')
+    .delete()
+    .eq('id', userId);
+
+  if (error) {
+    console.error('Error deleting user:', error);
+    return { success: false, error };
+  }
+
+  dispatch({ type: 'DELETE_USER', payload: userId });
+  return { success: true };
 };
 
 // Helper functions (pure, outside reducer)

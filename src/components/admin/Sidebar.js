@@ -89,6 +89,13 @@ export default function Sidebar({ activeTab, setActiveTab, handleLogout, storeIn
       ]
     },
     {
+      title: 'অ্যাডমিন ব্যবস্থাপনা',
+      items: [
+        { id: 'staff', label: 'অ্যাডমিন ও স্টাফ ব্যবস্থাপনা', icon: <FaUserGroup /> },
+        { id: 'activity-logs', label: 'একটিভিটি লগ', icon: <FaClockRotateLeft /> }
+      ]
+    },
+    {
       title: 'আর্থিক',
       items: [
         { id: 'pnl', label: 'আর্থিক ব্যবস্থাপনা', icon: <FaScaleBalanced /> }

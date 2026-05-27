@@ -30,8 +30,12 @@ import BackupPanel from '@/components/admin/panels/BackupPanel';
 import StoreProfilePanel from '@/components/admin/panels/StoreProfilePanel';
 import PromotionalPopupPanel from '@/components/admin/panels/PromotionalPopupPanel';
 
+// Staff & Activity Logs
+import StaffManagement from '@/components/dashboard/StaffManagement';
+import ActivityLogs from '@/components/dashboard/ActivityLogs';
+
 import { useAdmin } from '@/app/context/AdminContext';
-import { FaBars, FaXmark, FaMagnifyingGlass, FaBell, FaUser, FaGear, FaArrowRight, FaArrowTrendUp, FaArrowTrendDown, FaScaleBalanced, FaTruckFast, FaStar, FaMoneyBillTrendUp, FaClipboardList, FaUsers, FaCirclePlus } from 'react-icons/fa6';
+import { FaBars, FaXmark, FaMagnifyingGlass, FaBell, FaUser, FaGear, FaArrowRight, FaArrowTrendUp, FaArrowTrendDown, FaScaleBalanced, FaTruckFast, FaStar, FaMoneyBillTrendUp, FaClipboardList, FaUsers, FaCirclePlus, FaShieldHalved, FaUserTie } from 'react-icons/fa6';
 import { supabase } from '@/lib/supabase';
 
 export default function AdminPage() {
@@ -99,6 +103,9 @@ export default function AdminPage() {
       
     const activeOrdersCount = state.orders.filter(o => o.status === 'active').length;
     const totalCustomersCount = state.customers.length;
+    const totalAdmins = state.users?.filter(u => u.role_id === 'admin').length || 0;
+    const totalStaff = state.users?.filter(u => u.role_id === 'employee').length || 0;
+    const totalUsers = (state.users?.length || 0) + totalCustomersCount;
     
     const totalRemainingPayment = state.orders
       .filter(o => o.status === 'active')
@@ -126,11 +133,14 @@ export default function AdminPage() {
       monthTotalIncome,
       activeOrdersCount,
       totalCustomersCount,
+      totalAdmins,
+      totalStaff,
+      totalUsers,
       totalRemainingPayment,
       topSellingProducts,
       upcomingDeliveries
     };
-  }, [state.orders, state.transactions, state.reviews, state.products, state.customers]);
+  }, [state.orders, state.transactions, state.reviews, state.products, state.customers, state.users]);
 
   // Order Management State
   const [showCreateOrder, setShowCreateOrder] = useState(false);
@@ -243,6 +253,8 @@ export default function AdminPage() {
                    activeTab === 'delivery' ? 'ডেলিভারি ম্যানেজমেন্ট' :
                    activeTab === 'order-stages' ? 'অর্ডার স্টেজ কনফিগ' :
                    activeTab === 'customers' ? 'গ্রাহক ম্যানেজমেন্ট' :
+                   activeTab === 'staff' ? 'অ্যাডমিন ব্যবস্থাপনা' :
+                   activeTab === 'activity-logs' ? 'একটিভিটি লগ' :
                    activeTab === 'payments' ? 'পেমেন্ট ম্যানেজমেন্ট' :
                    activeTab === 'coupons' ? 'কুপন ও ডিসকাউন্ট' :
                    activeTab === 'reviews' ? 'রিভিউ ও রেটিং' :
@@ -313,7 +325,21 @@ export default function AdminPage() {
                       <span className="h-value">{dashboardMetrics.activeOrdersCount || 0}</span>
                     </div>
                   </div>
-                  <div className="hero-stat-card">
+                  <div className="hero-stat-card clickable" onClick={() => handleTabChange('staff')}>
+                    <div className="h-icon admins"><FaShieldHalved /></div>
+                    <div className="h-info">
+                      <span className="h-label">মোট অ্যাডমিন</span>
+                      <span className="h-value">{dashboardMetrics.totalAdmins || 0}</span>
+                    </div>
+                  </div>
+                  <div className="hero-stat-card clickable" onClick={() => handleTabChange('staff')}>
+                    <div className="h-icon staff"><FaUserTie /></div>
+                    <div className="h-info">
+                      <span className="h-label">মোট স্টাফ</span>
+                      <span className="h-value">{dashboardMetrics.totalStaff || 0}</span>
+                    </div>
+                  </div>
+                  <div className="hero-stat-card clickable" onClick={() => handleTabChange('customers')}>
                     <div className="h-icon customers"><FaUsers /></div>
                     <div className="h-info">
                       <span className="h-label">মোট গ্রাহক</span>
@@ -620,6 +646,14 @@ export default function AdminPage() {
               />
             )}
 
+            {activeTab === 'staff' && (
+              <StaffManagement />
+            )}
+
+            {activeTab === 'activity-logs' && (
+              <ActivityLogs />
+            )}
+
             {activeTab === 'delivery' && (
               <DeliveryManagementPanel 
                 deliveryZones={state.deliveryZones}
@@ -847,11 +881,15 @@ export default function AdminPage() {
 
         /* Hero Stats Grid */
         .hero-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .hero-stat-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid #eee; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .hero-stat-card { background: white; padding: 20px; border-radius: 15px; border: 1px solid #eee; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: 0.3s; }
+        .hero-stat-card.clickable { cursor: pointer; }
+        .hero-stat-card.clickable:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); border-color: #7C4B2A; }
         .h-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
         .h-icon.income { background: #e8f5e9; color: #2e7d32; }
         .h-icon.monthly { background: #e3f2fd; color: #1565c0; }
         .h-icon.active-ord { background: #fff3e0; color: #e65100; }
+        .h-icon.admins { background: #e0f2f1; color: #00796b; }
+        .h-icon.staff { background: #fff8e1; color: #f57f17; }
         .h-icon.customers { background: #f3e5f5; color: #7b1fa2; }
         .h-icon.dues { background: #ffebee; color: #c62828; }
         .h-info { display: flex; flex-direction: column; }
