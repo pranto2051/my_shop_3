@@ -3,40 +3,40 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 
-import Sidebar from '@/components/admin/Sidebar';
-import OrdersPanel from '@/components/admin/panels/OrdersPanel';
-import OrderDetailsView from '@/components/admin/panels/OrderDetailsView';
-import CreateOrderModal from '@/components/admin/panels/CreateOrderModal';
-import StageManagerPanel from '@/components/admin/panels/StageManagerPanel';
-import CategoriesPanel from '@/components/admin/panels/CategoriesPanel';
-import AdminLogin from '@/components/admin/login/AdminLogin';
-import OrderTrackingPanel from '@/components/admin/panels/OrderTrackingPanel';
-import ProductsPanel from '@/components/admin/panels/ProductsPanel';
-import SettingsPanel from '@/components/admin/panels/SettingsPanel';
-import DesignsPanel from '@/components/admin/panels/DesignsPanel';
-import GalleryPanel from '@/components/admin/panels/GalleryPanel';
+import Sidebar from '../../components/admin/Sidebar';
+import OrdersPanel from '../../components/admin/panels/OrdersPanel';
+import OrderDetailsView from '../../components/admin/panels/OrderDetailsView';
+import CreateOrderModal from '../../components/admin/panels/CreateOrderModal';
+import StageManagerPanel from '../../components/admin/panels/StageManagerPanel';
+import CategoriesPanel from '../../components/admin/panels/CategoriesPanel';
+import AdminLogin from '../../components/admin/login/AdminLogin';
+import OrderTrackingPanel from '../../components/admin/panels/OrderTrackingPanel';
+import ProductsPanel from '../../components/admin/panels/ProductsPanel';
+import SettingsPanel from '../../components/admin/panels/SettingsPanel';
+import DesignsPanel from '../../components/admin/panels/DesignsPanel';
+import GalleryPanel from '../../components/admin/panels/GalleryPanel';
 
 // New Panels
-import CustomerManagementPanel from '@/components/admin/panels/CustomerManagementPanel';
-import DeliveryManagementPanel from '@/components/admin/panels/DeliveryManagementPanel';
-import ReviewsPanel from '@/components/admin/panels/ReviewsPanel';
-import ContentManagementPanel from '@/components/admin/panels/ContentManagementPanel';
-import FinancialManagementPanel from '@/components/admin/panels/FinancialManagementPanel';
-import InventoryPanel from '@/components/admin/panels/InventoryPanel';
-import NotificationsPanel from '@/components/admin/panels/NotificationsPanel';
-import HelpPanel from '@/components/admin/panels/HelpPanel';
-import CalendarPanel from '@/components/admin/panels/CalendarPanel';
-import BackupPanel from '@/components/admin/panels/BackupPanel';
-import StoreProfilePanel from '@/components/admin/panels/StoreProfilePanel';
-import PromotionalPopupPanel from '@/components/admin/panels/PromotionalPopupPanel';
+import CustomerManagementPanel from '../../components/admin/panels/CustomerManagementPanel';
+import DeliveryManagementPanel from '../../components/admin/panels/DeliveryManagementPanel';
+import ReviewsPanel from '../../components/admin/panels/ReviewsPanel';
+import ContentManagementPanel from '../../components/admin/panels/ContentManagementPanel';
+import FinancialManagementPanel from '../../components/admin/panels/FinancialManagementPanel';
+import InventoryPanel from '../../components/admin/panels/InventoryPanel';
+import NotificationsPanel from '../../components/admin/panels/NotificationsPanel';
+import HelpPanel from '../../components/admin/panels/HelpPanel';
+import CalendarPanel from '../../components/admin/panels/CalendarPanel';
+import BackupPanel from '../../components/admin/panels/BackupPanel';
+import StoreProfilePanel from '../../components/admin/panels/StoreProfilePanel';
+import PromotionalPopupPanel from '../../components/admin/panels/PromotionalPopupPanel';
 
 // Staff & Activity Logs
-import StaffManagement from '@/components/dashboard/StaffManagement';
-import ActivityLogs from '@/components/dashboard/ActivityLogs';
+import StaffManagement from '../../components/dashboard/StaffManagement';
+import ActivityLogs from '../../components/dashboard/ActivityLogs';
 
-import { useAdmin } from '@/app/context/AdminContext';
+import { useAdmin } from '../context/AdminContext';
 import { FaBars, FaXmark, FaMagnifyingGlass, FaBell, FaUser, FaGear, FaArrowRight, FaArrowTrendUp, FaArrowTrendDown, FaScaleBalanced, FaTruckFast, FaStar, FaMoneyBillTrendUp, FaClipboardList, FaUsers, FaCirclePlus, FaShieldHalved, FaUserTie } from 'react-icons/fa6';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 export default function AdminPage() {
   const [isClient, setIsClient] = useState(false);
