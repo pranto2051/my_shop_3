@@ -21,13 +21,14 @@ export default function AnnouncementTicker() {
 
   return (
     <div className="announcement-ticker" suppressHydrationWarning>
-      <div className="ticker-wrapper">
-        <div className="ticker-content">
+      <div className="ticker-wrapper" suppressHydrationWarning>
+        <div className="ticker-content" suppressHydrationWarning>
           {activeAnnouncements.map((ann, idx) => (
             <div 
               key={ann.id} 
               className="ticker-item"
               style={{ backgroundColor: ann.bg_color, color: ann.text_color }}
+              suppressHydrationWarning
             >
               {ann.link ? (
                 <a href={ann.link} target="_blank" rel="noopener noreferrer">

@@ -135,74 +135,79 @@ export default function StaffManagement() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-700">
+    <div className="space-y-6 animate-in fade-in duration-700 px-[18px]">
 
       {/* ── PAGE HEADER ── */}
-      <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-[#3D1F0D] via-[#5D321A] to-[#7C4B2A] p-8 shadow-2xl">
-        {/* Decorative rings */}
-        <div className="pointer-events-none absolute -right-24 -top-24 w-72 h-72 rounded-full border border-white/10" />
-        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border border-white/10" />
-        <div className="pointer-events-none absolute right-8 bottom-8 w-32 h-32 rounded-full border border-white/10" />
-        <div className="pointer-events-none absolute -left-8 -bottom-8 w-40 h-40 rounded-full bg-white/5" />
+      <div className="relative overflow-hidden rounded-[40px] bg-linear-to-br from-[#3D1F0D] via-[#5D321A] to-[#7C4B2A] shadow-2xl p-8 md:p-12 lg:p-14">
+        {/* Decorative elements for depth */}
+        <div className="pointer-events-none absolute -right-24 -top-24 w-96 h-96 rounded-full border border-white/10 " />
+        <div className="pointer-events-none absolute -right-12 -top-12 w-64 h-64 rounded-full border border-white/10" />
+        <div className="pointer-events-none absolute right-20 bottom-10 w-48 h-48 rounded-full border border-white/10" />
+        <div className="pointer-events-none absolute -left-20 -bottom-20 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 w-full h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
 
-        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <div className="w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-xl">
-              <UserPlus size={26} className="text-white" />
+        <div className="relative z-10 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-10">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8">
+            <div className="w-20 h-20 rounded-[28px] bg-white/15 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
+              <UserPlus size={36} className="text-white" />
             </div>
             <div>
-              <h1 className="text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight">
-                অ্যাডমিন ও স্টাফ ব্যবস্থাপনা
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.1]">
+                অ্যাডমিন ও স্টাফ <br className="hidden md:block lg:hidden" /> ব্যবস্থাপনা
               </h1>
-              <p className="text-white/60 text-xs font-semibold mt-1">
-                আপনার দোকানের সকল অ্যাডমিন ও স্টাফদের তথ্য এবং পারমিশন ম্যানেজ করুন
+              <p className="text-white/70 text-sm md:text-base font-medium mt-3 max-w-xl leading-relaxed">
+                আপনার প্রতিষ্ঠানের সকল কর্মকর্তা ও কর্মচারীদের তথ্য, পদবী এবং পারমিশন এখান থেকে সুচারুভাবে নিয়ন্ত্রণ করুন।
               </p>
             </div>
           </div>
 
           <button
             onClick={() => handleOpenModal()}
-            className="group flex items-center gap-2.5 bg-white text-[#5D321A] px-6 py-3.5 rounded-2xl font-black text-sm shadow-xl hover:bg-[#7C4B2A]/5 transition-all active:scale-95"
+            className="group flex items-center gap-3 bg-white text-[#5D321A] px-8 py-4.5 rounded-[22px] font-black text-base shadow-2xl hover:bg-[#FDF8F5] hover:scale-[1.02] transition-all active:scale-95"
           >
-            <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+            <Plus size={22} className="group-hover:rotate-90 transition-transform duration-500" />
             নতুন স্টাফ যোগ করুন
           </button>
         </div>
 
-        {/* Stats row */}
-        <div className="relative z-10 mt-8 grid grid-cols-3 gap-4">
+        {/* Stats Grid */}
+        <div className="relative z-10 mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
           {[
-            { label: 'মোট সদস্য', value: (state.users || []).length },
-            { label: 'অ্যাডমিন', value: (state.users || []).filter((u: any) => u.role_id === 'admin').length },
-            { label: 'স্টাফ', value: (state.users || []).filter((u: any) => u.role_id === 'employee').length },
-          ].map((stat) => (
-            <div key={stat.label} className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/15 px-5 py-3 text-center">
-              <p className="text-2xl font-black text-white">{stat.value}</p>
-              <p className="text-[10px] font-black uppercase tracking-widest text-white/50 mt-0.5">{stat.label}</p>
+            { label: 'মোট সদস্য', value: (state.users || []).length, icon: <Shield size={16} /> },
+            { label: 'অ্যাডমিন', value: (state.users || []).filter((u: any) => u.role_id === 'admin').length, icon: <Shield size={16} /> },
+            { label: 'স্টাফ', value: (state.users || []).filter((u: any) => u.role_id === 'employee').length, icon: <Briefcase size={16} /> },
+          ].map((stat, idx) => (
+            <div key={stat.label} className="group relative rounded-3xl bg-white/10 backdrop-blur-md border border-white/15 p-6 hover:bg-white/15 transition-all duration-300">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-3xl md:text-4xl font-black text-white tracking-tighter">{stat.value}</p>
+                <div className="text-white/30 group-hover:text-white/60 transition-colors">
+                  {stat.icon}
+                </div>
+              </div>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/50">{stat.label}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* ── CONTROL BAR ── */}
-      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
+      <div className="flex flex-col xl:flex-row gap-6 items-stretch xl:items-center bg-white/50 backdrop-blur-sm p-4 rounded-[32px] border border-[#E8D5C4]/50 shadow-sm">
         {/* Search */}
         <div className="relative flex-1 group">
-          <Search
-            className="absolute left-5 top-1/2 -translate-y-1/2 text-[#A0826C] group-focus-within:text-[#7C4B2A] transition-colors"
-            size={18}
-          />
+          <div className="absolute left-5 top-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-xl shadow-sm border border-[#E8D5C4] flex items-center justify-center text-[#A0826C] group-focus-within:text-[#7C4B2A] group-focus-within:border-[#7C4B2A] transition-all">
+            <Search size={20} />
+          </div>
           <input
             type="text"
-            placeholder="নাম, ইমেইল বা মোবাইল দিয়ে খুঁজুন..."
-            className="w-full h-12 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl pl-12 pr-5 outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] text-sm font-semibold text-[#5D321A] placeholder:text-[#C4A898] transition-all"
+            placeholder="নাম, ইমেইল বা মোবাইল নম্বর দিয়ে খুঁজুন..."
+            className="w-full h-14 bg-white border border-[#E8D5C4] rounded-[22px] pl-18 pr-6 outline-none focus:ring-4 focus:ring-[#7C4B2A]/10 focus:border-[#7C4B2A] text-base font-bold text-[#5D321A] placeholder:text-[#C4A898]/60 shadow-sm transition-all"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
         {/* Role Filter */}
-        <div className="flex items-center gap-1.5 bg-[#FDF8F5] border border-[#E8D5C4] p-1.5 rounded-2xl">
+        <div className="flex items-center gap-2 bg-white border border-[#E8D5C4] p-2 rounded-[22px] shadow-sm">
           {[
             { key: 'all', label: 'সবাই' },
             { key: 'admin', label: 'অ্যাডমিন' },
@@ -211,10 +216,10 @@ export default function StaffManagement() {
             <button
               key={key}
               onClick={() => setSelectedRole(key)}
-              className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-200 ${
+              className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-[0.15em] transition-all duration-300 ${
                 selectedRole === key
-                  ? 'bg-[#7C4B2A] text-white shadow-md'
-                  : 'text-[#A0826C] hover:text-[#7C4B2A] hover:bg-[#7C4B2A]/10'
+                  ? 'bg-linear-to-br from-[#7C4B2A] to-[#5D321A] text-white shadow-lg shadow-[#7C4B2A]/20'
+                  : 'text-[#A0826C] hover:text-[#7C4B2A] hover:bg-[#7C4B2A]/5'
               }`}
             >
               {label}

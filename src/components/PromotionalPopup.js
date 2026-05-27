@@ -78,29 +78,30 @@ export default function PromotionalPopup() {
   if (!isVisible || !popupData) return null;
 
   return (
-    <div className="promo-popup-overlay">
-      <div className="promo-popup-card animate-popup-in">
+    <div className="promo-popup-overlay" suppressHydrationWarning>
+      <div className="promo-popup-card animate-popup-in" suppressHydrationWarning>
         <button className="promo-close-btn" onClick={closePopup} aria-label="বন্ধ করুন">
           <FaXmark />
         </button>
         
         {popupData.image_url && (
-          <div className="promo-image-container">
-            <img src={popupData.image_url} alt={popupData.title} />
+          <div className="promo-image-container" suppressHydrationWarning>
+            <img src={popupData.image_url} alt={popupData.title} suppressHydrationWarning />
           </div>
         )}
         
-        <div className="promo-content">
-          <div className="promo-icon">
+        <div className="promo-content" suppressHydrationWarning>
+          <div className="promo-icon" suppressHydrationWarning>
             <FaGift />
           </div>
-          <h2 className="promo-title">{popupData.title}</h2>
-          <p className="promo-description">{popupData.description}</p>
+          <h2 className="promo-title" suppressHydrationWarning>{popupData.title}</h2>
+          <p className="promo-description" suppressHydrationWarning>{popupData.description}</p>
           
           <Link 
             href={popupData.button_link || '/'} 
             className="promo-action-btn"
             onClick={closePopup}
+            suppressHydrationWarning
           >
             {popupData.button_text || 'কেনাকাটা শুরু করুন'}
           </Link>

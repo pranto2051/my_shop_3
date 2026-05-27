@@ -9,8 +9,11 @@ export default function Toast() {
   if (!toast) return null;
 
   return (
-    <div className="toast-container">
-      <div className={`toast toast-${toast.type} ${toast.show ? 'show' : ''}`}>
+    <div className="toast-container" suppressHydrationWarning>
+      <div 
+        className={`toast toast-${toast.type} ${toast.show ? 'show' : ''}`}
+        suppressHydrationWarning
+      >
         {toast.message}
       </div>
     </div>
