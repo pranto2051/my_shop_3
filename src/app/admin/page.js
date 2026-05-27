@@ -159,18 +159,18 @@ export default function AdminPage() {
 
   // Login logic
   const handleLogin = async () => {
-    // Check against Supabase admins table
-    const { data: admins, error } = await supabase
-      .from('admins')
+    // Check against Supabase users table
+    const { data: users, error } = await supabase
+      .from('users')
       .select('*')
       .or(`email.eq.${email},mobile.eq.${email}`)
       .eq('password', password);
 
-    if (!error && admins && admins.length > 0) {
+    if (!error && users && users.length > 0) {
       setIsLoggedIn(true);
       setLoginError(false);
       localStorage.setItem('adminLoggedIn', 'true');
-      localStorage.setItem('adminInfo', JSON.stringify(admins[0]));
+      localStorage.setItem('adminInfo', JSON.stringify(users[0]));
     } else {
       setLoginError(true);
     }

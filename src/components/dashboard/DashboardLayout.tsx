@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   LayoutDashboard, 
   ShieldCheck, 
@@ -20,6 +20,38 @@ import {
   HelpCircle,
   Store
 } from 'lucide-react';
+
+// Import Context
+import { useAdmin } from '@/app/context/AdminContext';
+
+// Import New Dashboard Components
+import AdminDashboard from './AdminDashboard';
+import EmployeeDashboard from './EmployeeDashboard';
+import StaffManagement from './StaffManagement';
+import ActivityLogs from './ActivityLogs';
+
+// Import Existing Panels (JS components)
+import OrdersPanel from '../admin/panels/OrdersPanel';
+import ProductsPanel from '../admin/panels/ProductsPanel';
+import CategoriesPanel from '../admin/panels/CategoriesPanel';
+import InventoryPanel from '../admin/panels/InventoryPanel';
+import DeliveryManagementPanel from '../admin/panels/DeliveryManagementPanel';
+import StageManagerPanel from '../admin/panels/StageManagerPanel';
+import CustomerManagementPanel from '../admin/panels/CustomerManagementPanel';
+import ReviewsPanel from '../admin/panels/ReviewsPanel';
+import FinancialManagementPanel from '../admin/panels/FinancialManagementPanel';
+import NotificationsPanel from '../admin/panels/NotificationsPanel';
+import GalleryPanel from '../admin/panels/GalleryPanel';
+import DesignsPanel from '../admin/panels/DesignsPanel';
+import PromotionalPopupPanel from '../admin/panels/PromotionalPopupPanel';
+import ContentManagementPanel from '../admin/panels/ContentManagementPanel';
+import SettingsPanel from '../admin/panels/SettingsPanel';
+import CalendarPanel from '../admin/panels/CalendarPanel';
+import BackupPanel from '../admin/panels/BackupPanel';
+import HelpPanel from '../admin/panels/HelpPanel';
+import StoreProfilePanel from '../admin/panels/StoreProfilePanel';
+import CreateOrderModal from '../admin/panels/CreateOrderModal';
+import OrderDetailsView from '../admin/panels/OrderDetailsView';
 
 interface SidebarItemData {
   icon: React.ElementType;
@@ -80,10 +112,17 @@ const SidebarSubItem = ({ label, active, onClick }: { label: string; active?: bo
   </button>
 );
 
-export default function DashboardLayout({ children, role }: { children: React.ReactNode, role: 'admin' | 'employee' }) {
+export default function DashboardLayout({ children, role }: { children?: React.ReactNode, role: 'admin' | 'employee' }) {
+  const { state, dispatch } = useAdmin();
+  const { products, categories: categoriesData, customers, orders } = state;
+
   const [activeTab, setActiveTab] = useState('ড্যাশবোর্ড');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [expandedMenus, setExpandedMenus] = useState<string[]>(['পণ্য ব্যবস্থাপনা', 'অর্ডার ব্যবস্থাপনা', 'টিম ব্যবস্থাপনা']);
+  
+  // Modal states
+  const [showCreateOrder, setShowCreateOrder] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   const toggleMenu = (label: string) => {
     setExpandedMenus(prev => 
@@ -202,6 +241,84 @@ export default function DashboardLayout({ children, role }: { children: React.Re
       ]
     }
   ];
+
+  const renderContent = () => {
+    if (children) return children;
+
+    switch (activeTab) {
+      case 'ড্যাশবোর্ড':
+        return role === 'admin' ? <AdminDashboard /> : <EmployeeDashboard />;
+      case 'পণ্য তালিকা':
+        return (
+          <ProductsPanel 
+            products={products} 
+            setProducts={(newProducts: any) => dispatch({ type: 'SET_INITIAL_DATA', payload: { products: newProducts, categories: categoriesData } })} 
+            categoriesData={categoriesData} 
+          />
+        );
+      case 'ক্যাটাগরি':
+        return (
+          <CategoriesPanel 
+            categories={categoriesData} 
+            onUpdateCategories={(newCats: any) => dispatch({ type: 'SET_INITIAL_DATA', payload: { products: products, categories: newCats } })} 
+          />
+        );
+      case 'ইনভেন্টরি ম্যানেজমেন্ট':
+        return <InventoryPanel />;
+      case 'অর্ডার তালিকা':
+      case 'নতুন অর্ডার':
+        return (
+          <OrdersPanel 
+            openCreateModal={() => setShowCreateOrder(true)} 
+            openOrderDetail={(order: any) => setSelectedOrder(order)} 
+          />
+        );
+      case 'ডেলিভারি ম্যানেজমেন্ট':
+        return <DeliveryManagementPanel />;
+      case 'অর্ডার স্টেজ ব্যবস্থাপনা':
+        return <StageManagerPanel />;
+      case 'গ্রাহক তালিকা':
+        return <CustomerManagementPanel customers={customers} orders={orders} setActiveTab={setActiveTab} />;
+      case 'রিভিউ ও রেটিং':
+        return <ReviewsPanel />;
+      case 'অ্যাডমিন ও স্টাফ ব্যবস্থাপনা':
+        return <StaffManagement />;
+      case 'একটিভিটি লগ':
+        return <ActivityLogs />;
+      case 'আর্থিক ব্যবস্থাপনা':
+        return <FinancialManagementPanel />;
+      case 'নোটিফিকেশন':
+        return <NotificationsPanel />;
+      case 'ফটো গ্যালারি':
+        return <GalleryPanel />;
+      case 'ডিজাইন গ্যালারি':
+        return <DesignsPanel />;
+      case 'প্রোমোショナル পপআপ':
+        return <PromotionalPopupPanel />;
+      case 'কন্টেন্ট ম্যানেজমেন্ট':
+      case 'SEO ও মার্কেটিং':
+        return <ContentManagementPanel />; 
+      case 'ক্যালেন্ডার ও টাস্কস':
+        return <CalendarPanel />;
+      case 'ডেটা ব্যাকআপ':
+        return <BackupPanel />;
+      case 'সেটিিংস':
+        return <SettingsPanel />;
+      case 'হেল্প সেন্টার':
+        return <HelpPanel />;
+      case 'স্টোর প্রোফাইল':
+        return <StoreProfilePanel />;
+      default:
+        return (
+          <div className="flex flex-col items-center justify-center h-full text-slate-500 space-y-4">
+            <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center">
+              <LayoutDashboard className="text-slate-700" size={32} />
+            </div>
+            <p className="font-medium">অনুগ্রহ করে একটি মেনু নির্বাচন করুন</p>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#020617] text-white flex overflow-hidden font-sans">
@@ -323,9 +440,21 @@ export default function DashboardLayout({ children, role }: { children: React.Re
 
         {/* Scrollable Area */}
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-950/50">
-          {children}
+          {renderContent()}
         </div>
       </main>
+
+      {/* Modals & Drawers */}
+      {showCreateOrder && (
+        <CreateOrderModal onClose={() => setShowCreateOrder(false)} />
+      )}
+
+      {selectedOrder && (
+        <OrderDetailsView 
+          order={selectedOrder} 
+          onClose={() => setSelectedOrder(null)} 
+        />
+      )}
     </div>
   );
 }

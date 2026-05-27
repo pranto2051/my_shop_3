@@ -51,7 +51,7 @@ export default function SettingsPanel() {
 
     try {
       const { data, error } = await supabase
-        .from('admins')
+        .from('users')
         .update({
           first_name: adminData.first_name,
           last_name: adminData.last_name,

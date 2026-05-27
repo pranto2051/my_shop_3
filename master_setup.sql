@@ -148,19 +148,8 @@ CREATE TABLE IF NOT EXISTS tasks (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 3. ADMIN & FEATURE TABLES
+-- 3. FEATURE TABLES
 -- ========================================================
-
-CREATE TABLE IF NOT EXISTS admins (
-  id SERIAL PRIMARY KEY,
-  first_name VARCHAR(255) NOT NULL,
-  last_name VARCHAR(255),
-  mobile VARCHAR(20) UNIQUE NOT NULL,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  photo_url TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
 CREATE TABLE IF NOT EXISTS announcements (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -355,7 +344,6 @@ ALTER TABLE gallery DISABLE ROW LEVEL SECURITY;
 ALTER TABLE customer_reviews DISABLE ROW LEVEL SECURITY;
 ALTER TABLE delivery_zones DISABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks DISABLE ROW LEVEL SECURITY;
-ALTER TABLE admins DISABLE ROW LEVEL SECURITY;
 ALTER TABLE announcements DISABLE ROW LEVEL SECURITY;
 ALTER TABLE promotional_popups DISABLE ROW LEVEL SECURITY;
 
@@ -498,7 +486,7 @@ CREATE TABLE IF NOT EXISTS departments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Migrating admins to a more robust users table
+-- Robust users table for admins and employees
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     first_name VARCHAR(255) NOT NULL,
@@ -508,7 +496,7 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     role_id VARCHAR(50) REFERENCES user_roles(id),
     department_id INTEGER REFERENCES departments(id),
-    photo_url TEXT,
+    photo_url TEXT DEFAULT 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
     status VARCHAR(20) DEFAULT 'active', -- active, inactive
     last_login TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
