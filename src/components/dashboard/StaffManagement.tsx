@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   ArrowRight,
   Loader2,
   Clock,
@@ -20,24 +20,22 @@ import {
 import { useAdmin, addUser, updateUser, deleteUser } from '@/app/context/AdminContext';
 
 const RoleBadge = ({ role }: { role: string }) => (
-  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.12em] border ${
-    role === 'admin' 
-      ? 'bg-amber-50 text-amber-700 border-amber-200' 
-      : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-  }`}>
-    {role === 'admin' 
-      ? <Shield size={10} strokeWidth={2.5} /> 
+  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.12em] border ${role === 'admin'
+    ? 'bg-amber-50 text-amber-700 border-amber-200'
+    : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+    }`}>
+    {role === 'admin'
+      ? <Shield size={10} strokeWidth={2.5} />
       : <Briefcase size={10} strokeWidth={2.5} />}
     {role === 'admin' ? 'অ্যাডমিন' : 'স্টাফ'}
   </span>
 );
 
 const StatusPill = ({ status }: { status: string }) => (
-  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] ${
-    status === 'active' 
-      ? 'bg-green-100 text-green-700' 
-      : 'bg-red-100 text-red-700'
-  }`}>
+  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] ${status === 'active'
+    ? 'bg-green-100 text-green-700'
+    : 'bg-red-100 text-red-700'
+    }`}>
     <span className={`w-1.5 h-1.5 rounded-full ${status === 'active' ? 'bg-green-500' : 'bg-red-500'}`} />
     {status === 'active' ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
   </div>
@@ -66,9 +64,9 @@ export default function StaffManagement() {
 
   const filteredUsers = (state.users || []).filter((user: any) => {
     const fullName = `${user.first_name} ${user.last_name || ''}`.toLowerCase();
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) || 
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.mobile.includes(searchTerm);
+    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.mobile.includes(searchTerm);
     const matchesRole = selectedRole === 'all' || user.role_id === selectedRole;
     return matchesSearch && matchesRole;
   });
@@ -140,13 +138,13 @@ export default function StaffManagement() {
       {/* ── PAGE HEADER ── */}
       <div className="relative overflow-hidden rounded-[40px] bg-linear-to-br from-[#3D1F0D] via-[#5D321A] to-[#7C4B2A] shadow-2xl p-8 md:p-12 lg:p-14">
         {/* Decorative elements for depth */}
-        <div className="pointer-events-none absolute -right-24 -top-24 w-96 h-96 rounded-full border border-white/10 " />
+        {/* <div className="pointer-events-none absolute -right-24 -top-24 w-96 h-96 rounded-full border border-white/10 " />
         <div className="pointer-events-none absolute -right-12 -top-12 w-64 h-64 rounded-full border border-white/10" />
         <div className="pointer-events-none absolute right-20 bottom-10 w-48 h-48 rounded-full border border-white/10" />
         <div className="pointer-events-none absolute -left-20 -bottom-20 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
-        <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 w-full h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
+        <div className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 w-full h-px bg-linear-to-r from-transparent via-white/20 to-transparent" /> */}
 
-        <div className="relative z-10 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-10">
+        <div className="relative z-10 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-10 ">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8">
             <div className="w-20 h-20 rounded-[28px] bg-white/15 backdrop-blur-xl border border-white/20 flex items-center justify-center shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-500">
               <UserPlus size={36} className="text-white" />
@@ -216,11 +214,10 @@ export default function StaffManagement() {
             <button
               key={key}
               onClick={() => setSelectedRole(key)}
-              className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-[0.15em] transition-all duration-300 ${
-                selectedRole === key
-                  ? 'bg-linear-to-br from-[#7C4B2A] to-[#5D321A] text-white shadow-lg shadow-[#7C4B2A]/20'
-                  : 'text-[#A0826C] hover:text-[#7C4B2A] hover:bg-[#7C4B2A]/5'
-              }`}
+              className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-[0.15em] transition-all duration-300 ${selectedRole === key
+                ? 'bg-linear-to-br from-[#7C4B2A] to-[#5D321A] text-white shadow-lg shadow-[#7C4B2A]/20'
+                : 'text-[#A0826C] hover:text-[#7C4B2A] hover:bg-[#7C4B2A]/5'
+                }`}
             >
               {label}
             </button>
@@ -241,11 +238,10 @@ export default function StaffManagement() {
               className="group relative bg-white border border-[#EDE0D6] rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-[#7C4B2A]/10 hover:-translate-y-0.5 transition-all duration-300"
             >
               {/* Top accent strip based on role */}
-              <div className={`absolute top-0 left-0 right-0 h-1 ${
-                user.role_id === 'admin'
-                  ? 'bg-linear-to-r from-amber-400 via-[#7C4B2A] to-amber-500'
-                  : 'bg-linear-to-r from-emerald-400 via-teal-500 to-emerald-400'
-              }`} />
+              <div className={`absolute top-0 left-0 right-0 h-1 ${user.role_id === 'admin'
+                ? 'bg-linear-to-r from-amber-400 via-[#7C4B2A] to-amber-500'
+                : 'bg-linear-to-r from-emerald-400 via-teal-500 to-emerald-400'
+                }`} />
 
               {/* Card Body */}
               <div className="p-6">
@@ -253,9 +249,8 @@ export default function StaffManagement() {
                 <div className="flex items-start gap-4">
                   {/* Avatar */}
                   <div className="relative shrink-0">
-                    <div className={`w-16 h-16 rounded-2xl overflow-hidden ring-2 ${
-                      user.role_id === 'admin' ? 'ring-amber-200' : 'ring-emerald-200'
-                    } shadow-md`}>
+                    <div className={`w-16 h-16 rounded-2xl overflow-hidden ring-2 ${user.role_id === 'admin' ? 'ring-amber-200' : 'ring-emerald-200'
+                      } shadow-md`}>
                       <img
                         src={user.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.first_name}`}
                         alt=""
@@ -263,9 +258,8 @@ export default function StaffManagement() {
                       />
                     </div>
                     {/* Online dot */}
-                    <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
-                      user.status === 'active' ? 'bg-green-500' : 'bg-red-400'
-                    }`} />
+                    <span className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${user.status === 'active' ? 'bg-green-500' : 'bg-red-400'
+                      }`} />
                   </div>
 
                   {/* Name & role */}
