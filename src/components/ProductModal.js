@@ -20,7 +20,7 @@ export default function ProductModal({ isOpen, onClose, product, categories, sto
     } else {
       document.body.classList.remove('no-scroll');
     }
-    
+
     return () => {
       document.body.classList.remove('no-scroll');
     };
@@ -49,17 +49,25 @@ export default function ProductModal({ isOpen, onClose, product, categories, sto
         <button className="modal-close" onClick={onClose} aria-label="বন্ধ করুন">
           <i className="fas fa-times"></i>
         </button>
-        
+
         <div className="modal-content" id="modalContent">
           <div className="modal-left">
-            <img src={activeImage || product.image} alt={product.name} className="modal-main-img" id="modalMainImg"
-                 onError={(e) => { e.target.src = 'https://placehold.co/600x500/8B4E38/FAF6F1?text=No+Image'; }} />
+            <img
+              src={activeImage || product.image}
+              alt={product.name}
+              className="modal-main-img"
+              id="modalMainImg"
+              onClick={() => window.open(activeImage || product.image, '_blank')}
+              style={{ cursor: 'zoom-in' }}
+              title="বড় করে দেখতে ক্লিক করুন"
+              onError={(e) => { e.target.src = 'https://placehold.co/600x500/8B4E38/FAF6F1?text=No+Image'; }}
+            />
             <div className="modal-thumbnails">
               {images.map((img, i) => (
-                <img 
+                <img
                   key={i}
-                  src={img} 
-                  alt={`${product.name} - ছবি ${i + 1}`} 
+                  src={img}
+                  alt={`${product.name} - ছবি ${i + 1}`}
                   loading="lazy"
                   className={`modal-thumb ${activeImage === img ? 'active' : ''}`}
                   onClick={() => setActiveImage(img)}
@@ -79,7 +87,7 @@ export default function ProductModal({ isOpen, onClose, product, categories, sto
             <div className="modal-rating-row">
               <div className="modal-rating-stars">
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <i 
+                  <i
                     key={i}
                     className={`fas fa-star${i <= Math.floor(product.rating) ? '' : (i - product.rating < 1 && i - product.rating > 0 ? '-half-alt' : '-o')}`}
                     style={{ color: 'var(--accent)' }}
@@ -129,7 +137,7 @@ export default function ProductModal({ isOpen, onClose, product, categories, sto
               <div className="spec-row">
                 <span className="spec-label">স্টক</span>
                 <span className="spec-value">
-                  {product.inStock 
+                  {product.inStock
                     ? <span className="spec-in-stock"><i className="fas fa-check-circle"></i> পাওয়া যাচ্ছে</span>
                     : <span className="spec-out-stock"><i className="fas fa-times-circle"></i> স্টকে নেই</span>
                   }
@@ -138,8 +146,8 @@ export default function ProductModal({ isOpen, onClose, product, categories, sto
             </div>
 
             <div className="modal-actions">
-              <a href={`https://wa.me/88${storeInfo.whatsapp.number.replace(/-/g, '')}?text=${waText}`} 
-                 className="modal-wa-btn" target="_blank" rel="noopener noreferrer">
+              <a href={`https://wa.me/88${storeInfo.whatsapp.number.replace(/-/g, '')}?text=${waText}`}
+                className="modal-wa-btn" target="_blank" rel="noopener noreferrer">
                 <i className="fab fa-whatsapp"></i> WhatsApp এ অর্ডার করুন
               </a>
               <button className="modal-call-btn" onClick={() => window.location.href = `tel:${storeInfo.callNumbers.numbers[0].replace(/-/g, '')}`}>
