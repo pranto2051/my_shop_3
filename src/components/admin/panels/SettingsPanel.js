@@ -5,6 +5,9 @@ import { useAdmin } from '@/app/context/AdminContext';
 import { supabase } from '@/lib/supabase';
 import styles from './SettingsPanel.module.css';
 
+const FALLBACK_AVATAR =
+  'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22150%22 height=%22150%22 viewBox=%220 0 150 150%22%3E%3Crect width=%22150%22 height=%22150%22 rx=%2275%22 fill=%22%23f3e5d7%22/%3E%3Ccircle cx=%2275%22 cy=%2258%22 r=%2224%22 fill=%22%23c8a88a%22/%3E%3Cpath d=%22M38 123c7-22 24-34 37-34s30 12 37 34%22 fill=%22%23c8a88a%22/%3E%3C/svg%3E';
+
 export default function SettingsPanel() {
   const { state, dispatch } = useAdmin();
   const { settings } = state;
@@ -151,10 +154,10 @@ export default function SettingsPanel() {
             
             <div className={styles.profileImagePreview}>
               <img 
-                src={adminData.photo_url || 'https://via.placeholder.com/150'} 
+                src={adminData.photo_url || FALLBACK_AVATAR} 
                 alt="Admin Profile" 
                 className={styles.adminAvatar} 
-                onError={(e) => { e.target.src = 'https://via.placeholder.com/150'; }}
+                onError={(e) => { e.currentTarget.src = FALLBACK_AVATAR; }}
               />
             </div>
 

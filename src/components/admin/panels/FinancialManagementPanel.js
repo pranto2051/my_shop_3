@@ -18,6 +18,7 @@ import {
 
 export default function FinancialManagementPanel({ transactions: dbTransactions = [], initialTab = 'overview' }) {
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [transactionFilter, setTransactionFilter] = useState('all');
 
   const transactions = dbTransactions.length > 0 ? dbTransactions : [
     { id: 'TXN-1001', type: 'Income', category: 'Order Payment', amount: 45000, method: 'bKash', status: 'Verified', date: '2024-05-06' },
@@ -29,6 +30,11 @@ export default function FinancialManagementPanel({ transactions: dbTransactions 
   const totalIncome = transactions.filter(t => t.type === 'Income').reduce((sum, t) => sum + Number(t.amount), 0);
   const totalExpense = transactions.filter(t => t.type === 'Expense').reduce((sum, t) => sum + Number(t.amount), 0);
   const netProfit = totalIncome - totalExpense;
+  const filteredTransactions = transactions.filter(transaction => {
+    if (transactionFilter === 'income') return transaction.type === 'Income';
+    if (transactionFilter === 'expense') return transaction.type === 'Expense';
+    return true;
+  });
 
   return (
     <div className="financial-panel">
@@ -133,7 +139,11 @@ export default function FinancialManagementPanel({ transactions: dbTransactions 
             <div className="table-header">
               <h3>সাম্প্রতিক লেনদেন সমূহ</h3>
               <div className="filter-group">
-                <select><option>সকল লেনদেন</option><option>আয়</option><option>ব্যয়</option></select>
+                <select value={transactionFilter} onChange={(event) => setTransactionFilter(event.target.value)}>
+                  <option value="all">সকল লেনদেন</option>
+                  <option value="income">আয়</option>
+                  <option value="expense">ব্যয়</option>
+                </select>
                 <input type="date" />
               </div>
             </div>
@@ -150,7 +160,7 @@ export default function FinancialManagementPanel({ transactions: dbTransactions 
                 </tr>
               </thead>
               <tbody>
-                {transactions.map(txn => (
+                {filteredTransactions.map(txn => (
                   <tr key={txn.id}>
                     <td><strong>{txn.id}</strong></td>
                     <td>
