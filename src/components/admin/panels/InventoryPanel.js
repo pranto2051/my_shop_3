@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAdmin } from '@/app/context/AdminContext';
+import { supabase } from '@/lib/supabase';
 import { 
   FaBoxesStacked, 
   FaTriangleExclamation, 
@@ -13,11 +14,89 @@ import {
   FaCheck
 } from 'react-icons/fa6';
 
+const normalizeStock = (value) => {
+  const parsed = Number.parseInt(String(value), 10);
+
+  if (!Number.isNaN(parsed)) {
+    return Math.max(0, parsed);
+  }
+
+  return value ? 1 : 0;
+};
+
 export default function InventoryPanel() {
   const { state, dispatch } = useAdmin();
-  const { products } = state;
+  const { products, categories } = state;
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all'); // all, low, out
+  const [stockDrafts, setStockDrafts] = useState({});
+  const [savingProductId, setSavingProductId] = useState(null);
+
+  useEffect(() => {
+    setStockDrafts(prevDrafts => {
+      const nextDrafts = {};
+
+      products.forEach(product => {
+        nextDrafts[product.id] = prevDrafts[product.id] ?? String(normalizeStock(product.inStock));
+      });
+
+      return nextDrafts;
+    });
+  }, [products]);
+
+  const getCurrentStock = (product) => normalizeStock(stockDrafts[product.id] ?? product.inStock);
+
+  const persistStockChange = async (product, nextStockValue) => {
+    const nextStock = normalizeStock(nextStockValue);
+    const previousStock = String(normalizeStock(product.inStock));
+
+    setSavingProductId(product.id);
+    setStockDrafts(prev => ({
+      ...prev,
+      [product.id]: String(nextStock),
+    }));
+
+    const { error } = await supabase
+      .from('products')
+      .update({ in_stock: nextStock })
+      .eq('id', product.id);
+
+    if (error) {
+      console.error('Error updating stock:', error);
+      alert('স্টক আপডেট করতে সমস্যা হয়েছে!');
+      setStockDrafts(prev => ({
+        ...prev,
+        [product.id]: previousStock,
+      }));
+      setSavingProductId(null);
+      return;
+    }
+
+    const updatedProducts = products.map(item => (
+      item.id === product.id
+        ? { ...item, inStock: nextStock }
+        : item
+    ));
+
+    dispatch({
+      type: 'SET_INITIAL_DATA',
+      payload: {
+        products: updatedProducts,
+        categories,
+      }
+    });
+
+    setSavingProductId(null);
+  };
+
+  const handleStockAdjust = (product, delta) => {
+    const currentStock = getCurrentStock(product);
+    persistStockChange(product, currentStock + delta);
+  };
+
+  const handleStockInputBlur = (product, value) => {
+    persistStockChange(product, value);
+  };
 
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -110,9 +189,46 @@ export default function InventoryPanel() {
                 <td>{product.categoryId}</td>
                 <td>
                   <div className="stock-counter">
-                    <button className="stock-btn minus"><FaMinus /></button>
-                    <span className="stock-val">{product.inStock}</span>
-                    <button className="stock-btn plus"><FaPlus /></button>
+                    <button
+                      type="button"
+                      className="stock-btn minus"
+                      onClick={() => handleStockAdjust(product, -1)}
+                      disabled={savingProductId === product.id}
+                      aria-label="স্টক কমান"
+                    >
+                      <FaMinus />
+                    </button>
+                    <input
+                      type="number"
+                      className="stock-input"
+                      min="0"
+                      step="1"
+                      value={stockDrafts[product.id] ?? String(normalizeStock(product.inStock))}
+                      onChange={(event) => {
+                        const nextValue = event.target.value;
+                        setStockDrafts(prev => ({
+                          ...prev,
+                          [product.id]: nextValue,
+                        }));
+                      }}
+                      onBlur={(event) => handleStockInputBlur(product, event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') {
+                          event.currentTarget.blur();
+                        }
+                      }}
+                      disabled={savingProductId === product.id}
+                      aria-label="স্টক পরিমাণ"
+                    />
+                    <button
+                      type="button"
+                      className="stock-btn plus"
+                      onClick={() => handleStockAdjust(product, 1)}
+                      disabled={savingProductId === product.id}
+                      aria-label="স্টক বাড়ান"
+                    >
+                      <FaPlus />
+                    </button>
                   </div>
                 </td>
                 <td>
@@ -171,7 +287,8 @@ export default function InventoryPanel() {
         .stock-counter { display: flex; align-items: center; gap: 12px; }
         .stock-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #ddd; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #7f8c8d; transition: 0.2s; }
         .stock-btn:hover { background: #f8f9fa; border-color: #7C4B2A; color: #7C4B2A; }
-        .stock-val { font-weight: 800; min-width: 20px; text-align: center; }
+        .stock-input { width: 72px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; text-align: center; font-weight: 800; font-size: 14px; }
+        .stock-input:focus { outline: none; border-color: #7C4B2A; box-shadow: 0 0 0 3px rgba(124, 75, 42, 0.12); }
 
         .stock-tag { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .stock-tag.ok { background: #e8f5e9; color: #2e7d32; display: flex; align-items: center; gap: 5px; }

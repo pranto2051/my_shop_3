@@ -34,7 +34,7 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
       material: formData.get('material'),
       dimensions: formData.get('dimensions'),
       color: formData.get('color'),
-      in_stock: formData.get('inStock') === 'on',
+      in_stock: Math.max(0, parseInt(formData.get('inStock'), 10) || 0),
       is_featured: formData.get('isFeatured') === 'on',
       is_top_selling: formData.get('isTopSelling') === 'on',
       rating: editingProduct ? editingProduct.rating : 4.0,
@@ -203,8 +203,8 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
                     </span>
                   </td>
                   <td>
-                    <span className={`${styles.badge} ${product.inStock ? styles.stockIn : styles.stockOut}`}>
-                      {product.inStock ? 'স্টকে আছে' : 'স্টক শেষ'}
+                    <span className={`${styles.badge} ${product.inStock > 0 ? styles.stockIn : styles.stockOut}`}>
+                      {product.inStock > 0 ? 'স্টকে আছে' : 'স্টক শেষ'}
                     </span>
                   </td>
                   <td>
@@ -371,8 +371,8 @@ export default function ProductsPanel({ products, setProducts, categoriesData })
                   <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                     <div className={styles.checkboxGroup}>
                       <label className={styles.checkboxItem}>
-                        <input type="checkbox" name="inStock" defaultChecked={editingProduct ? editingProduct.inStock : true} />
-                        স্টকে আছে
+                        স্টক পরিমাণ
+                        <input type="number" name="inStock" min="0" step="1" defaultValue={editingProduct?.inStock ?? 0} required />
                       </label>
                       <label className={styles.checkboxItem}>
                         <input type="checkbox" name="isFeatured" defaultChecked={editingProduct ? editingProduct.isFeatured : false} />

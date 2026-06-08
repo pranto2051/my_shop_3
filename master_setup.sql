@@ -333,6 +333,22 @@ VALUES ('ঈদ স্পেশাল অফার!', 'সকল ফার্ন
 -- 6. SECURITY: DISABLE RLS
 -- ========================================================
 
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_name = 'products'
+      AND column_name = 'in_stock'
+      AND data_type = 'boolean'
+  ) THEN
+    ALTER TABLE products ALTER COLUMN in_stock DROP DEFAULT;
+    ALTER TABLE products
+      ALTER COLUMN in_stock TYPE INTEGER USING CASE WHEN in_stock THEN 1 ELSE 0 END;
+    ALTER TABLE products ALTER COLUMN in_stock SET DEFAULT 0;
+  END IF;
+END $$;
+
 ALTER TABLE shop_info DISABLE ROW LEVEL SECURITY;
 ALTER TABLE categories DISABLE ROW LEVEL SECURITY;
 ALTER TABLE products DISABLE ROW LEVEL SECURITY;
@@ -848,3 +864,9 @@ LEFT JOIN page_blocks     pb ON pb.section_id = ps.id
 LEFT JOIN page_highlights ph ON ph.page_slug  = pc.slug
 GROUP BY pc.slug, pc.title_bn
 ORDER BY pc.slug;
+
+
+
+
+
+
