@@ -50,13 +50,13 @@ export default function ShowReview({ reviews = [], orders = [] }) {
                   <div className={styles.reviewerName}>{rev.customer_name || 'অতিথি'}</div>
                   <div className={styles.address}>{getAddressFor(rev)}</div>
                 </div>
-                <div className={styles.rating} aria-label={`Rating ${rev.rating} out of 5`}>
+                
+              </div>
+              <div className={styles.rating} aria-label={`Rating ${rev.rating} out of 5`}>
                   <span className={styles.stars}>
                     {'★'.repeat(rev.rating || 0)}{'☆'.repeat(5 - (rev.rating || 0))}
                   </span>
                 </div>
-              </div>
-
               <div className={styles.comment}>{rev.review_text || ''}</div>
             </article>
           ))}
