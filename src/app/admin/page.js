@@ -159,19 +159,54 @@ export default function AdminPage() {
 
   // Login logic
   const handleLogin = async () => {
-    // Check against Supabase users table
-    const { data: users, error } = await supabase
-      .from('users')
-      .select('*')
-      .or(`email.eq.${email},mobile.eq.${email}`)
-      .eq('password', password);
+    try {
+      // 1. Look up the user's email if they entered a mobile number
+      const { data: users, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .or(`email.eq.${email},mobile.eq.${email}`)
+        .limit(1);
 
-    if (!error && users && users.length > 0) {
+      if (userError || !users || users.length === 0) {
+        setLoginError(true);
+        return;
+      }
+
+      const userEmail = users[0].email;
+      const userInfo = users[0];
+
+      // 2. Authenticate with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: userEmail,
+        password: password,
+      });
+
+      if (authError || !authData.user) {
+        setLoginError(true);
+        return;
+      }
+
+      // 3. Verify they are an admin
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', authData.user.id)
+        .eq('role', 'admin')
+        .single();
+
+      if (roleError || !roleData) {
+        setLoginError(true);
+        await supabase.auth.signOut(); // Not an admin
+        return;
+      }
+
+      // 4. Success! Login the user
       setIsLoggedIn(true);
       setLoginError(false);
       localStorage.setItem('adminLoggedIn', 'true');
-      localStorage.setItem('adminInfo', JSON.stringify(users[0]));
-    } else {
+      localStorage.setItem('adminInfo', JSON.stringify(userInfo));
+    } catch (error) {
+      console.error('Login error:', error);
       setLoginError(true);
     }
   };

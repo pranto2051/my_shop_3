@@ -1,7 +1,0 @@
-ALTER TABLE products
-  ALTER COLUMN in_stock DROP DEFAULT,
-  ALTER COLUMN in_stock TYPE INTEGER USING CASE WHEN in_stock THEN 1 ELSE 0 END,
-  ALTER COLUMN in_stock SET DEFAULT 0;
-
-UPDATE products
-SET in_stock = GREATEST(COALESCE(in_stock, 0), 0);
