@@ -309,7 +309,7 @@ h4 { font-size: clamp(0.95rem, 1.8vw, 1.15rem); font-weight: 600; }
 .has-dropdown:hover .dropdown-menu {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
 .has-dropdown:hover .nav-link i {
@@ -319,20 +319,39 @@ h4 { font-size: clamp(0.95rem, 1.8vw, 1.15rem); font-weight: 600; }
 .dropdown-menu {
   position: absolute;
   top: calc(100% + 8px);
-  left: -50%;
+  left: 50%;
   transform: translateX(-50%) translateY(-8px);
   background: white;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: 0 8px 30px var(--shadow-md);
-  min-width: 240px;
-  padding: 0.5rem;
+  box-shadow: 0 12px 40px var(--shadow-md);
+  width: 550px;
+  max-width: 90vw;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding: 1rem;
   opacity: 0;
   visibility: hidden;
   transition: var(--transition);
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.25rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+/* Custom scrollbar for dropdown-menu */
+.dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+.dropdown-menu::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+.dropdown-menu::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 8px;
+}
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }
 
 .dropdown-item {

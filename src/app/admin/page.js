@@ -168,6 +168,7 @@ export default function AdminPage() {
         .limit(1);
 
       if (userError || !users || users.length === 0) {
+        console.error('Login Step 1 Failed (user search):', userError || 'User not found');
         setLoginError(true);
         return;
       }
@@ -182,21 +183,23 @@ export default function AdminPage() {
       });
 
       if (authError || !authData.user) {
+        console.error('Login Step 2 Failed (Auth):', authError);
         setLoginError(true);
         return;
       }
 
-      // 3. Verify they are an admin
+      // 3. Verify their role allows admin panel access
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', authData.user.id)
-        .eq('role', 'admin')
+        .in('role', ['admin', 'employee', 'manager', 'staff'])
         .single();
 
       if (roleError || !roleData) {
+        console.error('Login Step 3 Failed (Role verify):', roleError || 'No role found');
         setLoginError(true);
-        await supabase.auth.signOut(); // Not an admin
+        await supabase.auth.signOut(); // Not authorized
         return;
       }
 
