@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAdmin } from '@/app/context/AdminContext';
 import ProductModal from '@/components/ProductModal';
@@ -10,6 +10,7 @@ import ProductCard from '@/components/ProductCard';
 function SearchResults() {
   const { state } = useAdmin();
   const { products: productsData, categories, shopInfo: fetchedShopInfo } = state;
+  const router = useRouter();
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
@@ -76,7 +77,28 @@ function SearchResults() {
     }
 
     setResults(filtered);
-  }, [query, categoryId, minPrice, maxPrice, sort]);
+  }, [query, categoryId, minPrice, maxPrice, sort, productsData]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const params = new URLSearchParams();
+    
+    const q = formData.get('q');
+    const catId = formData.get('categoryId');
+    const minP = formData.get('minPrice');
+    const maxP = formData.get('maxPrice');
+    const s = formData.get('sort');
+
+    if (q) params.set('q', q);
+    if (catId) params.set('categoryId', catId);
+    if (minP) params.set('minPrice', minP);
+    if (maxP) params.set('maxPrice', maxP);
+    if (s) params.set('sort', s);
+
+    router.push(`/search?${params.toString()}`);
+    setIsSidebarOpen(false);
+  };
 
   const openProductDetail = (product) => {
     setSelectedProduct(product);
@@ -110,7 +132,7 @@ function SearchResults() {
             </div>
             
             <div className="filter-group">
-              <form action="/search" method="GET">
+              <form onSubmit={handleSubmit}>
                 <div className="search-field" style={{ marginBottom: '1rem' }}>
                   <input 
                     type="text" 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAdmin } from '@/app/context/AdminContext';
 import AnnouncementTicker from './AnnouncementTicker';
 
@@ -13,8 +13,19 @@ export default function Header({ storeInfo, categories }) {
   const [isMobileCatOpen, setIsMobileCatOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const { state } = useAdmin();
   const showAdminHeader = state?.settings?.showAdminHeader;
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const q = formData.get('q');
+    if (q) {
+      router.push(`/search?q=${encodeURIComponent(q)}`);
+      setIsSearchOpen(false);
+    }
+  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -189,7 +200,7 @@ export default function Header({ storeInfo, categories }) {
           <button className="search-close" onClick={() => setIsSearchOpen(false)} aria-label="বন্ধ করুন">
             <i className="fas fa-times"></i>
           </button>
-          <form action="/search" method="GET" className="search-form" suppressHydrationWarning>
+          <form onSubmit={handleSearchSubmit} className="search-form" suppressHydrationWarning>
             <input type="text" name="q" placeholder="কি খুঁজছেন? (যেমন: চেয়ার, বেড...)" required autoFocus={isSearchOpen} />
             <button type="submit" className="search-btn">
               <i className="fas fa-search"></i> খুঁজুন

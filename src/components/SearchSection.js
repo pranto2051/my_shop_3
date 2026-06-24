@@ -1,9 +1,35 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+
 export default function SearchSection({ categories }) {
+  const router = useRouter();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const params = new URLSearchParams();
+    
+    const q = formData.get('q');
+    const categoryId = formData.get('categoryId');
+    const minPrice = formData.get('minPrice');
+    const maxPrice = formData.get('maxPrice');
+    const sort = formData.get('sort');
+
+    if (q) params.set('q', q);
+    if (categoryId) params.set('categoryId', categoryId);
+    if (minPrice) params.set('minPrice', minPrice);
+    if (maxPrice) params.set('maxPrice', maxPrice);
+    if (sort) params.set('sort', sort);
+
+    router.push(`/search?${params.toString()}`);
+  };
+
   return (
     <section className="search-section">
       <div className="container">
         <h2 className="search-section-title">আপনার পছন্দের পণ্য খুঁজুন</h2>
-        <form action="/search" method="GET" className="search-bar-form">
+        <form onSubmit={handleSubmit} className="search-bar-form">
           <div className="search-fields">
             <div className="search-field">
               <i className="fas fa-search field-icon"></i>

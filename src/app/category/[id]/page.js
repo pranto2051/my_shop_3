@@ -82,7 +82,7 @@ export default function CategoryPage({ params: paramsPromise }) {
     }
 
     setFilteredProducts(result);
-  }, [categoryId, minPrice, maxPrice, sortBy]);
+  }, [categoryId, minPrice, maxPrice, sortBy, productsData]);
 
   // Handle background scroll lock for sidebar
   useEffect(() => {
