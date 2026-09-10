@@ -118,7 +118,7 @@ export default function DashboardLayout({ children, role }: { children?: React.R
 
   const [activeTab, setActiveTab] = useState('ড্যাশবোর্ড');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['পণ্য ব্যবস্থাপনা', 'অর্ডার ব্যবস্থাপনা', 'টিম ব্যবস্থাপনা']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['পণ্য ব্যবস্থাপনা', 'অর্ডার ব্যবস্থাপনা', 'অ্যাডমিন ব্যবস্থাপনা']);
   
   // Modal states
   const [showCreateOrder, setShowCreateOrder] = useState(false);
@@ -183,11 +183,11 @@ export default function DashboardLayout({ children, role }: { children?: React.R
       ]
     },
     {
-      title: 'টিম ব্যবস্থাপনা',
+      title: 'অ্যাডমিন ব্যবস্থাপনা',
       items: [
         { 
           icon: ShieldCheck, 
-          label: 'টিম ব্যবস্থাপনা', 
+          label: 'অ্যাডমিন ব্যবস্থাপনা', 
           roles: ['admin'],
           subItems: [
             { label: 'অ্যাডমিন ও স্টাফ ব্যবস্থাপনা', roles: ['admin'] },
@@ -427,7 +427,7 @@ export default function DashboardLayout({ children, role }: { children?: React.R
                 <p className="text-sm font-semibold">Pranto Islam</p>
                 <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">{role === 'admin' ? 'অ্যাডমিন' : 'স্টাফ'}</p>
               </div>
-              <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-slate-800 p-0.5 bg-linear-to-tr from-green-500 to-blue-500">
+              <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-slate-800 p-0.5 bg-gradient-to-tr from-green-500 to-blue-500">
                 <img 
                   src="https://api.dicebear.com/7.x/avataaars/svg?seed=Pranto" 
                   alt="Avatar" 
