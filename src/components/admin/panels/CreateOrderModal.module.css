@@ -454,6 +454,7 @@
 
 .qtyInput[type=number] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .qtySelector button {
@@ -537,6 +538,7 @@
 
 .priceInput[type=number] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 .sienna {
