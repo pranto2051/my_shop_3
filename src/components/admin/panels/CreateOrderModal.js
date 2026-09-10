@@ -24,6 +24,8 @@ export default function CreateOrderModal({ onClose }) {
     deliveryAddress: '',
     orderNote: '',
     quantity: 1,
+    unitPrice: 0,
+    totalPrice: 0,
     advancePaid: 0,
     estimatedDelivery: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   });
@@ -61,7 +63,49 @@ export default function CreateOrderModal({ onClose }) {
     setProductSearch('');
     setShowProductDropdown(false);
     setErrors({ ...errors, product: null });
+    const currentQty = parseInt(formData.quantity, 10) || 1;
+    const price = product.price || 0;
+    setFormData(prev => ({
+      ...prev,
+      unitPrice: price,
+      totalPrice: price * currentQty
+    }));
   };
+
+  const updateQuantity = (newQtyVal) => {
+    setFormData(prev => {
+      let qtyVal = newQtyVal;
+      let numericQty = 0;
+      if (qtyVal !== '') {
+        numericQty = Math.max(1, parseInt(qtyVal, 10) || 1);
+        qtyVal = numericQty;
+      }
+      
+      const effectiveUnitPrice = selectedProduct ? (selectedProduct.price || 0) : (prev.unitPrice || 1);
+      const computedTotal = qtyVal === '' ? 0 : effectiveUnitPrice * numericQty;
+
+      return {
+        ...prev,
+        quantity: qtyVal,
+        unitPrice: effectiveUnitPrice,
+        totalPrice: computedTotal
+      };
+    });
+    setErrors(prev => ({ ...prev, quantity: null }));
+  };
+
+  const handleTotalPriceChange = (val) => {
+    if (val === '') {
+      setFormData(prev => ({ ...prev, totalPrice: '' }));
+    } else {
+      const parsed = parseInt(val, 10);
+      setFormData(prev => ({ ...prev, totalPrice: isNaN(parsed) ? 0 : Math.max(0, parsed) }));
+    }
+  };
+
+  const finalTotalPrice = formData.totalPrice === '' ? 0 : (parseInt(formData.totalPrice, 10) || 0);
+  const advance = parseInt(formData.advancePaid, 10) || 0;
+  const remainingAmount = finalTotalPrice - advance;
 
   const validateForm = () => {
     const newErrors = {};
@@ -73,6 +117,11 @@ export default function CreateOrderModal({ onClose }) {
     }
     if (!selectedProduct) newErrors.product = 'একটি পণ্য নির্বাচন করুন';
     
+    const parsedQty = parseInt(formData.quantity, 10);
+    if (formData.quantity === '' || isNaN(parsedQty) || parsedQty < 1) {
+      newErrors.quantity = 'সঠিক পরিমাণ দিন';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -82,8 +131,8 @@ export default function CreateOrderModal({ onClose }) {
     if (!validateForm()) return;
     setIsSaving(true);
 
-    const totalPrice = selectedProduct.price * formData.quantity;
-    const remainingAmount = totalPrice - formData.advancePaid;
+    const qty = parseInt(formData.quantity, 10) || 1;
+    const totalPrice = finalTotalPrice;
 
     const createdOrderId = `ORD-${String(state.orders.length + 1).padStart(3, '0')}-${Date.now().toString().slice(-4)}`;
     
@@ -96,9 +145,9 @@ export default function CreateOrderModal({ onClose }) {
       product_id: selectedProduct.id,
       product_name: selectedProduct.name,
       product_image: selectedProduct.image,
-      quantity: formData.quantity,
+      quantity: qty,
       total_price: totalPrice,
-      advance_paid: formData.advancePaid,
+      advance_paid: advance,
       remaining_amount: remainingAmount,
       delivery_address: formData.deliveryAddress,
       estimated_delivery: formData.estimatedDelivery,
@@ -141,7 +190,7 @@ export default function CreateOrderModal({ onClose }) {
         productId: selectedProduct.id,
         productName: selectedProduct.name,
         productImage: selectedProduct.image,
-        quantity: formData.quantity,
+        quantity: qty,
         totalPrice: totalPrice,
         advancePaid: formData.advancePaid,
         remainingAmount: remainingAmount,
@@ -203,7 +252,7 @@ export default function CreateOrderModal({ onClose }) {
               </div>
               <div className={styles.summaryRow}>
                 <span>মোট মূল্য:</span>
-                <span className={styles.summaryValue}>৳{(selectedProduct.price * formData.quantity).toLocaleString()}</span>
+                <span className={styles.summaryValue}>৳{(selectedProduct.price * (parseInt(formData.quantity, 10) || 1)).toLocaleString()}</span>
               </div>
             </div>
 
@@ -289,7 +338,10 @@ export default function CreateOrderModal({ onClose }) {
                         <span className={styles.pPrice}>৳{selectedProduct.price.toLocaleString('bn-BD')}</span>
                       </div>
                     </div>
-                    <button className={styles.clearProduct} onClick={() => setSelectedProduct(null)}>
+                    <button className={styles.clearProduct} onClick={() => {
+                      setSelectedProduct(null);
+                      setFormData(prev => ({ ...prev, unitPrice: 0, totalPrice: 0 }));
+                    }}>
                       <FaXmark />
                     </button>
                   </div>
@@ -324,20 +376,51 @@ export default function CreateOrderModal({ onClose }) {
               <div className={styles.formGroup}>
                 <label className={styles.label}>পরিমাণ *</label>
                 <div className={styles.qtySelector}>
-                  <button type="button" onClick={() => setFormData({ ...formData, quantity: Math.max(1, formData.quantity - 1) })}>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      const currentQty = parseInt(formData.quantity, 10) || 1;
+                      updateQuantity(Math.max(1, currentQty - 1));
+                    }}
+                  >
                     <FaMinus />
                   </button>
-                  <span className={styles.fira}>{formData.quantity}</span>
-                  <button type="button" onClick={() => setFormData({ ...formData, quantity: formData.quantity + 1 })}>
+                  <input 
+                    type="number"
+                    min="1"
+                    className={styles.qtyInput}
+                    value={formData.quantity}
+                    onChange={(e) => updateQuantity(e.target.value)}
+                    onBlur={() => {
+                      if (!formData.quantity || parseInt(formData.quantity, 10) < 1) {
+                        updateQuantity(1);
+                      }
+                    }}
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      const currentQty = parseInt(formData.quantity, 10) || 0;
+                      updateQuantity(currentQty + 1);
+                    }}
+                  >
                     <FaPlus />
                   </button>
                 </div>
+                {errors.quantity && <span className={styles.errorText}>{errors.quantity}</span>}
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.label}>মোট মূল্য</label>
-                <div className={styles.priceDisplay}>
-                  ৳{((selectedProduct?.price || 0) * formData.quantity).toLocaleString('bn-BD')}
+                <label className={styles.label}>মোট মূল্য (৳)</label>
+                <div className={styles.priceInputWrapper}>
+                  <span className={styles.priceCurrency}>৳</span>
+                  <input 
+                    type="number"
+                    min="0"
+                    className={styles.priceInput}
+                    value={formData.totalPrice}
+                    onChange={(e) => handleTotalPriceChange(e.target.value)}
+                  />
                 </div>
               </div>
             </div>
@@ -347,16 +430,17 @@ export default function CreateOrderModal({ onClose }) {
                 <label className={styles.label}>অগ্রিম প্রদান (৳)</label>
                 <input 
                   type="number" 
+                  min="0"
                   className={styles.input}
                   value={formData.advancePaid}
-                  onChange={(e) => setFormData({ ...formData, advancePaid: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => setFormData({ ...formData, advancePaid: parseInt(e.target.value, 10) || 0 })}
                 />
               </div>
 
               <div className={styles.formGroup}>
                 <label className={styles.label}>বাকি টাকা</label>
-                <div className={`${styles.priceDisplay} ${styles.sienna}`}>
-                  ৳{(((selectedProduct?.price || 0) * formData.quantity) - formData.advancePaid).toLocaleString('bn-BD')}
+                <div className={`${styles.priceDisplay} ${remainingAmount > 0 ? styles.sienna : ''}`}>
+                  ৳{remainingAmount.toLocaleString('bn-BD')}
                 </div>
               </div>
             </div>

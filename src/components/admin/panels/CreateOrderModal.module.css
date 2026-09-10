@@ -434,6 +434,28 @@
   box-shadow: 0 0 0 4px rgba(124, 75, 42, 0.12);
 }
 
+.qtyInput {
+  width: 60px;
+  text-align: center;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Fira Code', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+}
+
+.qtyInput::-webkit-inner-spin-button,
+.qtyInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.qtyInput[type=number] {
+  -moz-appearance: textfield;
+}
+
 .qtySelector button {
   background: linear-gradient(135deg, #f8f8f8, #fff);
   border: 2px solid #ddd;
@@ -469,6 +491,52 @@
   background: linear-gradient(135deg, #fdf6e8, #fff);
   border-radius: 14px;
   border: 2px solid #eaeaea;
+}
+
+.priceInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.priceCurrency {
+  position: absolute;
+  left: 16px;
+  font-family: 'Hind Siliguri', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #7C4B2A;
+  pointer-events: none;
+}
+
+.priceInput {
+  width: 100%;
+  height: 52px;
+  padding: 0 18px 0 38px;
+  background: linear-gradient(135deg, #fdf6e8, #fff);
+  border-radius: 14px;
+  border: 2px solid #eaeaea;
+  font-family: 'Fira Code', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: #7C4B2A;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.priceInput:focus {
+  border-color: #7C4B2A;
+  box-shadow: 0 0 0 4px rgba(124, 75, 42, 0.12);
+}
+
+.priceInput::-webkit-inner-spin-button,
+.priceInput::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.priceInput[type=number] {
+  -moz-appearance: textfield;
 }
 
 .sienna {
