@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import styles from './ProductsPanel.module.css'; // Reusing some base styles if possible, but let's define specific ones
 import { 
   FaUser, 
   FaPhone, 
