@@ -682,6 +682,16 @@ export const getOrdersByPhone = (phone, orders) => {
 export function AdminProvider({ children }) {
   const [state, dispatch] = useReducer(adminReducer, initialState);
 
+  const refreshData = async () => {
+    try {
+      const data = await fetchAllData();
+      dispatch({ type: 'SET_ALL_DATA', payload: data });
+      return data;
+    } catch (err) {
+      console.error('Error refreshing admin data:', err);
+    }
+  };
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedSettings = localStorage.getItem('admin_settings');
@@ -691,9 +701,7 @@ export function AdminProvider({ children }) {
     }
     
     // Fetch data from Supabase
-    fetchAllData().then(data => {
-      dispatch({ type: 'SET_ALL_DATA', payload: data });
-    });
+    refreshData();
   }, []);
 
   const showToast = (message, type = 'success') => {
@@ -704,7 +712,7 @@ export function AdminProvider({ children }) {
   };
 
   return (
-    <AdminContext.Provider value={{ state, dispatch, showToast }}>
+    <AdminContext.Provider value={{ state, dispatch, showToast, refreshData }}>
       {children}
     </AdminContext.Provider>
   );
