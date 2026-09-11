@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAdmin } from '@/app/context/AdminContext';
+import './footer.css';
 
 export default function Footer({ storeInfo, categories }) {
   const pathname = usePathname();
