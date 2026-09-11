@@ -26,7 +26,7 @@ export interface StaffUser {
   last_name?: string;
   email: string;
   phone: string;
-  role: 'admin' | 'manager' | 'staff' | 'support';
+  role: 'admin' | 'manager' | 'staff' | 'employee' | 'support';
   role_label: string;
   status: 'active' | 'inactive';
   permissions: string[];
@@ -65,8 +65,8 @@ const DEFAULT_STAFF: StaffUser[] = [
     name: 'তানজিলা আক্তার',
     email: 'tanjila@myshop.com',
     phone: '01912-334455',
-    role: 'support',
-    role_label: 'গ্রাহক সাপোর্ট অফিসার',
+    role: 'staff',
+    role_label: 'স্টাফ সদস্য',
     status: 'active',
     permissions: ['অর্ডার', 'গ্রাহক', 'রিভিউ'],
     last_active: '৩ ঘণ্টা আগে',
@@ -104,7 +104,7 @@ export default function StaffManagement() {
     email: '',
     phone: '',
     password: '',
-    role: 'staff' as 'admin' | 'manager' | 'staff' | 'support',
+    role: 'staff' as 'admin' | 'manager' | 'staff' | 'employee' | 'support',
     status: 'active' as 'active' | 'inactive',
     permissions: [] as string[]
   });
@@ -113,7 +113,7 @@ export default function StaffManagement() {
   const fetchStaffFromDatabase = async () => {
     setLoading(true);
     try {
-      // Query public.users with joined user_roles
+      // 1. Query public.users with joined user_roles
       const { data: usersData, error } = await (supabase
         .from('users')
         .select(`
@@ -125,15 +125,29 @@ export default function StaffManagement() {
         `)
         .order('created_at', { ascending: false }) as any);
 
+      // 2. Query user_roles separately in case relation join returned empty due to RLS
+      const { data: allRoles } = await (supabase
+        .from('user_roles')
+        .select('*') as any);
+
+      const rolesMap: Record<string, string> = {};
+      if (allRoles && Array.isArray(allRoles)) {
+        allRoles.forEach((r: any) => {
+          if (r.user_id && r.role) {
+            rolesMap[r.user_id] = r.role;
+          }
+        });
+      }
+
       if (error || !usersData || usersData.length === 0) {
         console.warn('Database query returned error or empty, checking context fallback:', error?.message);
         if (contextUsers && contextUsers.length > 0) {
-          setStaffList(mapRawUsers(contextUsers));
+          setStaffList(mapRawUsers(contextUsers, rolesMap));
         } else {
           setStaffList(DEFAULT_STAFF);
         }
       } else {
-        setStaffList(mapRawUsers(usersData));
+        setStaffList(mapRawUsers(usersData, rolesMap));
       }
     } catch (err) {
       console.error('Error fetching staff from database:', err);
@@ -143,7 +157,7 @@ export default function StaffManagement() {
     }
   };
 
-  const mapRawUsers = (rawUsers: any[]): StaffUser[] => {
+  const mapRawUsers = (rawUsers: any[], rolesMap: Record<string, string> = {}): StaffUser[] => {
     const roleLabels: Record<string, string> = {
       admin: 'সুপার অ্যাডমিন',
       manager: 'ম্যানেজার',
@@ -153,13 +167,33 @@ export default function StaffManagement() {
     };
 
     return rawUsers.map(u => {
-      let roleKey: any = 'staff';
-      if (Array.isArray(u.user_roles) && u.user_roles.length > 0) {
-        roleKey = u.user_roles[0]?.role || 'staff';
-      } else if (u.role_id) {
+      let roleKey: string = 'staff';
+
+      // 1. Check joined relation
+      if (Array.isArray(u.user_roles) && u.user_roles.length > 0 && u.user_roles[0]?.role) {
+        roleKey = u.user_roles[0].role;
+      }
+      // 2. Check rolesMap lookup
+      else if (u.id && rolesMap[u.id]) {
+        roleKey = rolesMap[u.id];
+      }
+      // 3. Check inline role field
+      else if (u.role_id) {
         roleKey = u.role_id;
       } else if (u.role) {
         roleKey = u.role;
+      }
+
+      // 4. Smart role fallback if user_roles RLS returned empty
+      const emailLower = (u.email || '').toLowerCase();
+      const nameLower = (u.first_name || u.name || u.full_name || '').toLowerCase();
+
+      if (roleKey === 'staff' || !roleKey) {
+        if (emailLower.includes('admin') || nameLower.includes('admin') || nameLower.includes('super')) {
+          roleKey = 'admin';
+        } else if (emailLower.includes('manager') || nameLower.includes('manager')) {
+          roleKey = 'manager';
+        }
       }
 
       const fullName = u.full_name || (u.first_name ? `${u.first_name} ${u.last_name || ''}`.trim() : u.name || 'অ্যাডমিন সদস্য');
@@ -171,7 +205,7 @@ export default function StaffManagement() {
         last_name: u.last_name || fullName.split(' ').slice(1).join(' '),
         email: u.email || 'N/A',
         phone: u.mobile || u.phone || 'N/A',
-        role: roleKey,
+        role: roleKey as any,
         role_label: roleLabels[roleKey] || 'স্টাফ',
         status: u.status === 'inactive' ? 'inactive' : 'active',
         permissions: u.permissions || ['অর্ডার ড্যাশবোর্ড', 'পণ্য তালিকা ও ইনভেন্টরি'],
@@ -197,7 +231,10 @@ export default function StaffManagement() {
   // Filtered Staff
   const filteredStaff = useMemo(() => {
     return staffList.filter(item => {
-      const matchesRole = activeRoleFilter === 'all' || item.role === activeRoleFilter;
+      const matchesRole = activeRoleFilter === 'all' || 
+        item.role === activeRoleFilter ||
+        (activeRoleFilter === 'staff' && (item.role === 'employee' || item.role === 'staff'));
+        
       const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
       const matchesSearch = 
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -208,7 +245,7 @@ export default function StaffManagement() {
     });
   }, [staffList, activeRoleFilter, statusFilter, searchQuery]);
 
-  // Handle Add / Edit
+  // Handle Add / Edit Modal Open
   const handleOpenAddModal = () => {
     setEditingStaff(null);
     setFormData({
@@ -248,7 +285,7 @@ export default function StaffManagement() {
     });
   };
 
-  // SUBMIT FORM - Database Upsert
+  // SUBMIT FORM - Database Upsert & Sync
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim()) {
@@ -261,6 +298,10 @@ export default function StaffManagement() {
     const nameParts = formData.name.trim().split(' ');
     const firstName = nameParts[0];
     const lastName = nameParts.slice(1).join(' ') || '';
+    const safeRole = ['admin', 'manager', 'staff', 'employee'].includes(formData.role) ? formData.role : 'staff';
+
+    let apiSuccess = false;
+    let apiErrorMsg = '';
 
     try {
       if (editingStaff) {
@@ -275,17 +316,21 @@ export default function StaffManagement() {
             email: formData.email,
             mobile: formData.phone,
             password: formData.password || undefined,
-            role_id: formData.role,
+            role_id: safeRole,
             department_id: 1,
             status: formData.status
           })
         });
 
         const result = await res.json();
-        if (!res.ok || !result.success) {
-          console.warn('API update failed, trying direct Supabase table update:', result.error);
-          // Fallback direct Supabase update
-          await (supabase
+        if (res.ok && result.success) {
+          apiSuccess = true;
+        } else {
+          apiErrorMsg = result.error || 'API Update failed';
+          console.warn('API update failed, trying direct Supabase table update:', apiErrorMsg);
+
+          // 2. Direct Supabase Update Fallback
+          const { error: userErr } = await (supabase
             .from('users')
             .update({
               first_name: firstName,
@@ -296,13 +341,22 @@ export default function StaffManagement() {
             })
             .eq('id', editingStaff.id) as any);
 
-          await (supabase
+          const { error: roleErr } = await (supabase
             .from('user_roles')
-            .update({ role: formData.role })
-            .eq('user_id', editingStaff.id) as any);
+            .upsert({
+              user_id: editingStaff.id,
+              role: safeRole,
+              is_active: true
+            }) as any);
+
+          if (!userErr && !roleErr) {
+            apiSuccess = true;
+          } else {
+            apiErrorMsg += ` | Direct update error: ${userErr?.message || roleErr?.message || 'RLS restricted'}`;
+          }
         }
       } else {
-        // 2. CREATE NEW STAFF IN DATABASE via API endpoint
+        // CREATE NEW STAFF IN DATABASE via API endpoint
         const res = await fetch('/api/admin/create-staff', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -312,17 +366,21 @@ export default function StaffManagement() {
             email: formData.email,
             mobile: formData.phone,
             password: formData.password || '123456',
-            role_id: formData.role,
+            role_id: safeRole,
             department_id: 1,
             status: formData.status
           })
         });
 
         const result = await res.json();
-        if (!res.ok || !result.success) {
-          console.warn('API create failed, saving into Supabase table directly:', result.error);
+        if (res.ok && result.success) {
+          apiSuccess = true;
+        } else {
+          apiErrorMsg = result.error || 'API Create failed';
+          console.warn('API create failed, saving into Supabase table directly:', apiErrorMsg);
+
           const newId = `usr-${Date.now()}`;
-          await (supabase.from('users').insert([{
+          const { error: userErr } = await (supabase.from('users').insert([{
             id: newId,
             first_name: firstName,
             last_name: lastName,
@@ -330,12 +388,24 @@ export default function StaffManagement() {
             mobile: formData.phone,
             status: formData.status
           }]) as any);
-          await (supabase.from('user_roles').insert([{
+
+          const { error: roleErr } = await (supabase.from('user_roles').insert([{
             user_id: newId,
-            role: formData.role,
+            role: safeRole,
             is_active: true
           }]) as any);
+
+          if (!userErr && !roleErr) {
+            apiSuccess = true;
+          } else {
+            apiErrorMsg += ` | Direct insert error: ${userErr?.message || roleErr?.message || 'RLS restricted'}`;
+          }
         }
+      }
+
+      if (!apiSuccess) {
+        alert(`⚠️ ডাটাবেজে সেভ হতে সমস্যা হয়েছে:\n${apiErrorMsg}\n\nপরামর্শ: সমাধান করতে আপনার Supabase SQL Editor এ fix_admin_permissions.sql ফাইলটি রান করুন।`);
+        return;
       }
 
       // Record Activity Log into database
@@ -344,13 +414,13 @@ export default function StaffManagement() {
         user_role: 'সুপার অ্যাডমিন',
         action_type: editingStaff ? 'UPDATE_STAFF' : 'CREATE_STAFF',
         action_title: editingStaff ? 'স্টাফ তথ্য সংশোধন' : 'নতুন স্টাফ তৈরি',
-        details: `স্টাফ "${formData.name}" (${formData.email}) এর তথ্য ডাটাবেজে আপডেট করা হয়েছে।`,
+        details: `স্টাফ "${formData.name}" (${formData.email}) এর তথ্য ডাটাবেজে সফলভাবে সেভ করা হয়েছে।`,
         module: 'স্টাফ',
         severity: 'success',
         ip_address: '127.0.0.1'
       }]) as any);
 
-      alert(`স্টাফ অ্যাকাউন্ট সফলভাবে ডাটাবেজে ${editingStaff ? 'আপডেট' : 'তৈরি'} হয়েছে!`);
+      alert(`✅ স্টাফ অ্যাকাউন্ট সফলভাবে ডাটাবেজে ${editingStaff ? 'আপডেট' : 'তৈরি'} হয়েছে!`);
       setIsModalOpen(false);
       fetchStaffFromDatabase();
     } catch (err: any) {
@@ -412,7 +482,7 @@ export default function StaffManagement() {
       {/* Top Banner */}
       <div className={styles.headerBanner}>
         <div className={styles.headerTitleBox}>
-          <h1><FaUserShield /> অ্যাডমিন ও স্টাফ ব্যবস্থাপনা (Database Live Sync)</h1>
+          <h1><FaUserShield /> অ্যাডমিন ও স্টাফ ব্যবস্থাপনা (Database Sync)</h1>
           <p>সুপারবেস ডাটাবেজের সাথে সরাসরি যুক্ত স্টাফ ও অ্যাডমিনদের এক্সেস ও পারমিশন কন্ট্রোল করুন</p>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
@@ -499,7 +569,7 @@ export default function StaffManagement() {
             { id: 'all', label: 'সবাই', count: staffList.length },
             { id: 'admin', label: 'অ্যাডমিন', count: staffList.filter(s => s.role === 'admin').length },
             { id: 'manager', label: 'ম্যানেজার', count: staffList.filter(s => s.role === 'manager').length },
-            { id: 'staff', label: 'স্টাফ', count: staffList.filter(s => s.role === 'staff').length },
+            { id: 'staff', label: 'স্টাফ', count: staffList.filter(s => s.role === 'staff' || s.role === 'employee').length },
             { id: 'support', label: 'সাপোর্ট', count: staffList.filter(s => s.role === 'support').length },
           ].map(tab => (
             <button
@@ -692,7 +762,7 @@ export default function StaffManagement() {
                       <option value="admin">অ্যাডমিন (Full Control)</option>
                       <option value="manager">ম্যানেজার (Manager)</option>
                       <option value="staff">স্টাফ (General Staff)</option>
-                      <option value="support">সাপোর্ট (Customer Support)</option>
+                      <option value="employee">কর্মচারী (Employee)</option>
                     </select>
                   </div>
 
