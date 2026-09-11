@@ -360,14 +360,21 @@ CREATE TRIGGER trg_tasks_updated_at
 -- activity_logs
 -- ------------------------------------------------------------
 CREATE TABLE public.activity_logs (
-  id         SERIAL PRIMARY KEY,
-  user_id    UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-  action     VARCHAR(255) NOT NULL,
-  entity     VARCHAR(100),
-  entity_id  VARCHAR(100),
-  details    JSONB,
-  ip_address VARCHAR(45),
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  id           SERIAL PRIMARY KEY,
+  user_id      UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  user_name    VARCHAR(255) DEFAULT 'অ্যাডমিন',
+  user_role    VARCHAR(255) DEFAULT 'সুপার অ্যাডমিন',
+  action       VARCHAR(255) DEFAULT 'ACTIVITY',
+  action_type  VARCHAR(100) DEFAULT 'SYSTEM_EVENT',
+  action_title VARCHAR(255) DEFAULT 'অ্যাক্টিভিটি সমাধান',
+  entity       VARCHAR(100),
+  entity_id    VARCHAR(100),
+  module       VARCHAR(100) DEFAULT 'সিস্টেম',
+  severity     VARCHAR(50) DEFAULT 'info',
+  details      TEXT,
+  ip_address   VARCHAR(45) DEFAULT '127.0.0.1',
+  device_info  VARCHAR(255) DEFAULT 'Chrome / macOS',
+  created_at   TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ------------------------------------------------------------
@@ -1396,63 +1403,31 @@ INSERT INTO products (id, name, name_en, category_id, price, original_price, ima
 
 
 -- ============================================================
--- STEP 8: ADMIN CREDENTIALS IDEMPOTENT SETUP (FIXED)
+-- STEP 8: DEMO & ADMIN USERS CREATION (IDEMPOTENT & COMPLETE)
 -- ============================================================
--- This block safely creates or updates the admin user 'prantoislamnt51@gmail.com'
--- with a fixed UUID, preventing any unique constraint or foreign key violations.
+-- Consolidates add_demo_users.sql, fix_admin_permissions.sql, & master_setup.sql.
+-- Creates all demo admin and staff accounts safely in auth.users and public.users.
 
 DO $$
 DECLARE
-  target_user_id UUID := 'a53ab6d6-014b-4fb0-b0c4-4a6b7005cc5c';
-  existing_user_id UUID;
+  curr_user_id UUID;
+  all_admin_perms JSONB := '["অর্ডার ড্যাশবোর্ড", "পণ্য তালিকা ও ইনভেন্টরি", "গ্রাহক তথ্য ও বার্তা", "আর্থিক হিসাব ও PnL", "সিস্টেম সেটিংস", "স্টাফ ও অ্যাডমিন কন্ট্রোল", "প্রোমোশনাল পপআপ ও কুপন", "রিভিউ অনুমোদন"]'::jsonb;
+  staff_perms JSONB := '["অর্ডার ড্যাশবোর্ড", "পণ্য তালিকা ও ইনভেন্টরি"]'::jsonb;
 BEGIN
-  -- Check if the user exists by email or by target ID
-  SELECT id INTO existing_user_id FROM auth.users WHERE email = 'prantoislamnt51@gmail.com' OR id = target_user_id LIMIT 1;
 
-  IF existing_user_id IS NOT NULL THEN
-    -- User exists, update password and details
-    UPDATE auth.users 
-    SET 
-      encrypted_password = crypt('pranto1234', gen_salt('bf')),
-      email_confirmed_at = COALESCE(email_confirmed_at, now()),
-      updated_at = now()
-    WHERE id = existing_user_id;
+  -- ----------------------------------------------------
+  -- 1. Main Admin: prantoislamnt51@gmail.com
+  -- ----------------------------------------------------
+  curr_user_id := NULL;
+  SELECT id INTO curr_user_id FROM auth.users WHERE email = 'prantoislamnt51@gmail.com' LIMIT 1;
 
-    -- Ensure identity exists for the existing user ID
-    IF NOT EXISTS (SELECT 1 FROM auth.identities WHERE user_id = existing_user_id) THEN
-      INSERT INTO auth.identities (
-        id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at
-      ) VALUES (
-        gen_random_uuid(), existing_user_id, existing_user_id::text, 
-        format('{"sub":"%s","email":"%s"}', existing_user_id::text, 'prantoislamnt51@gmail.com')::jsonb, 
-        'email', now(), now(), now()
-      );
-    END IF;
-
-    -- Ensure public.users entry exists for the existing user ID
-    IF NOT EXISTS (SELECT 1 FROM public.users WHERE id = existing_user_id) THEN
-      INSERT INTO public.users (id, first_name, last_name, email, mobile, status)
-      VALUES (existing_user_id, 'Admin', 'User', 'prantoislamnt51@gmail.com', '01979728818', 'active');
-    ELSE
-      UPDATE public.users
-      SET first_name = 'Admin', last_name = 'User', mobile = '01979728818', status = 'active'
-      WHERE id = existing_user_id;
-    END IF;
-
-    -- Ensure admin role exists for the existing user ID in public.user_roles
-    IF NOT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = existing_user_id AND role = 'admin') THEN
-      INSERT INTO public.user_roles (user_id, role, is_active)
-      VALUES (existing_user_id, 'admin', true)
-      ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
-    END IF;
-
-  ELSE
-    -- User does not exist, insert brand new user with target_user_id
+  IF curr_user_id IS NULL THEN
+    curr_user_id := 'a53ab6d6-014b-4fb0-b0c4-4a6b7005cc5c'::uuid;
     INSERT INTO auth.users (
       instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
       last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at
     ) VALUES (
-      '00000000-0000-0000-0000-000000000000', target_user_id, 'authenticated', 'authenticated', 
+      '00000000-0000-0000-0000-000000000000', curr_user_id, 'authenticated', 'authenticated', 
       'prantoislamnt51@gmail.com', crypt('pranto1234', gen_salt('bf')), now(), 
       now(), '{"provider":"email","providers":["email"]}', '{"full_name": "Admin User", "phone": "01979728818"}', now(), now()
     );
@@ -1460,30 +1435,283 @@ BEGIN
     INSERT INTO auth.identities (
       id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at
     ) VALUES (
-      gen_random_uuid(), target_user_id, target_user_id::text, 
-      format('{"sub":"%s","email":"%s"}', target_user_id::text, 'prantoislamnt51@gmail.com')::jsonb, 
+      gen_random_uuid(), curr_user_id, curr_user_id::text, 
+      format('{"sub":"%s","email":"%s"}', curr_user_id::text, 'prantoislamnt51@gmail.com')::jsonb, 
       'email', now(), now(), now()
     );
-
-    INSERT INTO public.users (
-      id, first_name, last_name, email, mobile, status
-    ) VALUES (
-      target_user_id, 'Admin', 'User', 'prantoislamnt51@gmail.com', '01979728818', 'active'
-    );
-
-    INSERT INTO public.user_roles (
-      user_id, role, is_active
-    ) VALUES (
-      target_user_id, 'admin', true
-    );
+  ELSE
+    UPDATE auth.users 
+    SET encrypted_password = crypt('pranto1234', gen_salt('bf')), email_confirmed_at = COALESCE(email_confirmed_at, now()), updated_at = now()
+    WHERE id = curr_user_id;
   END IF;
+
+  INSERT INTO public.users (id, first_name, last_name, email, mobile, status, permissions)
+  VALUES (curr_user_id, 'Admin', 'User', 'prantoislamnt51@gmail.com', '01979728818', 'active', all_admin_perms)
+  ON CONFLICT (id) DO UPDATE SET 
+    first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name, 
+    email = EXCLUDED.email, mobile = EXCLUDED.mobile, status = EXCLUDED.status,
+    permissions = all_admin_perms;
+
+  INSERT INTO public.user_roles (user_id, role, is_active)
+  VALUES (curr_user_id, 'admin', true)
+  ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
+
+  -- ----------------------------------------------------
+  -- 2. Super Admin: prappoislam2005@gmail.com
+  -- ----------------------------------------------------
+  curr_user_id := NULL;
+  SELECT id INTO curr_user_id FROM auth.users WHERE email = 'prappoislam2005@gmail.com' LIMIT 1;
+
+  IF curr_user_id IS NULL THEN
+    curr_user_id := gen_random_uuid();
+    INSERT INTO auth.users (
+      instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
+      last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000', curr_user_id, 'authenticated', 'authenticated', 
+      'prappoislam2005@gmail.com', crypt('123456', gen_salt('bf')), now(), 
+      now(), '{"provider":"email","providers":["email"]}', '{"full_name": "Super Admin", "phone": "+880170000000"}', now(), now()
+    );
+
+    INSERT INTO auth.identities (
+      id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+    ) VALUES (
+      gen_random_uuid(), curr_user_id, curr_user_id::text, 
+      format('{"sub":"%s","email":"%s"}', curr_user_id::text, 'prappoislam2005@gmail.com')::jsonb, 
+      'email', now(), now(), now()
+    );
+  ELSE
+    UPDATE auth.users 
+    SET encrypted_password = crypt('123456', gen_salt('bf')), email_confirmed_at = COALESCE(email_confirmed_at, now()), updated_at = now()
+    WHERE id = curr_user_id;
+  END IF;
+
+  INSERT INTO public.users (id, first_name, last_name, email, mobile, status, permissions)
+  VALUES (curr_user_id, 'Super', 'Admin', 'prappoislam2005@gmail.com', '+880170000000', 'active', all_admin_perms)
+  ON CONFLICT (id) DO UPDATE SET 
+    first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name, 
+    email = EXCLUDED.email, mobile = EXCLUDED.mobile, status = EXCLUDED.status;
+
+  INSERT INTO public.user_roles (user_id, role, is_active)
+  VALUES (curr_user_id, 'admin', true)
+  ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
+
+  -- ----------------------------------------------------
+  -- 3. Demo Admin: admin_new@myshop.com
+  -- ----------------------------------------------------
+  curr_user_id := NULL;
+  SELECT id INTO curr_user_id FROM auth.users WHERE email = 'admin_new@myshop.com' LIMIT 1;
+
+  IF curr_user_id IS NULL THEN
+    curr_user_id := gen_random_uuid();
+    INSERT INTO auth.users (
+      instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
+      last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000', curr_user_id, 'authenticated', 'authenticated', 
+      'admin_new@myshop.com', crypt('AdminPass123!', gen_salt('bf')), now(), 
+      now(), '{"provider":"email","providers":["email"]}', '{"full_name": "Demo Admin", "phone": "+8801700000001"}', now(), now()
+    );
+
+    INSERT INTO auth.identities (
+      id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+    ) VALUES (
+      gen_random_uuid(), curr_user_id, curr_user_id::text, 
+      format('{"sub":"%s","email":"%s"}', curr_user_id::text, 'admin_new@myshop.com')::jsonb, 
+      'email', now(), now(), now()
+    );
+  ELSE
+    UPDATE auth.users 
+    SET encrypted_password = crypt('AdminPass123!', gen_salt('bf')), email_confirmed_at = COALESCE(email_confirmed_at, now()), updated_at = now()
+    WHERE id = curr_user_id;
+  END IF;
+
+  INSERT INTO public.users (id, first_name, last_name, email, mobile, status, permissions)
+  VALUES (curr_user_id, 'Demo', 'Admin', 'admin_new@myshop.com', '+8801700000001', 'active', all_admin_perms)
+  ON CONFLICT (id) DO UPDATE SET 
+    first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name, 
+    email = EXCLUDED.email, mobile = EXCLUDED.mobile, status = EXCLUDED.status;
+
+  INSERT INTO public.user_roles (user_id, role, is_active)
+  VALUES (curr_user_id, 'admin', true)
+  ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
+
+  -- ----------------------------------------------------
+  -- 4. Demo Staff: staff_new@myshop.com
+  -- ----------------------------------------------------
+  curr_user_id := NULL;
+  SELECT id INTO curr_user_id FROM auth.users WHERE email = 'staff_new@myshop.com' LIMIT 1;
+
+  IF curr_user_id IS NULL THEN
+    curr_user_id := gen_random_uuid();
+    INSERT INTO auth.users (
+      instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
+      last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000', curr_user_id, 'authenticated', 'authenticated', 
+      'staff_new@myshop.com', crypt('StaffPass123!', gen_salt('bf')), now(), 
+      now(), '{"provider":"email","providers":["email"]}', '{"full_name": "Demo Staff", "phone": "+8801900000002"}', now(), now()
+    );
+
+    INSERT INTO auth.identities (
+      id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+    ) VALUES (
+      gen_random_uuid(), curr_user_id, curr_user_id::text, 
+      format('{"sub":"%s","email":"%s"}', curr_user_id::text, 'staff_new@myshop.com')::jsonb, 
+      'email', now(), now(), now()
+    );
+  ELSE
+    UPDATE auth.users 
+    SET encrypted_password = crypt('StaffPass123!', gen_salt('bf')), email_confirmed_at = COALESCE(email_confirmed_at, now()), updated_at = now()
+    WHERE id = curr_user_id;
+  END IF;
+
+  INSERT INTO public.users (id, first_name, last_name, email, mobile, department_id, status, permissions)
+  VALUES (curr_user_id, 'Demo', 'Staff', 'staff_new@myshop.com', '+8801900000002', 1, 'active', staff_perms)
+  ON CONFLICT (id) DO UPDATE SET 
+    first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name, 
+    email = EXCLUDED.email, mobile = EXCLUDED.mobile, status = EXCLUDED.status;
+
+  INSERT INTO public.user_roles (user_id, role, is_active)
+  VALUES (curr_user_id, 'staff', true)
+  ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
+
+  -- ----------------------------------------------------
+  -- 5. Staff Admin: rahman@admin.com
+  -- ----------------------------------------------------
+  curr_user_id := NULL;
+  SELECT id INTO curr_user_id FROM auth.users WHERE email = 'rahman@admin.com' LIMIT 1;
+
+  IF curr_user_id IS NULL THEN
+    curr_user_id := gen_random_uuid();
+    INSERT INTO auth.users (
+      instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
+      last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000', curr_user_id, 'authenticated', 'authenticated', 
+      'rahman@admin.com', crypt('123456', gen_salt('bf')), now(), 
+      now(), '{"provider":"email","providers":["email"]}', '{"full_name": "আব্দুর রহমান", "phone": "01711-123456"}', now(), now()
+    );
+
+    INSERT INTO auth.identities (
+      id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+    ) VALUES (
+      gen_random_uuid(), curr_user_id, curr_user_id::text, 
+      format('{"sub":"%s","email":"%s"}', curr_user_id::text, 'rahman@admin.com')::jsonb, 
+      'email', now(), now(), now()
+    );
+  ELSE
+    UPDATE auth.users 
+    SET encrypted_password = crypt('123456', gen_salt('bf')), email_confirmed_at = COALESCE(email_confirmed_at, now()), updated_at = now()
+    WHERE id = curr_user_id;
+  END IF;
+
+  INSERT INTO public.users (id, first_name, last_name, email, mobile, department_id, status, permissions)
+  VALUES (curr_user_id, 'আব্দুর', 'রহমান', 'rahman@admin.com', '01711-123456', 1, 'active', all_admin_perms)
+  ON CONFLICT (id) DO UPDATE SET 
+    first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name, 
+    email = EXCLUDED.email, mobile = EXCLUDED.mobile, status = EXCLUDED.status;
+
+  INSERT INTO public.user_roles (user_id, role, is_active)
+  VALUES (curr_user_id, 'admin', true)
+  ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
+
+  -- ----------------------------------------------------
+  -- 6. Staff Manager: saiful@myshop.com
+  -- ----------------------------------------------------
+  curr_user_id := NULL;
+  SELECT id INTO curr_user_id FROM auth.users WHERE email = 'saiful@myshop.com' LIMIT 1;
+
+  IF curr_user_id IS NULL THEN
+    curr_user_id := gen_random_uuid();
+    INSERT INTO auth.users (
+      instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
+      last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000', curr_user_id, 'authenticated', 'authenticated', 
+      'saiful@myshop.com', crypt('123456', gen_salt('bf')), now(), 
+      now(), '{"provider":"email","providers":["email"]}', '{"full_name": "সাইফুল ইসলাম", "phone": "01819-876543"}', now(), now()
+    );
+
+    INSERT INTO auth.identities (
+      id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+    ) VALUES (
+      gen_random_uuid(), curr_user_id, curr_user_id::text, 
+      format('{"sub":"%s","email":"%s"}', curr_user_id::text, 'saiful@myshop.com')::jsonb, 
+      'email', now(), now(), now()
+    );
+  ELSE
+    UPDATE auth.users 
+    SET encrypted_password = crypt('123456', gen_salt('bf')), email_confirmed_at = COALESCE(email_confirmed_at, now()), updated_at = now()
+    WHERE id = curr_user_id;
+  END IF;
+
+  INSERT INTO public.users (id, first_name, last_name, email, mobile, department_id, status, permissions)
+  VALUES (curr_user_id, 'সাইফুল', 'ইসলাম', 'saiful@myshop.com', '01819-876543', 1, 'active', staff_perms)
+  ON CONFLICT (id) DO UPDATE SET 
+    first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name, 
+    email = EXCLUDED.email, mobile = EXCLUDED.mobile, status = EXCLUDED.status;
+
+  INSERT INTO public.user_roles (user_id, role, is_active)
+  VALUES (curr_user_id, 'manager', true)
+  ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
+
+  -- ----------------------------------------------------
+  -- 7. Staff Member: tanjila@myshop.com
+  -- ----------------------------------------------------
+  curr_user_id := NULL;
+  SELECT id INTO curr_user_id FROM auth.users WHERE email = 'tanjila@myshop.com' LIMIT 1;
+
+  IF curr_user_id IS NULL THEN
+    curr_user_id := gen_random_uuid();
+    INSERT INTO auth.users (
+      instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
+      last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000', curr_user_id, 'authenticated', 'authenticated', 
+      'tanjila@myshop.com', crypt('123456', gen_salt('bf')), now(), 
+      now(), '{"provider":"email","providers":["email"]}', '{"full_name": "তানজিলা আক্তার", "phone": "01912-334455"}', now(), now()
+    );
+
+    INSERT INTO auth.identities (
+      id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at
+    ) VALUES (
+      gen_random_uuid(), curr_user_id, curr_user_id::text, 
+      format('{"sub":"%s","email":"%s"}', curr_user_id::text, 'tanjila@myshop.com')::jsonb, 
+      'email', now(), now(), now()
+    );
+  ELSE
+    UPDATE auth.users 
+    SET encrypted_password = crypt('123456', gen_salt('bf')), email_confirmed_at = COALESCE(email_confirmed_at, now()), updated_at = now()
+    WHERE id = curr_user_id;
+  END IF;
+
+  INSERT INTO public.users (id, first_name, last_name, email, mobile, department_id, status, permissions)
+  VALUES (curr_user_id, 'তানজিলা', 'আক্তার', 'tanjila@myshop.com', '01912-334455', 1, 'active',
+    '["অর্ডার ড্যাশবোর্ড", "গ্রাহক তথ্য ও বার্তা", "রিভিউ অনুমোদন"]'::jsonb)
+  ON CONFLICT (id) DO UPDATE SET 
+    first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name, 
+    email = EXCLUDED.email, mobile = EXCLUDED.mobile, status = EXCLUDED.status;
+
+  INSERT INTO public.user_roles (user_id, role, is_active)
+  VALUES (curr_user_id, 'staff', true)
+  ON CONFLICT (user_id, role) DO UPDATE SET is_active = true;
+
+  -- Ensure any existing Admin user in public.users has full module permissions initialized
+  UPDATE public.users u
+  SET permissions = all_admin_perms
+  FROM public.user_roles r
+  WHERE u.id = r.user_id 
+    AND r.role = 'admin'
+    AND (u.permissions IS NULL OR u.permissions = '[]'::jsonb);
 
 END $$;
 
-
+-- Reload PGRST Schema Cache
+NOTIFY pgrst, 'reload schema';
 
 -- ============================================================
--- STEP 6: DIAGNOSTIC VALIDATION QUERY
+-- STEP 9: DIAGNOSTIC VALIDATION QUERY
 -- ============================================================
 
 SELECT
@@ -1498,3 +1726,4 @@ LEFT JOIN public.page_blocks     pb ON pb.section_id = ps.id
 LEFT JOIN public.page_highlights ph ON ph.page_slug  = pc.slug
 GROUP BY pc.slug, pc.title_bn
 ORDER BY pc.slug;
+

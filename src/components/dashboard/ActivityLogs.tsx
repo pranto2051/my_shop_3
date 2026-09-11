@@ -85,52 +85,55 @@ export default function ActivityLogs() {
   const fetchActivityLogsFromDatabase = async () => {
     setLoading(true);
     try {
-      // 1. Fetch from Supabase table activity_logs
+      // 1. Force fresh fetch via API endpoint first
+      const res = await fetch(`/api/admin/get-activity-logs?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+          const mappedLogs: ActivityLogItem[] = result.data.map((l: any) => ({
+            id: l.id || `log-${Math.random()}`,
+            user_name: l.user_name || 'অ্যাডমিন',
+            user_role: l.user_role || 'সুপার অ্যাডমিন',
+            action_type: l.action_type || l.action || 'ACTIVITY',
+            action_title: l.action_title || 'সিস্টেম কাজ',
+            details: l.details || l.message || 'বিবরণ নেই',
+            module: l.module || 'সাধারণ',
+            severity: (l.severity || 'info') as any,
+            timestamp: new Date(l.created_at || Date.now()).toLocaleString('bn-BD'),
+            time_ago: l.created_at ? new Date(l.created_at).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' }) : 'সম্প্রতি',
+            ip_address: l.ip_address || '127.0.0.1',
+            device_info: l.device_info || 'Chrome / macOS',
+            diff: l.diff || []
+          }));
+
+          setLogs(mappedLogs);
+          return;
+        }
+      }
+
+      // 2. Direct Supabase client query fallback
       const { data: dbLogs, error } = await (supabase
         .from('activity_logs')
         .select('*')
         .order('created_at', { ascending: false }) as any);
 
-      if (error || !dbLogs || dbLogs.length === 0) {
-        console.warn('activity_logs query notice:', error?.message || 'Empty table');
-        
-        // 2. Try fetching from order_stage_history & notifications as dynamic fallback
-        const { data: notificationsData } = await (supabase
-          .from('notifications')
-          .select('*')
-          .order('created_at', { ascending: false })
-          .limit(10) as any);
-
-        if (notificationsData && notificationsData.length > 0) {
-          const mappedFromNotifs: ActivityLogItem[] = notificationsData.map((n: any) => ({
-            id: n.id || `notif-${Math.random()}`,
-            user_name: n.user_name || 'অ্যাডমিন',
-            user_role: 'অ্যাডমিন সদস্য',
-            action_type: n.type || 'SYSTEM_NOTIF',
-            action_title: n.title || 'সিস্টেম অ্যাক্টিভিটি',
-            details: n.message || n.title,
-            module: n.module || 'অর্ডার',
-            severity: n.type === 'Success' ? 'success' : n.type === 'Warning' ? 'warning' : 'info',
-            timestamp: new Date(n.created_at || Date.now()).toLocaleString('bn-BD'),
-            time_ago: 'সম্প্রতি',
-            ip_address: '103.145.72.18',
-            device_info: 'Web Session'
-          }));
-
-          setLogs(mappedFromNotifs);
-        } else {
-          setLogs(FALLBACK_LOGS);
-        }
-      } else {
-        const mappedLogs: ActivityLogItem[] = dbLogs.map(l => ({
+      if (!error && dbLogs && dbLogs.length > 0) {
+        const mappedLogs: ActivityLogItem[] = dbLogs.map((l: any) => ({
           id: l.id,
           user_name: l.user_name || 'অ্যাডমিন',
-          user_role: l.user_role || 'অ্যাডমিন সদস্য',
-          action_type: l.action_type || 'ACTIVITY',
+          user_role: l.user_role || 'সুপার অ্যাডমিন',
+          action_type: l.action_type || l.action || 'ACTIVITY',
           action_title: l.action_title || 'সিস্টেম কাজ',
           details: l.details || l.message || 'বিবরণ নেই',
           module: l.module || 'সাধারণ',
-          severity: l.severity || 'info',
+          severity: (l.severity || 'info') as any,
           timestamp: new Date(l.created_at || Date.now()).toLocaleString('bn-BD'),
           time_ago: l.created_at ? new Date(l.created_at).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' }) : 'সম্প্রতি',
           ip_address: l.ip_address || '127.0.0.1',
@@ -139,6 +142,8 @@ export default function ActivityLogs() {
         }));
 
         setLogs(mappedLogs);
+      } else {
+        setLogs(FALLBACK_LOGS);
       }
     } catch (err) {
       console.error('Error fetching activity logs from database:', err);
