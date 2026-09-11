@@ -7,6 +7,9 @@
 -- ============================================================
 
 
+-- Ensure permissions column exists
+ALTER TABLE public.users ADD COLUMN IF NOT EXISTS permissions JSONB DEFAULT '[]'::jsonb;
+
 -- ============================================================
 --                       ADD NEW ADMIN
 --  (Copy from the "DO $$" below down to the first "END $$;")
@@ -48,11 +51,12 @@ BEGIN
       'email', now(), now(), now()
     );
 
-    -- 3. Insert into public.users
+    -- 3. Insert into public.users with Full Admin Module Permissions
     INSERT INTO public.users (
-      id, first_name, last_name, email, mobile, status
+      id, first_name, last_name, email, mobile, status, permissions
     ) VALUES (
-      admin_id, new_admin_first_name, new_admin_last_name, LOWER(new_admin_email), new_admin_mobile, 'active'
+      admin_id, new_admin_first_name, new_admin_last_name, LOWER(new_admin_email), new_admin_mobile, 'active',
+      '["অর্ডার ড্যাশবোর্ড", "পণ্য তালিকা ও ইনভেন্টরি", "গ্রাহক তথ্য ও বার্তা", "আর্থিক হিসাব ও PnL", "সিস্টেম সেটিংস", "স্টাফ ও অ্যাডমিন কন্ট্রোল", "প্রোমোশনাল পপআপ ও কুপন", "রিভিউ অনুমোদন"]'::jsonb
     );
 
     -- 4. Insert into public.user_roles (Role: admin)
@@ -112,11 +116,12 @@ BEGIN
       'email', now(), now(), now()
     );
 
-    -- 3. Insert into public.users
+    -- 3. Insert into public.users with Staff Module Permissions
     INSERT INTO public.users (
-      id, first_name, last_name, email, mobile, department_id, status
+      id, first_name, last_name, email, mobile, department_id, status, permissions
     ) VALUES (
-      staff_id, new_staff_first_name, new_staff_last_name, LOWER(new_staff_email), new_staff_mobile, COALESCE(staff_dept_id, 1), 'active'
+      staff_id, new_staff_first_name, new_staff_last_name, LOWER(new_staff_email), new_staff_mobile, COALESCE(staff_dept_id, 1), 'active',
+      '["অর্ডার ড্যাশবোর্ড", "পণ্য তালিকা ও ইনভেন্টরি"]'::jsonb
     );
 
     -- 4. Insert into public.user_roles (Role: staff)

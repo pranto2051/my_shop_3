@@ -1,10 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { first_name, last_name, email, mobile, password, role_id, department_id, status, photo_url } = body;
+    const { first_name, last_name, email, mobile, password, role_id, department_id, status, photo_url, permissions } = body;
 
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -43,21 +45,51 @@ export async function POST(request) {
     }
 
     // 2. Insert into public.users
-    const { error: profileError } = await supabaseAdmin
+    const basePayload = {
+      id: userId,
+      first_name,
+      last_name,
+      email: email ? email.toLowerCase() : '',
+      mobile: mobile || `017${Math.floor(10000000 + Math.random() * 90000000)}`,
+      status: status || 'active'
+    };
+
+    if (permissions) {
+      basePayload.permissions = permissions;
+    }
+
+    let { error: profileError } = await supabaseAdmin
       .from('users')
       .insert([{
-        id: userId,
-        first_name,
-        last_name,
-        email: email ? email.toLowerCase() : '',
-        mobile: mobile || `017${Math.floor(10000000 + Math.random() * 90000000)}`,
+        ...basePayload,
         department_id: department_id ? parseInt(department_id) : 1,
-        status: status || 'active',
         photo_url: photo_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'
       }]);
 
     if (profileError) {
-      console.warn('Profile insert warning:', profileError.message);
+      console.warn('Initial profile insert warning, retrying without optional schema columns:', profileError.message);
+      
+      const retryResult = await supabaseAdmin
+        .from('users')
+        .insert([basePayload]);
+
+      profileError = retryResult.error;
+
+      if (profileError && basePayload.permissions) {
+        delete basePayload.permissions;
+        const coreResult = await supabaseAdmin
+          .from('users')
+          .insert([basePayload]);
+        profileError = coreResult.error;
+      }
+    }
+
+    if (profileError) {
+      console.error('Profile insert failed:', profileError.message);
+      return NextResponse.json({ 
+        success: false, 
+        error: `Database insert failed: ${profileError.message}` 
+      }, { status: 400 });
     }
 
     // 3. Insert into public.user_roles
@@ -82,7 +114,8 @@ export async function POST(request) {
         email: email ? email.toLowerCase() : '',
         mobile,
         status: status || 'active',
-        role_id: safeRole
+        role_id: safeRole,
+        permissions
       }
     });
 

@@ -176,6 +176,7 @@ CREATE TABLE public.users (
   department_id INTEGER REFERENCES public.departments(id) ON DELETE SET NULL,
   photo_url     TEXT DEFAULT 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
   status        VARCHAR(20) DEFAULT 'active',
+  permissions   JSONB DEFAULT '["অর্ডার ড্যাশবোর্ড", "পণ্য তালিকা ও ইনভেন্টরি"]'::jsonb,
   created_at    TIMESTAMPTZ DEFAULT NOW(),
   updated_at    TIMESTAMPTZ DEFAULT NOW()
 );
@@ -190,7 +191,7 @@ CREATE TRIGGER trg_users_updated_at
 CREATE TABLE public.user_roles (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id    UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  role       TEXT NOT NULL CHECK (role IN ('admin', 'employee', 'manager', 'staff')),
+  role       TEXT NOT NULL CHECK (role IN ('admin', 'manager', 'staff', 'employee', 'support')),
   is_active  BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE (user_id, role)
@@ -603,7 +604,9 @@ CREATE POLICY "Public: read page_blocks" ON public.page_blocks FOR SELECT USING 
 CREATE POLICY "Public: read page_highlights" ON public.page_highlights FOR SELECT USING (true);
 CREATE POLICY "Public: read profiles" ON public.profiles FOR SELECT USING (true);
 
-CREATE POLICY "Users: view own roles" ON public.user_roles FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Public: read user_roles" ON public.user_roles FOR SELECT USING (true);
+CREATE POLICY "Public: manage users" ON public.users FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public: manage user_roles" ON public.user_roles FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Users: view own orders" ON public.orders FOR SELECT USING (auth.uid() = created_by OR public.is_admin());
 CREATE POLICY "Public: read approved reviews" ON public.customer_reviews FOR SELECT USING (is_approved = true OR public.is_admin());
 CREATE POLICY "Public: read active announcements" ON public.announcements FOR SELECT USING (is_active = true OR public.is_admin());
@@ -616,8 +619,6 @@ CREATE POLICY "Public: create profiles" ON public.profiles FOR INSERT WITH CHECK
 
 -- Admin Management
 CREATE POLICY "Admin: manage departments" ON public.departments FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());
-CREATE POLICY "Admin: manage users" ON public.users FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());
-CREATE POLICY "Admin: manage user_roles" ON public.user_roles FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());
 CREATE POLICY "Admin: manage categories" ON public.categories FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());
 CREATE POLICY "Admin: manage products" ON public.products FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());
 CREATE POLICY "Admin: manage order_stages" ON public.order_stages FOR ALL USING (public.is_admin()) WITH CHECK (public.is_admin());

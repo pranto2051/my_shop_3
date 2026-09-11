@@ -16,7 +16,8 @@ import {
   FaTrashCan, 
   FaXmark,
   FaShieldHalved,
-  FaRotate
+  FaRotate,
+  FaCheck
 } from 'react-icons/fa6';
 
 export interface StaffUser {
@@ -109,11 +110,54 @@ export default function StaffManagement() {
     permissions: [] as string[]
   });
 
-  // Fetch users directly from Supabase Database
-  const fetchStaffFromDatabase = async () => {
+  // Success Popup Modal State
+  const [successModal, setSuccessModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    name: string;
+    email: string;
+    permsCount: number;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    name: '',
+    email: '',
+    permsCount: 0
+  });
+
+  // Fetch users directly from Supabase Database (force fresh fetch)
+  const fetchStaffFromDatabase = async (isManualReload = false) => {
     setLoading(true);
     try {
-      // 1. Query public.users with joined user_roles
+      // 1. Force fresh fetch via API endpoint to bypass client-side cache
+      const res = await fetch(`/api/admin/get-staff?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache'
+        }
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+          const rolesMap: Record<string, string> = {};
+          if (Array.isArray(result.roles)) {
+            result.roles.forEach((r: any) => {
+              if (r.user_id && r.role) {
+                rolesMap[r.user_id] = r.role;
+              }
+            });
+          }
+
+          setStaffList(mapRawUsers(result.data, rolesMap));
+          return;
+        }
+      }
+
+      // 2. Direct Supabase client query fallback
       const { data: usersData, error } = await (supabase
         .from('users')
         .select(`
@@ -125,7 +169,6 @@ export default function StaffManagement() {
         `)
         .order('created_at', { ascending: false }) as any);
 
-      // 2. Query user_roles separately in case relation join returned empty due to RLS
       const { data: allRoles } = await (supabase
         .from('user_roles')
         .select('*') as any);
@@ -139,19 +182,20 @@ export default function StaffManagement() {
         });
       }
 
-      if (error || !usersData || usersData.length === 0) {
-        console.warn('Database query returned error or empty, checking context fallback:', error?.message);
-        if (contextUsers && contextUsers.length > 0) {
-          setStaffList(mapRawUsers(contextUsers, rolesMap));
-        } else {
-          setStaffList(DEFAULT_STAFF);
-        }
-      } else {
+      if (!error && usersData && usersData.length > 0) {
         setStaffList(mapRawUsers(usersData, rolesMap));
+      } else if (contextUsers && contextUsers.length > 0) {
+        setStaffList(mapRawUsers(contextUsers, rolesMap));
+      } else {
+        setStaffList(DEFAULT_STAFF);
       }
     } catch (err) {
       console.error('Error fetching staff from database:', err);
-      setStaffList(DEFAULT_STAFF);
+      if (contextUsers && contextUsers.length > 0) {
+        setStaffList(mapRawUsers(contextUsers));
+      } else {
+        setStaffList(DEFAULT_STAFF);
+      }
     } finally {
       setLoading(false);
     }
@@ -198,6 +242,18 @@ export default function StaffManagement() {
 
       const fullName = u.full_name || (u.first_name ? `${u.first_name} ${u.last_name || ''}`.trim() : u.name || 'অ্যাডমিন সদস্য');
 
+      let parsedPermissions: string[] = ['অর্ডার ড্যাশবোর্ড', 'পণ্য তালিকা ও ইনভেন্টরি'];
+      if (Array.isArray(u.permissions)) {
+        parsedPermissions = u.permissions;
+      } else if (typeof u.permissions === 'string' && u.permissions.trim() !== '') {
+        try {
+          const json = JSON.parse(u.permissions);
+          if (Array.isArray(json)) parsedPermissions = json;
+        } catch {
+          // fallback default
+        }
+      }
+
       return {
         id: u.id || `usr-${Math.random()}`,
         name: fullName,
@@ -208,7 +264,7 @@ export default function StaffManagement() {
         role: roleKey as any,
         role_label: roleLabels[roleKey] || 'স্টাফ',
         status: u.status === 'inactive' ? 'inactive' : 'active',
-        permissions: u.permissions || ['অর্ডার ড্যাশবোর্ড', 'পণ্য তালিকা ও ইনভেন্টরি'],
+        permissions: parsedPermissions,
         last_active: u.created_at ? new Date(u.created_at).toLocaleDateString('bn-BD') : 'সক্রিয়',
         created_at: u.created_at || new Date().toISOString()
       };
@@ -318,11 +374,19 @@ export default function StaffManagement() {
             password: formData.password || undefined,
             role_id: safeRole,
             department_id: 1,
-            status: formData.status
+            status: formData.status,
+            permissions: formData.permissions
           })
         });
 
-        const result = await res.json();
+        let result: any = {};
+        try {
+          result = await res.json();
+        } catch (jsonErr) {
+          console.warn('API returned non-JSON response:', jsonErr);
+          result = { success: false, error: `Server response error (${res.status})` };
+        }
+
         if (res.ok && result.success) {
           apiSuccess = true;
         } else {
@@ -337,7 +401,8 @@ export default function StaffManagement() {
               last_name: lastName,
               email: formData.email.toLowerCase(),
               mobile: formData.phone,
-              status: formData.status
+              status: formData.status,
+              permissions: formData.permissions
             })
             .eq('id', editingStaff.id) as any);
 
@@ -368,11 +433,18 @@ export default function StaffManagement() {
             password: formData.password || '123456',
             role_id: safeRole,
             department_id: 1,
-            status: formData.status
+            status: formData.status,
+            permissions: formData.permissions
           })
         });
 
-        const result = await res.json();
+        let result: any = {};
+        try {
+          result = await res.json();
+        } catch (jsonErr) {
+          console.warn('API returned non-JSON response:', jsonErr);
+          result = { success: false, error: `Server response error (${res.status})` };
+        }
         if (res.ok && result.success) {
           apiSuccess = true;
         } else {
@@ -386,7 +458,8 @@ export default function StaffManagement() {
             last_name: lastName,
             email: formData.email.toLowerCase(),
             mobile: formData.phone,
-            status: formData.status
+            status: formData.status,
+            permissions: formData.permissions
           }]) as any);
 
           const { error: roleErr } = await (supabase.from('user_roles').insert([{
@@ -408,21 +481,76 @@ export default function StaffManagement() {
         return;
       }
 
+      // 3. Immediately update local state so UI reflects changes instantly
+      const roleLabels: Record<string, string> = {
+        admin: 'সুপার অ্যাডমিন',
+        manager: 'ম্যানেজার',
+        staff: 'স্টাফ সদস্য',
+        employee: 'কর্মচারী',
+        support: 'সাপোর্ট অফিসার'
+      };
+
+      if (editingStaff) {
+        setStaffList(prev => prev.map(item => {
+          if (item.id === editingStaff.id || (item.email && item.email.toLowerCase() === formData.email.toLowerCase())) {
+            return {
+              ...item,
+              name: formData.name,
+              first_name: firstName,
+              last_name: lastName,
+              email: formData.email,
+              phone: formData.phone,
+              role: safeRole as any,
+              role_label: roleLabels[safeRole] || 'স্টাফ',
+              status: formData.status,
+              permissions: [...formData.permissions]
+            };
+          }
+          return item;
+        }));
+      } else {
+        const newStaffMember: StaffUser = {
+          id: `usr-${Date.now()}`,
+          name: formData.name,
+          first_name: firstName,
+          last_name: lastName,
+          email: formData.email,
+          phone: formData.phone,
+          role: safeRole as any,
+          role_label: roleLabels[safeRole] || 'স্টাফ',
+          status: formData.status,
+          permissions: [...formData.permissions],
+          last_active: 'এখন সক্রিয়',
+          created_at: new Date().toISOString()
+        };
+        setStaffList(prev => [newStaffMember, ...prev]);
+      }
+
       // Record Activity Log into database
       await (supabase.from('activity_logs').insert([{
         user_name: 'অ্যাডমিন',
         user_role: 'সুপার অ্যাডমিন',
         action_type: editingStaff ? 'UPDATE_STAFF' : 'CREATE_STAFF',
         action_title: editingStaff ? 'স্টাফ তথ্য সংশোধন' : 'নতুন স্টাফ তৈরি',
-        details: `স্টাফ "${formData.name}" (${formData.email}) এর তথ্য ডাটাবেজে সফলভাবে সেভ করা হয়েছে।`,
+        details: `স্টাফ "${formData.name}" (${formData.email}) এর তথ্য ডাটাবেজে সফলভাবে সেভ করা হয়েছে। (${formData.permissions.length} টি পারমিশন)`,
         module: 'স্টাফ',
         severity: 'success',
         ip_address: '127.0.0.1'
       }]) as any);
 
-      alert(`✅ স্টাফ অ্যাকাউন্ট সফলভাবে ডাটাবেজে ${editingStaff ? 'আপডেট' : 'তৈরি'} হয়েছে!`);
+      // Trigger Luxury Success Popup Modal
       setIsModalOpen(false);
-      fetchStaffFromDatabase();
+      setSuccessModal({
+        isOpen: true,
+        title: editingStaff ? 'স্টাফ তথ্য সফলভাবে আপডেট হয়েছে!' : 'নতুন স্টাফ সফলভাবে তৈরি হয়েছে!',
+        message: `স্টাফ "${formData.name}" এর অ্যাকাউন্ট তথ্য ও অ্যাকসেস পারমিশন ডাটাবেজে পারমানেন্টলি সেভ করা হয়েছে।`,
+        name: formData.name,
+        email: formData.email,
+        permsCount: formData.permissions.length
+      });
+
+      // Refetch background state from Database
+      await fetchStaffFromDatabase();
     } catch (err: any) {
       console.error('Database Operation Error:', err);
       alert('ডাটাবেজে আপডেট করতে সমস্যা হয়েছে: ' + (err.message || 'Error occurred'));
@@ -486,8 +614,13 @@ export default function StaffManagement() {
           <p>সুপারবেস ডাটাবেজের সাথে সরাসরি যুক্ত স্টাফ ও অ্যাডমিনদের এক্সেস ও পারমিশন কন্ট্রোল করুন</p>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button className={styles.addBtn} style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }} onClick={fetchStaffFromDatabase}>
-            <FaRotate /> রিলোড
+          <button 
+            className={styles.addBtn} 
+            style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }} 
+            onClick={() => fetchStaffFromDatabase(true)}
+            disabled={loading}
+          >
+            <FaRotate className={loading ? styles.spinIcon : ''} /> {loading ? 'লোড হচ্ছে...' : 'রিলোড'}
           </button>
           <button className={styles.addBtn} onClick={handleOpenAddModal}>
             <FaPlus /> নতুন স্টাফ যোগ করুন
@@ -809,6 +942,46 @@ export default function StaffManagement() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Luxury Success Popup Modal */}
+      {successModal.isOpen && (
+        <div className={styles.successModalOverlay} onClick={() => setSuccessModal(prev => ({ ...prev, isOpen: false }))}>
+          <div className={styles.successModalContent} onClick={e => e.stopPropagation()}>
+            <div className={styles.successIconWrapper}>
+              <div className={styles.successPulseRing}></div>
+              <div className={styles.successBadgeIcon}>
+                <FaCheck />
+              </div>
+            </div>
+
+            <h2 className={styles.successTitle}>{successModal.title}</h2>
+            <p className={styles.successSubtitle}>{successModal.message}</p>
+
+            <div className={styles.successDetailsCard}>
+              <div className={styles.successDetailRow}>
+                <span className={styles.successDetailLabel}>স্টাফ সদস্য:</span>
+                <span className={styles.successDetailValue}>{successModal.name}</span>
+              </div>
+              <div className={styles.successDetailRow}>
+                <span className={styles.successDetailLabel}>ইমেইল ঠিকানা:</span>
+                <span className={styles.successDetailValue}>{successModal.email}</span>
+              </div>
+              <div className={styles.successDetailRow}>
+                <span className={styles.successDetailLabel}>অ্যাকসেস পারমিশন:</span>
+                <span className={styles.successPermsBadge}>{successModal.permsCount} টি মডিউল সক্রিয়</span>
+              </div>
+            </div>
+
+            <button 
+              className={styles.successConfirmBtn}
+              onClick={() => setSuccessModal(prev => ({ ...prev, isOpen: false }))}
+            >
+              <span>ঠিক আছে</span>
+              <FaCheck />
+            </button>
           </div>
         </div>
       )}

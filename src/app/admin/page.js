@@ -29,6 +29,7 @@ import CalendarPanel from '../../components/admin/panels/CalendarPanel';
 import BackupPanel from '../../components/admin/panels/BackupPanel';
 import StoreProfilePanel from '../../components/admin/panels/StoreProfilePanel';
 import PromotionalPopupPanel from '../../components/admin/panels/PromotionalPopupPanel';
+import PerformancePanel from '../../components/admin/panels/PerformancePanel';
 
 // Staff & Activity Logs
 import StaffManagement from '../../components/dashboard/StaffManagement';

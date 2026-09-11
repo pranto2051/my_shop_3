@@ -712,3 +712,172 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Luxury Success Popup Modal */
+.successModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.successModalContent {
+  background: linear-gradient(145deg, #ffffff 0%, #fdfbf7 100%);
+  border-radius: 28px;
+  width: 100%;
+  max-width: 440px;
+  padding: 36px 32px 30px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(166, 123, 91, 0.25);
+  animation: popupScale 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+}
+
+.successModalContent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #7C4B2A, #A67B5B, #27ae60, #A67B5B, #7C4B2A);
+}
+
+.successIconWrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successBadgeIcon {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  box-shadow: 0 10px 25px rgba(39, 174, 96, 0.35);
+  z-index: 2;
+  position: relative;
+}
+
+.successPulseRing {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(39, 174, 96, 0.4);
+  animation: pulseGlow 2s infinite;
+}
+
+.successTitle {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #2c3e50;
+  letter-spacing: -0.3px;
+}
+
+.successSubtitle {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  color: #6b5545;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.successDetailsCard {
+  background: rgba(247, 243, 238, 0.8);
+  border: 1px solid #e8dfd5;
+  border-radius: 16px;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.successDetailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.successDetailLabel {
+  color: #7f8c8d;
+  font-weight: 600;
+}
+
+.successDetailValue {
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.successPermsBadge {
+  background: #eafaf1;
+  color: #1e8449;
+  border: 1px solid #a3e4d7;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.successConfirmBtn {
+  width: 100%;
+  padding: 14px 28px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(135deg, #7C4B2A 0%, #A67B5B 100%);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(124, 75, 42, 0.3);
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.successConfirmBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(124, 75, 42, 0.4);
+  background: linear-gradient(135deg, #64391d 0%, #93684a 100%);
+}
+
+@keyframes popupScale {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 0; }
+  100% { transform: scale(0.95); opacity: 0; }
+}
+
+.spinIcon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
