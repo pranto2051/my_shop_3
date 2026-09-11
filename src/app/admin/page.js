@@ -299,6 +299,8 @@ export default function AdminPage() {
                    activeTab === 'reviews' ? 'রিভিউ ও রেটিং' :
                    activeTab === 'pnl' ? 'আর্থিক ব্যবস্থাপনা' :
                    activeTab === 'promotional-popups' ? 'প্রোমোশনাল পপআপ' :
+                   activeTab === 'gallery' ? 'ফটো গ্যালারি' :
+                   activeTab === 'designs' ? 'ডিজাইন গ্যালারি' :
                    activeTab === 'cms' ? 'Content Management' :
                    activeTab === 'settings' ? 'সেটিংস' : 'অর্ডার ব্যবস্থাপনা'}
                 </span>

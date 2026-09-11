@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { FaPlus, FaSearch, FaEdit, FaTrashAlt, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import styles from './ProductsPanel.module.css';
 
-export default function ProductsPanel({ products = [], setProducts, categoriesData = [] }) {
+export default function ProductsPanel({ products, setProducts, categoriesData }) {
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -97,7 +97,7 @@ export default function ProductsPanel({ products = [], setProducts, categoriesDa
     }
   };
 
-  const filteredProducts = (products || []).filter(p => {
+  const filteredProducts = products.filter(p => {
     const matchesSearch = 
       p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
       p.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -114,6 +114,7 @@ export default function ProductsPanel({ products = [], setProducts, categoriesDa
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+    // Scroll to top of table
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -128,39 +129,33 @@ export default function ProductsPanel({ products = [], setProducts, categoriesDa
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-[#EDE0D6] shadow-xs">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-black text-[#2D1505]">পণ্য ব্যবস্থাপনা</h2>
-          <p className="text-xs sm:text-sm font-semibold text-[#A0826C] mt-0.5">শোরুমের সকল পণ্য ক্যাটালগ পরিচালনা ও স্টক ট্র্যাক করুন</p>
-        </div>
+    <div className={styles.productsContainer}>
+      <div className={styles.header}>
+        <h2>পণ্য ব্যবস্থাপনা</h2>
         <button 
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-[#7C4B2A] to-[#5D321A] text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-black shadow-md shadow-[#7C4B2A]/20 hover:shadow-lg transition-all cursor-pointer active:scale-95 shrink-0"
+          className={styles.addButton}
           onClick={() => { 
             setEditingProduct(null); 
             setGalleryUrls([]);
             setShowModal(true); 
           }}
         >
-          <FaPlus /> নতুন পণ্য যোগ করুন
+          <i className="fas fa-plus"></i> নতুন পণ্য যোগ করুন
         </button>
       </div>
 
-      {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white p-4 rounded-3xl border border-[#EDE0D6] shadow-xs">
-        <div className="relative flex-1 w-full">
-          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#A0826C]" />
+      <div className={styles.searchFilter}>
+        <div className={styles.searchInput}>
+          <i className="fas fa-search"></i>
           <input 
             type="text" 
             placeholder="নাম বা আইডি দিয়ে খুঁজুন..." 
-            className="w-full h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl pl-11 pr-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all placeholder:text-[#C4A898]"
             value={searchQuery}
             onChange={handleSearchChange}
           />
         </div>
         <select 
-          className="w-full sm:w-60 h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all cursor-pointer shrink-0"
+          className={styles.categorySelect}
           value={categoryFilter}
           onChange={handleCategoryChange}
         >
@@ -171,55 +166,51 @@ export default function ProductsPanel({ products = [], setProducts, categoriesDa
         </select>
       </div>
 
-      {/* Table Card */}
-      <div className="bg-white border border-[#EDE0D6] rounded-3xl overflow-hidden shadow-xs">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+      <div className={styles.tableCard}>
+        <div className="table-responsive">
+          <table className={styles.premiumTable}>
             <thead>
-              <tr className="bg-[#FDF8F5] border-b border-[#EDE0D6] text-[11px] font-black uppercase tracking-wider text-[#A0826C]">
-                <th className="py-4 px-6">আইডি</th>
-                <th className="py-4 px-6">পণ্য</th>
-                <th className="py-4 px-6">ক্যাটাগরি</th>
-                <th className="py-4 px-6">মূল্য</th>
-                <th className="py-4 px-6">স্টক</th>
-                <th className="py-4 px-6 text-right">অ্যাকশন</th>
+              <tr>
+                <th>আইডি</th>
+                <th>পণ্য</th>
+                <th>ক্যাটাগরি</th>
+                <th>মূল্য</th>
+                <th>স্টক</th>
+                <th>অ্যাকশন</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EDE0D6] text-sm">
+            <tbody>
               {currentProducts.map(product => (
-                <tr key={product.id} className="hover:bg-[#FDF8F5]/50 transition-colors">
-                  <td className="py-4 px-6 font-mono font-bold text-xs text-[#7C4B2A]">#{product.id}</td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <img src={product.image} alt="" className="w-12 h-12 rounded-xl object-cover border border-[#E8D5C4] shrink-0" />
-                      <div className="min-w-0">
-                        <p className="font-black text-[#2D1505] truncate">{product.name}</p>
-                        <p className="text-xs font-semibold text-[#A0826C] truncate">{product.nameEn}</p>
+                <tr key={product.id}>
+                  <td>#{product.id}</td>
+                  <td>
+                    <div className={styles.productCell}>
+                      <img src={product.image} alt="" className={styles.productImg} />
+                      <div className={styles.productNames}>
+                        <span className={styles.nameBn}>{product.name}</span>
+                        <span className={styles.nameEn}>{product.nameEn}</span>
                       </div>
                     </div>
                   </td>
-                  <td className="py-4 px-6">
-                    <span className="inline-flex px-3 py-1 rounded-full text-xs font-bold bg-[#7C4B2A]/10 text-[#7C4B2A] border border-[#7C4B2A]/20">
-                      {(categoriesData.find(c => c.id === product.categoryId) || {}).name || 'সাধারণ'}
+                  <td>
+                    <span className={`${styles.badge} ${styles.categoryBadge}`}>
+                      {(categoriesData.find(c => c.id === product.categoryId) || {}).name}
                     </span>
                   </td>
-                  <td className="py-4 px-6 font-black text-[#2D1505]">
-                    ৳{product.price.toLocaleString('bn-BD')}
+                  <td>
+                    <span className={styles.price}>
+                      ৳{product.price.toLocaleString('bn-BD')}
+                    </span>
                   </td>
-                  <td className="py-4 px-6">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                      product.inStock > 0 
-                        ? 'bg-green-100 text-green-700 border border-green-200' 
-                        : 'bg-red-100 text-red-700 border border-red-200'
-                    }`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${product.inStock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <td>
+                    <span className={`${styles.badge} ${product.inStock > 0 ? styles.stockIn : styles.stockOut}`}>
                       {product.inStock > 0 ? 'স্টকে আছে' : 'স্টক শেষ'}
                     </span>
                   </td>
-                  <td className="py-4 px-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                  <td>
+                    <div className={styles.actions}>
                       <button 
-                        className="w-8 h-8 rounded-xl bg-[#FDF8F5] border border-[#E8D5C4] flex items-center justify-center text-[#A0826C] hover:text-[#7C4B2A] hover:border-[#7C4B2A] hover:bg-[#7C4B2A]/10 transition-all cursor-pointer"
+                        className={`${styles.actionBtn} ${styles.editBtn}`}
                         onClick={() => { 
                           setEditingProduct(product); 
                           setGalleryUrls(product.images || []);
@@ -227,14 +218,14 @@ export default function ProductsPanel({ products = [], setProducts, categoriesDa
                         }}
                         title="এডিট করুন"
                       >
-                        <FaEdit />
+                        <i className="fas fa-edit"></i>
                       </button>
                       <button 
-                        className="w-8 h-8 rounded-xl bg-[#FDF8F5] border border-[#E8D5C4] flex items-center justify-center text-[#A0826C] hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-all cursor-pointer"
+                        className={`${styles.actionBtn} ${styles.deleteBtn}`}
                         onClick={() => handleDeleteProduct(product.id)}
                         title="মুছে ফেলুন"
                       >
-                        <FaTrashAlt />
+                        <i className="fas fa-trash-alt"></i>
                       </button>
                     </div>
                   </td>
@@ -245,26 +236,22 @@ export default function ProductsPanel({ products = [], setProducts, categoriesDa
         </div>
       </div>
 
-      {/* Pagination */}
+      {/* Pagination UI */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between bg-white border border-[#EDE0D6] rounded-3xl p-4">
+        <div className={styles.pagination}>
           <button 
-            className="w-9 h-9 rounded-xl bg-[#FDF8F5] border border-[#E8D5C4] flex items-center justify-center text-[#A0826C] hover:text-[#7C4B2A] disabled:opacity-40 transition-all cursor-pointer"
+            className={styles.pageBtn} 
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            <FaChevronLeft size={12} />
+            <i className="fas fa-chevron-left"></i>
           </button>
           
-          <div className="flex items-center gap-1.5">
+          <div className={styles.pageNumbers}>
             {[...Array(totalPages)].map((_, i) => (
               <button 
                 key={i + 1}
-                className={`w-9 h-9 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                  currentPage === i + 1 
-                    ? 'bg-[#7C4B2A] text-white shadow-sm' 
-                    : 'bg-[#FDF8F5] text-[#A0826C] border border-[#E8D5C4] hover:bg-white'
-                }`}
+                className={`${styles.pageNumber} ${currentPage === i + 1 ? styles.activePage : ''}`}
                 onClick={() => handlePageChange(i + 1)}
               >
                 {(i + 1).toLocaleString('bn-BD')}
@@ -273,63 +260,66 @@ export default function ProductsPanel({ products = [], setProducts, categoriesDa
           </div>
 
           <button 
-            className="w-9 h-9 rounded-xl bg-[#FDF8F5] border border-[#E8D5C4] flex items-center justify-center text-[#A0826C] hover:text-[#7C4B2A] disabled:opacity-40 transition-all cursor-pointer"
+            className={styles.pageBtn} 
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            <FaChevronRight size={12} />
+            <i className="fas fa-chevron-right"></i>
           </button>
         </div>
       )}
 
-      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1A0A00]/60 backdrop-blur-sm" onClick={() => setShowModal(false)}>
-          <div className="relative w-full max-w-3xl bg-white rounded-3xl sm:rounded-[36px] shadow-2xl overflow-hidden border border-[#E8D5C4] max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
-            <div className="relative overflow-hidden bg-gradient-to-br from-[#2D1505] to-[#7C4B2A] px-6 sm:px-8 py-6 text-white flex items-center justify-between shrink-0">
-              <h3 className="text-xl font-black">{editingProduct ? 'পণ্য এডিট করুন' : 'নতুন পণ্য যোগ করুন'}</h3>
-              <button className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/20 transition-all cursor-pointer" onClick={() => setShowModal(false)}>
-                <FaTimes />
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h3>{editingProduct ? 'পণ্য এডিট করুন' : 'পণ্য যোগ করুন'}</h3>
+              <button className={styles.closeBtn} onClick={() => setShowModal(false)}>
+                <i className="fas fa-times"></i>
               </button>
             </div>
-            <form onSubmit={handleSaveProduct} className="flex flex-col flex-1 overflow-hidden">
-              <div className="p-6 sm:p-8 overflow-y-auto space-y-4 flex-1 custom-scrollbar">
+            <form onSubmit={handleSaveProduct}>
+              <div className={styles.modalBody}>
                 <input type="hidden" name="id" defaultValue={editingProduct?.id || ''} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">পণ্যের নাম (বাংলা)</label>
-                    <input type="text" name="name" defaultValue={editingProduct?.name || ''} required placeholder="যেমন: আধুনিক সোফা" className="w-full h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all" />
+                <div className={styles.formGrid}>
+                  <div className={styles.formGroup}>
+                    <label>পণ্যের নাম (বাংলা)</label>
+                    <input type="text" name="name" defaultValue={editingProduct?.name || ''} required placeholder="যেমন: আধুনিক সোফা" />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">Product Name (English)</label>
-                    <input type="text" name="nameEn" defaultValue={editingProduct?.nameEn || ''} required placeholder="e.g. Modern Sofa" className="w-full h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all" />
+                  <div className={styles.formGroup}>
+                    <label>Product Name (English)</label>
+                    <input type="text" name="nameEn" defaultValue={editingProduct?.nameEn || ''} required placeholder="e.g. Modern Sofa" />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">ক্যাটাগরি</label>
-                    <select name="categoryId" defaultValue={editingProduct?.categoryId || categoriesData[0]?.id} required className="w-full h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all cursor-pointer">
+                  <div className={styles.formGroup}>
+                    <label>ক্যাটাগরি</label>
+                    <select name="categoryId" defaultValue={editingProduct?.categoryId || categoriesData[0]?.id} required>
                       {categoriesData.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                     </select>
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">প্রধান ছবির লিঙ্ক (Primary Image URL)</label>
-                    <input type="text" name="image" defaultValue={editingProduct?.image || ''} placeholder="https://example.com/image.jpg" className="w-full h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all" />
+                  <div className={styles.formGroup}>
+                    <label>প্রধান ছবির লিঙ্ক (Primary Image URL)</label>
+                    <input type="text" name="image" defaultValue={editingProduct?.image || ''} placeholder="https://example.com/image.jpg" />
                   </div>
                   
-                  <div className="sm:col-span-2 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">গ্যালারি ছবি (সর্বোচ্চ ৪টি অতিরিক্ত ছবি)</label>
+                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <label style={{ margin: 0 }}>গ্যালারি ছবি (সর্বোচ্চ ৪টি অতিরিক্ত ছবি)</label>
                       {galleryUrls.length < 4 && (
                         <button 
                           type="button" 
                           onClick={() => setGalleryUrls([...galleryUrls, ''])}
-                          className="px-3 py-1 bg-[#7C4B2A] text-white rounded-lg text-xs font-bold hover:bg-[#5D321A] transition-colors cursor-pointer"
+                          style={{
+                            background: '#0d6efd', color: 'white', border: 'none', 
+                            padding: '5px 10px', borderRadius: '4px', cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
                         >
-                          + ছবি যোগ করুন
+                          <i className="fas fa-plus"></i> ছবি যোগ করুন
                         </button>
                       )}
                     </div>
                     {galleryUrls.map((url, index) => (
-                      <div key={index} className="flex gap-2">
+                      <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                         <input 
                           type="text" 
                           value={url}
@@ -339,63 +329,66 @@ export default function ProductsPanel({ products = [], setProducts, categoriesDa
                             setGalleryUrls(newUrls);
                           }}
                           placeholder="https://example.com/gallery-image.jpg" 
-                          className="flex-1 h-10 bg-[#FDF8F5] border border-[#E8D5C4] rounded-xl px-3 text-xs font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20"
+                          style={{ flex: 1 }}
                         />
                         <button 
                           type="button" 
                           onClick={() => setGalleryUrls(galleryUrls.filter((_, i) => i !== index))}
-                          className="px-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors cursor-pointer"
+                          style={{
+                            background: '#dc3545', color: 'white', border: 'none', 
+                            padding: '0 15px', borderRadius: '4px', cursor: 'pointer'
+                          }}
                         >
-                          <FaTimes size={12} />
+                          <i className="fas fa-trash"></i>
                         </button>
                       </div>
                     ))}
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">মূল্য (৳)</label>
-                    <input type="number" name="price" defaultValue={editingProduct?.price || ''} required placeholder="0" className="w-full h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all" />
+                  <div className={styles.formGroup}>
+                    <label>মূল্য (৳)</label>
+                    <input type="number" name="price" defaultValue={editingProduct?.price || ''} required placeholder="0" />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">আগের মূল্য (৳)</label>
-                    <input type="number" name="originalPrice" defaultValue={editingProduct?.originalPrice || ''} placeholder="0" className="w-full h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all" />
+                  <div className={styles.formGroup}>
+                    <label>আগের মূল্য (৳)</label>
+                    <input type="number" name="originalPrice" defaultValue={editingProduct?.originalPrice || ''} placeholder="0" />
                   </div>
-                  <div className="sm:col-span-2 space-y-1.5">
-                    <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">পণ্যের বর্ণনা</label>
-                    <textarea name="description" rows="3" defaultValue={editingProduct?.description || ''} placeholder="পণ্য সম্পর্কে বিস্তারিত লিখুন..." className="w-full bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl p-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all"></textarea>
+                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                    <label>পণ্যের বর্ণনা</label>
+                    <textarea name="description" rows="3" defaultValue={editingProduct?.description || ''} placeholder="পণ্য সম্পর্কে বিস্তারিত লিখুন..."></textarea>
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">উপাদান (Material)</label>
-                    <input type="text" name="material" defaultValue={editingProduct?.material || ''} placeholder="যেমন: সেগুন কাঠ" className="w-full h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all" />
+                  <div className={styles.formGroup}>
+                    <label>উপাদান (Material)</label>
+                    <input type="text" name="material" defaultValue={editingProduct?.material || ''} placeholder="যেমন: সেগুন কাঠ" />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">মাপ (Dimensions)</label>
-                    <input type="text" name="dimensions" defaultValue={editingProduct?.dimensions || ''} placeholder="যেমন: ৫ ফিট / ২ ফিট" className="w-full h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all" />
+                  <div className={styles.formGroup}>
+                    <label>মাপ (Dimensions)</label>
+                    <input type="text" name="dimensions" defaultValue={editingProduct?.dimensions || ''} placeholder="যেমন: ৫ ফিট / ২ ফিট" />
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-extrabold text-[#A0826C] uppercase tracking-wider">রঙ (Color)</label>
-                    <input type="text" name="color" defaultValue={editingProduct?.color || ''} placeholder="যেমন: বাদামী" className="w-full h-11 bg-[#FDF8F5] border border-[#E8D5C4] rounded-2xl px-4 text-sm font-bold text-[#2D1505] outline-none focus:ring-2 focus:ring-[#7C4B2A]/20 focus:border-[#7C4B2A] transition-all" />
+                  <div className={styles.formGroup}>
+                    <label>রঙ (Color)</label>
+                    <input type="text" name="color" defaultValue={editingProduct?.color || ''} placeholder="যেমন: বাদামী" />
                   </div>
-                  <div className="sm:col-span-2 space-y-1.5">
-                    <div className="flex flex-wrap gap-6 items-center bg-[#FDF8F5] p-4 rounded-2xl border border-[#E8D5C4]">
-                      <label className="flex items-center gap-2 text-xs font-bold text-[#2D1505] cursor-pointer">
-                        স্টক পরিমাণ:
-                        <input type="number" name="inStock" min="0" step="1" defaultValue={editingProduct?.inStock ?? 0} required className="w-20 h-9 bg-white border border-[#E8D5C4] rounded-xl px-2 text-xs font-bold text-[#2D1505]" />
+                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                    <div className={styles.checkboxGroup}>
+                      <label className={styles.checkboxItem}>
+                        স্টক পরিমাণ
+                        <input type="number" name="inStock" min="0" step="1" defaultValue={editingProduct?.inStock ?? 0} required />
                       </label>
-                      <label className="flex items-center gap-2 text-xs font-bold text-[#2D1505] cursor-pointer">
-                        <input type="checkbox" name="isFeatured" defaultChecked={editingProduct ? editingProduct.isFeatured : false} className="w-4 h-4 rounded text-[#7C4B2A]" />
+                      <label className={styles.checkboxItem}>
+                        <input type="checkbox" name="isFeatured" defaultChecked={editingProduct ? editingProduct.isFeatured : false} />
                         ফিচার্ড পণ্য
                       </label>
-                      <label className="flex items-center gap-2 text-xs font-bold text-[#2D1505] cursor-pointer">
-                        <input type="checkbox" name="isTopSelling" defaultChecked={editingProduct ? editingProduct.isTopSelling : false} className="w-4 h-4 rounded text-[#7C4B2A]" />
+                      <label className={styles.checkboxItem}>
+                        <input type="checkbox" name="isTopSelling" defaultChecked={editingProduct ? editingProduct.isTopSelling : false} />
                         টপ সেলিং
                       </label>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center justify-end gap-3 px-6 sm:px-8 py-4 bg-[#FDF8F5] border-t border-[#E8D5C4] shrink-0">
-                <button type="button" className="px-5 py-2.5 rounded-xl border border-[#E8D5C4] bg-white text-xs font-black text-[#A0826C] hover:text-[#7C4B2A] hover:bg-[#7C4B2A]/5 transition-all cursor-pointer" onClick={() => setShowModal(false)} disabled={isSaving}>বাতিল</button>
-                <button type="submit" className="inline-flex items-center gap-2 bg-gradient-to-r from-[#7C4B2A] to-[#5D321A] text-white px-6 py-2.5 rounded-xl text-xs font-black shadow-md shadow-[#7C4B2A]/20 hover:shadow-lg transition-all cursor-pointer" disabled={isSaving}>
+              <div className={styles.modalFooter}>
+                <button type="button" className={styles.cancelBtn} onClick={() => setShowModal(false)} disabled={isSaving}>বাতিল</button>
+                <button type="submit" className={styles.saveBtn} disabled={isSaving}>
                   {isSaving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
                 </button>
               </div>
