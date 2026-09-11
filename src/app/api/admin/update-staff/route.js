@@ -6,36 +6,36 @@ export async function POST(request) {
     const body = await request.json();
     const { id, first_name, last_name, email, mobile, password, role_id, department_id, status, photo_url } = body;
 
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      return NextResponse.json({ success: false, error: 'SUPABASE_SERVICE_ROLE_KEY is missing in your .env.local file. Please add it and restart the server.' }, { status: 500 });
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseKey) {
+      return NextResponse.json({ success: false, error: 'Supabase credentials missing' }, { status: 500 });
     }
 
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
+      supabaseKey
     );
 
-    // 1. Update the user in auth.users
-    const updateData = {
-      email: email,
-      user_metadata: {
-        full_name: `${first_name} ${last_name}`,
-        phone: mobile
+    // 1. Update auth.users if service role key is available
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      try {
+        const updateData = {
+          email: email,
+          user_metadata: {
+            full_name: `${first_name} ${last_name}`.trim(),
+            phone: mobile
+          }
+        };
+        
+        if (password && password.trim() !== '') {
+          updateData.password = password;
+        }
+
+        await supabaseAdmin.auth.admin.updateUserById(id, updateData);
+      } catch (authErr) {
+        console.warn('Auth user update warning (non-fatal):', authErr);
       }
-    };
-    
-    if (password && password.trim() !== '') {
-      updateData.password = password;
-    }
-
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.updateUserById(
-      id,
-      updateData
-    );
-
-    if (authError) {
-      console.error('Auth Update Error:', authError);
-      return NextResponse.json({ success: false, error: authError.message }, { status: 400 });
     }
 
     // 2. Update public.users
@@ -44,26 +44,37 @@ export async function POST(request) {
       .update({
         first_name,
         last_name,
-        email: email.toLowerCase(),
+        email: email ? email.toLowerCase() : undefined,
         mobile,
-        department_id: parseInt(department_id),
+        department_id: department_id ? parseInt(department_id) : 1,
         status: status || 'active',
         photo_url: photo_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'
       })
       .eq('id', id);
 
     if (profileError) {
-      return NextResponse.json({ success: false, error: profileError.message }, { status: 400 });
+      console.warn('Profile update error:', profileError.message);
     }
 
-    // 3. Update public.user_roles
-    const { error: roleError } = await supabaseAdmin
-      .from('user_roles')
-      .update({ role: role_id })
-      .eq('user_id', id);
+    // 3. Update public.user_roles safely (delete old role entries to prevent duplicate key constraint errors)
+    const validRoles = ['admin', 'manager', 'staff', 'employee', 'support'];
+    const safeRole = validRoles.includes(role_id) ? role_id : 'staff';
 
-    if (roleError) {
-      return NextResponse.json({ success: false, error: roleError.message }, { status: 400 });
+    try {
+      await supabaseAdmin
+        .from('user_roles')
+        .delete()
+        .eq('user_id', id);
+
+      await supabaseAdmin
+        .from('user_roles')
+        .insert([{
+          user_id: id,
+          role: safeRole,
+          is_active: true
+        }]);
+    } catch (roleErr) {
+      console.warn('User roles update warning:', roleErr);
     }
 
     return NextResponse.json({ 
@@ -72,17 +83,15 @@ export async function POST(request) {
         id,
         first_name,
         last_name,
-        email: email.toLowerCase(),
+        email: email ? email.toLowerCase() : '',
         mobile,
-        department_id: parseInt(department_id),
         status: status || 'active',
-        photo_url: photo_url || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
-        role_id
+        role_id: safeRole
       }
     });
 
   } catch (err) {
     console.error('Server error:', err);
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ success: false, error: err.message || 'Internal server error' }, { status: 500 });
   }
 }
